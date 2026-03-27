@@ -6,7 +6,8 @@ export default function Header({
   toggleLanguage,
   toggleMenu,
   menuRef,
-    t // Pass translations to header for search placeholder
+  t, // Pass translations to header
+  variant = "default" // Add variant prop with default value
 }) {
   return (
     <>
@@ -41,25 +42,33 @@ export default function Header({
 
           </div>
 
-          {/* CENTER: SEARCH */}
-          <div className="flex-1 max-w-md relative">
-
-            <input
-              type="text"
-              placeholder={t.search}
-              className="w-full py-2 pl-4 pr-10 rounded-full 
+          {/* CENTER: SEARCH or TITLE */}
+          {variant === "registration" ? (
+            <div className="flex-1 flex justify-center">
+              <h2 className="text-xl md:text-2xl font-semibold text-yellow-500 
+                           bg-gradient-to-r from-yellow-600 to-yellow-800 
+                           bg-clip-text text-transparent 
+                           tracking-wide">
+                {t.trader_registration}
+              </h2>
+            </div>
+          ) : (
+            <div className="flex-1 max-w-md relative">
+              <input
+                type="text"
+                placeholder={t.search}
+                className="w-full py-2 pl-4 pr-10 rounded-full 
                          bg-white/20 backdrop-blur-md 
                          border border-white/30 
                          text-yellow-700 placeholder:text-yellow-700 
                          outline-none 
                          focus:ring-2 focus:ring-white/50"
-            />
-
-            <span className="absolute right-3 top-1/2 -translate-y-1/2">
-              🔍
-            </span>
-
-          </div>
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                🔍
+              </span>
+            </div>
+          )}
 
           {/* RIGHT: MENU + LANGUAGE */}
           <div className="flex items-center gap-3" ref={menuRef}>
