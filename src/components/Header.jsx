@@ -45,7 +45,7 @@ export default function Header({
           {/* CENTER: SEARCH or TITLE */}
           {variant === "registration" ? (
             <div className="flex-1 flex justify-center">
-              <h2 className="text-xl md:text-2xl font-semibold text-yellow-500 
+              <h2 className="lg:text-xl md:text-2xl sm:text-[10px] font-semibold text-yellow-500 
                            bg-gradient-to-r from-yellow-600 to-yellow-800 
                            bg-clip-text text-transparent 
                            tracking-wide">
@@ -76,7 +76,7 @@ export default function Header({
             {/* MENU */}
             <button
               onClick={toggleMenu}
-              className="text-2xl px-2 py-1 rounded-full bg-yellow-500 text-white 
+              className="text-xl px-2 py-1 rounded-full bg-yellow-500 text-white 
                          hover:scale-110 transition"
             >
               ☰

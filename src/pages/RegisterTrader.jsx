@@ -57,7 +57,7 @@ function RegisterTrader() {
     category_id: "",
     password: "",
     confirm_password: "",
-    profile_picture: null
+    profile_image: null
   });
 
   const [address, setAddress] = useState({
@@ -99,7 +99,7 @@ function RegisterTrader() {
   };
 
   const handleFileChange = (e) => {
-    setForm({ ...form, profile_picture: e.target.files[0] });
+    setForm({ ...form, profile_image: e.target.files[0] });
   };
 
   // REFEREES
@@ -128,7 +128,7 @@ function RegisterTrader() {
       category_id: "",
       password: "",
       confirm_password: "",
-      profile_picture: null
+      profile_image: null
     });
 
     setReferees([{ name: "", phone: "", relation: "" }]);
@@ -165,10 +165,10 @@ function RegisterTrader() {
   };
 
   const getProfilePictureUrl = () => {
-    if (registrationData?.profile_picture instanceof File) {
-      return URL.createObjectURL(registrationData.profile_picture);
+    if (registrationData?.profile_image instanceof File) {
+      return URL.createObjectURL(registrationData.profile_image);
     }
-    return registrationData?.profile_picture || logo;
+    return registrationData?.profile_image || logo;
   };
 
   // VALIDATE STEP
@@ -190,7 +190,7 @@ function RegisterTrader() {
           setShowErrorModal(true);
           return false;
         }
-        if (!form.profile_picture) {
+        if (!form.profile_image) {
           setErrorMessage("Profile picture (passport) is required");
           setShowErrorModal(true);
           return false;
@@ -298,8 +298,8 @@ function RegisterTrader() {
     
     // Add all form fields
     Object.keys(form).forEach(key => {
-      if (key === 'profile_picture' && form[key]) {
-        formData.append('profile_picture', form[key]);
+      if (key === 'profile_image' && form[key]) {
+        formData.append('profile_image', form[key]);
       } else if (key !== 'confirm_password') {
         formData.append(key, form[key]);
       }
@@ -324,7 +324,7 @@ function RegisterTrader() {
         user_code: res.data.user_code,
         name: form.first_name + " " + form.last_name,
         email: form.email,
-        profile_picture: form.profile_picture
+        profile_image: form.profile_image
       });
       setShowSuccessModal(true);
 
@@ -405,8 +405,8 @@ function RegisterTrader() {
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
             {/* Red Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-700 p-6 text-center">
-              <h2 className="text-3xl font-bold text-white mb-2">❌ Error</h2>
-              <p className="text-red-50">Something went wrong</p>
+              <h2 className="text-3xl font-bold text-white mb-2">❌ {t.error}</h2>
+              <p className="text-red-50">{t.something_went_wrong}</p>
             </div>
 
             {/* Content */}
@@ -533,13 +533,13 @@ function RegisterTrader() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-gray-600 text-center">Step {currentStep} of {totalSteps}</p>
+            <p className="text-sm text-gray-600 text-center">{t.step} {currentStep} {t.of} {totalSteps}</p>
             </div>
 
             {/* Step 1: Personal Information */}
             {currentStep === 1 && (
               <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Personal Information</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.personal_info}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <input name="first_name" placeholder={t.first_name} value={form.first_name} onChange={handleChange} className="input" required />
                   <input name="middle_name" placeholder={t.middle_name} value={form.middle_name} onChange={handleChange} className="input" />
@@ -576,7 +576,7 @@ function RegisterTrader() {
                 </div>
                 <div className="mt-3">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t.profile_picture} *
+                    {t.profile_image} *
                   </label>
                   <input
                     type="file"
@@ -585,9 +585,9 @@ function RegisterTrader() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     required
                   />
-                  {form.profile_picture && (
+                  {form.profile_image && (
                     <p className="text-sm text-green-600 mt-1">
-                      Selected: {form.profile_picture.name}
+                      {t.selected}: {form.profile_image.name}
                     </p>
                   )}
                 </div>
@@ -597,7 +597,7 @@ function RegisterTrader() {
             {/* Step 2: Contact Information */}
             {currentStep === 2 && (
               <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Contact Information</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.contact_info}</h3>
                 <input name="email" placeholder={t.email} type="email" value={form.email} onChange={handleChange} className="input" required />
                 <input name="phone" placeholder={t.phone} value={form.phone} onChange={handleChange} className="input mt-3" required />
               </div>
@@ -606,7 +606,7 @@ function RegisterTrader() {
             {/* Step 3: Business Information */}
             {currentStep === 3 && (
               <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Business Information</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.business_info}</h3>
                 <input name="business_name" placeholder={t.business} value={form.business_name} onChange={handleChange} className="input" required />
                 <select name="category_id" value={form.category_id} onChange={handleChange} className="input text-black mt-3" required>
                   <option value="">{t.category}</option>
@@ -653,7 +653,7 @@ function RegisterTrader() {
             {/* Step 6: Security/Password */}
             {currentStep === 6 && (
               <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">Security</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.security}</h3>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -686,57 +686,57 @@ function RegisterTrader() {
             {/* Step 7: Review/Summary */}
             {currentStep === 7 && (
               <div className="bg-gray-50 p-4 rounded-xl space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">Review Your Information</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{t.review_info}</h3>
                 
                 {/* Personal Information Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-blue-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">📋 Personal Information</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">📋 {t.personal_info}</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div><span className="text-gray-600">First Name:</span> <span className="font-medium">{form.first_name}</span></div>
-                    <div><span className="text-gray-600">Last Name:</span> <span className="font-medium">{form.last_name}</span></div>
-                    {form.middle_name && <div><span className="text-gray-600">Middle Name:</span> <span className="font-medium">{form.middle_name}</span></div>}
-                    <div><span className="text-gray-600">Gender:</span> <span className="font-medium capitalize">{form.gender === 'male' ? t.male : form.gender === 'female' ? t.female : form.gender}</span></div>
-                    <div className="col-span-2"><span className="text-gray-600">Profile Picture:</span> <span className="text-green-600 font-medium">✓ Uploaded</span></div>
+                    <div><span className="text-gray-600">{t.first_name}:</span> <span className="font-medium">{form.first_name}</span></div>
+                    <div><span className="text-gray-600">{t.last_name}:</span> <span className="font-medium">{form.last_name}</span></div>
+                    {form.middle_name && <div><span className="text-gray-600">{t.middle_name}:</span> <span className="font-medium">{form.middle_name}</span></div>}
+                    <div><span className="text-gray-600">{t.gender}:</span> <span className="font-medium capitalize">{form.gender === 'male' ? t.male : form.gender === 'female' ? t.female : form.gender}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.profile_image}:</span> <span className="text-green-600 font-medium">✓ {t.uploaded}</span></div>
                   </div>
                 </div>
 
                 {/* Contact Information Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-green-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">📧 Contact Information</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">📧 {t.contact_info}</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="col-span-2"><span className="text-gray-600">Email:</span> <span className="font-medium">{form.email}</span></div>
-                    <div className="col-span-2"><span className="text-gray-600">Phone:</span> <span className="font-medium">{form.phone}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.email}:</span> <span className="font-medium">{form.email}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.phone}:</span> <span className="font-medium">{form.phone}</span></div>
                   </div>
                 </div>
 
                 {/* Business Information Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-purple-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">🏪 Business Information</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">🏪 {t.business_info}</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="col-span-2"><span className="text-gray-600">Business Name:</span> <span className="font-medium">{form.business_name}</span></div>
-                    <div className="col-span-2"><span className="text-gray-600">Category:</span> <span className="font-medium">{categories.find(c => c.id == form.category_id)?.name || 'Selected'}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.business}:</span> <span className="font-medium">{form.business_name}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.category}:</span> <span className="font-medium">{categories.find(c => c.id == form.category_id)?.name || 'Selected'}</span></div>
                   </div>
                 </div>
 
                 {/* Address Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-orange-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">📍 Address</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">📍 {t.address}</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div><span className="text-gray-600">Region:</span> <span className="font-medium">{address.region}</span></div>
-                    <div><span className="text-gray-600">District:</span> <span className="font-medium">{address.district}</span></div>
-                    <div className="col-span-2"><span className="text-gray-600">Street:</span> <span className="font-medium">{address.street}</span></div>
+                    <div><span className="text-gray-600">{t.region}:</span> <span className="font-medium">{address.region}</span></div>
+                    <div><span className="text-gray-600">{t.district}:</span> <span className="font-medium">{address.district}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.street}:</span> <span className="font-medium">{address.street}</span></div>
                   </div>
                 </div>
 
                 {/* Referees Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-red-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">👥 Referees ({referees.length})</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">👥 {t.referee_info}</h4>
                   <div className="space-y-2 text-sm">
                     {referees.map((ref, idx) => (
                       <div key={idx} className="bg-gray-50 p-2 rounded">
-                        <div><span className="text-gray-600">Name:</span> <span className="font-medium">{ref.name}</span></div>
-                        <div><span className="text-gray-600">Phone:</span> <span className="font-medium">{ref.phone}</span></div>
-                        <div><span className="text-gray-600">Relation:</span> <span className="font-medium">{ref.relation}</span></div>
+                        <div><span className="text-gray-600">{t.first_name}:</span> <span className="font-medium">{ref.name}</span></div>
+                        <div><span className="text-gray-600">{t.phone}:</span> <span className="font-medium">{ref.phone}</span></div>
+                        <div><span className="text-gray-600">{t.referee}:</span> <span className="font-medium">{ref.relation}</span></div>
                       </div>
                     ))}
                   </div>
@@ -744,14 +744,14 @@ function RegisterTrader() {
 
                 {/* Security Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-yellow-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">🔐 Security</h4>
+                  <h4 className="font-semibold text-gray-800 mb-2">🔐 {t.security}</h4>
                   <div className="text-sm">
-                    <span className="text-gray-600">Password:</span> <span className="text-green-600 font-medium">✓ Set</span>
+                    <span className="text-gray-600">Password:</span> <span className="text-green-600 font-medium">✓ {t.set}</span>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm text-blue-800">
-                  ✓ All information looks correct? Click <strong>Register</strong> to proceed to payment.
+                  ✓ {t.allinfo} <strong>{t.register}</strong> {t.toproceed}
                 </div>
               </div>
             )}
@@ -761,7 +761,7 @@ function RegisterTrader() {
               {currentStep < 7 ? (
                 <>
                   <button type="button" onClick={handleNextStep} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all">
-                    Next
+                    {t.next}
                   </button>
                 </>
               ) : (
@@ -771,7 +771,7 @@ function RegisterTrader() {
               )}
               {currentStep > 1 && (
                 <button type="button" onClick={handlePreviousStep} className="flex-1 bg-gray-500 text-white py-3 rounded-lg font-semibold hover:bg-gray-600 transition-all">
-                  Back
+                  {t.back}
                 </button>
               )}
               <button type="button" onClick={handleClear} className="flex-1 bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition-all">

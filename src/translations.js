@@ -40,7 +40,7 @@ const translations = {
      gender: "Jinsia",
      male: "Mwanaume",
      female: "Mwanamke",
-     trader_registration: "Usajili wa Mfanyabiashara",
+     trader_registration: "  Mfanyabiashara",
      email: "Barua pepe",
      phone: "Simu",
      business: "Jina la biashara",
@@ -48,7 +48,7 @@ const translations = {
      confirm_password: "Thibitisha nenosiri",
      add_referee: "Ongeza mdhamini",
      passwords_not_match: "Nenosiri hazifanani",
-     profile_picture: "Picha ya wasifu (Pasi)",
+     profile_image: "Picha ya wasifu (Pasipoti)",
      congratulations: "Hongera!",
      registration_success: "Jisajili Kulipukia",
      registration_fee: "Kodi ya Jisajili:",
@@ -56,8 +56,25 @@ const translations = {
      proceed_payment: "Endelea na Malipo",
      close_for_now: "Funga Kwa Sasa",
      error: "Kosa",
-     something_went_wrong: "Kitu kibaya kikatokea",
-     try_again: "Jaribu Tena"
+     something_went_wrong: "Tatizo limetokea",
+     try_again: "Jaribu Tena",
+      personal_info: "Taarifa za kibinafsi",
+      business_info: "Taarifa za biashara",
+      referee_info: "Taarifa za mdhamini",
+      contact_info: "Taarifa za mawasiliano",
+      security: "Usalama",
+      review_info: "Hakiki Taarifa Zako",
+      uploaded: "Imewekwa",
+      set:"Ipo",
+      allinfo:"Taarifa zote zinaonekana sahihi? Bofya",
+      toproceed: "kuendelea na malipo.",
+      next: "Ifuatayo",
+      back: "Nyuma",
+      step: "Hatua ya",
+      of: "kati ya",
+      selected: "Umeweka"
+
+      
   },
     en: {
     search: "Search for products...",
@@ -90,7 +107,7 @@ const translations = {
      district: "District",
      street: "Street",
      is_primary: "Primary Address",
-  
+     
      clear: "Clear Form",
      exit: "Exit",
      first_name: "First Name",
@@ -99,7 +116,7 @@ const translations = {
      gender: "Gender",
      male: "Male",
      female: "Female",
-     trader_registration: "Trader Registration",
+     trader_registration: "  Trader",
      email: "Email",
      phone: "Phone",
      business: "Business Name",
@@ -107,7 +124,7 @@ const translations = {
      confirm_password: "Confirm Password",
      add_referee: "Add Referee",
      passwords_not_match: "Passwords do not match",
-     profile_picture: "Profile Picture (Passport)",
+     profile_image: "Profile Picture (Passport)",
      congratulations: "Congratulations!",
      registration_success: "Registration Successful",
      registration_fee: "Registration Fee:",
@@ -117,7 +134,23 @@ const translations = {
      error: "Error",
      something_went_wrong: "Something went wrong",
      try_again: "Try Again",
-     promo: "Join our community of verified traders and start your business journey today!"
+     personal_info: "Personal Information",
+     business_info: "Business Information",
+     referee_info: "Referee Information",
+     promo: "Join our community of verified traders and start your business journey today!",
+     contact_info: "Contact Information",
+     security: "Security",
+     review_info: "Review Your Information",
+     uploaded: "Uploaded",
+     set: "Set",
+     allinfo:"All information looks correct? Click",
+     toproceed: "to proceed to payment.",
+     next: "Next",
+     back: "Back",
+     step: "Step",
+     of: "of",
+     selected: "Selected"
+
   },
 };
 export default translations;
