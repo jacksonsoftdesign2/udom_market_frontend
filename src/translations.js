@@ -72,7 +72,9 @@ const translations = {
       back: "Nyuma",
       step: "Hatua ya",
       of: "kati ya",
-      selected: "Umeweka"
+      selected: "Umeweka",
+      tr: "Namba ya usajili"
+
 
       
   },
@@ -149,7 +151,8 @@ const translations = {
      back: "Back",
      step: "Step",
      of: "of",
-     selected: "Selected"
+     selected: "Selected",
+     tr: "Registration Number"
 
   },
 };

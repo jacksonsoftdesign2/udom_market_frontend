@@ -1,3 +1,4 @@
+import{ API } from "./api";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../components/Header";
@@ -41,7 +42,7 @@ function RegisterTrader() {
 
   // FETCH CATEGORIES
   useEffect(() => {
-    axios.get("http://localhost:5000/api/users/categories")
+    axios.get(`${API}/api/users/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error(err));
   }, []);
@@ -104,7 +105,7 @@ function RegisterTrader() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/users/register-trader",
+        `${API}/api/users/register-trader`,
         data
       );
 

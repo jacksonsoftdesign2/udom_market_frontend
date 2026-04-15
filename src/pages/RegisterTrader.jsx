@@ -1,48 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import{ API } from "../api";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
-import { FaUser, FaInfoCircle, FaTruckMoving, FaHome } from "react-icons/fa";
+
 function RegisterTrader() {
   const navigate = useNavigate();
- action: () => navigate("/register-trader")
   const [lang, setLang] = useState("sw");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
   const t = translations[lang] || translations["sw"];
-
-  const toggleLanguage = () => {
-    setLang((prev) => (prev === "sw" ? "en" : "sw"));
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen((prev) => !prev);
-  };
-
-  // 🔥 Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // MENU ITEMS
-  const menuItems = [
-    { label: t.home, icon: <FaHome />, action: () => navigate("/") },
-    { label: t.login, icon: <FaUser />, action: () => navigate("/login") },
-    { label: t.register, icon: <FaInfoCircle />, action: () => navigate("/register-trader") },
-    { label: t.delivery, icon: <FaTruckMoving />, action: () => navigate("/delivery") },
-    { label: t.about, icon: <FaInfoCircle />, action: () => navigate("/about") },
-  ];
 
   const [categories, setCategories] = useState([]);
 
@@ -80,11 +48,12 @@ function RegisterTrader() {
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 7;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // FETCH CATEGORIES
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/users/categories")
+    axios.get(`${API}/api/users/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error(err));
   }, []);
@@ -114,6 +83,10 @@ function RegisterTrader() {
       setReferees([...referees, { name: "", phone: "", relation: "" }]);
     }
   };
+  //to clear extra referee fields if user added more than 1 referee and then wants to clear the form
+  const removeReferee = (index) => {
+  setReferees(referees.filter((_, i) => i !== index));
+};
 
   // CLEAR
   const handleClear = () => {
@@ -148,7 +121,7 @@ function RegisterTrader() {
       };
 
       const res = await axios.post(
-        "http://localhost:3000/api/payment/register-payment",
+        `${API}/api/payment/register-payment`,
         paymentData
       );
 
@@ -293,7 +266,7 @@ function RegisterTrader() {
     if (!validateStep(6)) {
       return;
     }
-
+    setIsSubmitting(true);
     const formData = new FormData();
     
     // Add all form fields
@@ -311,7 +284,7 @@ function RegisterTrader() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/users/register-trader",
+        `${API}/api/users/register-trader`,
         formData,
         {
           headers: {
@@ -332,14 +305,40 @@ function RegisterTrader() {
       const errorMsg = err.response?.data?.error || "Registration failed. Please try again.";
       setErrorMessage(errorMsg);
       setShowErrorModal(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <>
-      <Header lang={lang} toggleLanguage={toggleLanguage} toggleMenu={toggleMenu} menuRef={menuRef} t={t} variant="registration" />
+      <Header />
 
       {/* SUCCESS MODAL */}
+
+      {isSubmitting && (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-2xl p-10 flex flex-col items-center gap-4">
+      {/* Logo with spinning ring around it */}
+      <div className="relative w-24 h-24 flex items-center justify-center">
+        <div
+  className="absolute inset-0 rounded-full animate-spin"
+  style={{
+    background: "conic-gradient(from 0deg, transparent 0%, #2563eb 100%)",
+    WebkitMask: "radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px))",
+    mask: "radial-gradient(farthest-side, transparent calc(100% - 4px), white calc(100% - 4px))"
+  }}
+></div>
+        <img src={logo} alt="logo" className="w-16 h-16 object-contain" />
+      </div>
+      <p className="text-gray-700 font-semibold text-lg">Registering...</p>
+      <p className="text-gray-400 text-sm">Please wait</p>
+    </div>
+  </div>
+)}
+
+
+
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
@@ -430,60 +429,6 @@ function RegisterTrader() {
         </div>
       )}
 
-      {/* 🔽 DROPDOWN MENU */}
-      <div
-        ref={menuRef}
-        className={`fixed top-20 right-2 z-50
-                    w-56 rounded-2xl
-                    bg-gradient-to-b from-white/95 to-blue-50/95 backdrop-blur-xl
-                    border border-white/40 shadow-2xl
-                    text-black overflow-hidden
-                    transition-all duration-300 ease-in-out
-                    ${
-                      menuOpen
-                        ? "opacity-100 translate-x-0 scale-100"
-                        : "opacity-0 translate-x-10 scale-95 pointer-events-none"
-                    }`}
-      >
-        {/* MENU HEADER */}
-        <div className="px-5 py-4 border-b border-blue-200/50 bg-gradient-to-r from-blue-500/10 to-blue-600/10">
-          <h2 className="font-bold text-lg text-blue-800 flex items-center gap-2">
-            <span className="text-2xl">🏪</span>
-            UDOM Market
-          </h2>
-          <p className="text-sm text-blue-600 font-medium">{t.menu}</p>
-        </div>
-
-        {/* MENU ITEMS */}
-        {menuItems.map((item, index) => (
-          <div key={index}>
-            <button
-            onClick={() =>{
-              item.action && item.action();
-              setMenuOpen(false);
-            }}
-              className="flex items-center gap-4 w-full px-5 py-3
-                         hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20
-                         hover:pl-7 transition-all duration-300 ease-out
-                         group relative overflow-hidden"
-            >
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-600
-                            transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
-              <span className="text-blue-700 text-lg group-hover:scale-110 transition-transform duration-200">
-                {item.icon}
-              </span>
-              <span className="font-medium text-gray-800 group-hover:text-blue-800 transition-colors duration-200">
-                {item.label}
-              </span>
-            </button>
-
-            {index !== menuItems.length - 1 && (
-              <div className="border-t border-blue-100/50 mx-2"></div>
-            )}
-          </div>
-        ))}
-      </div>
-
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-center p-4 pt-20">
         {/* Small Screen Welcome Section */}
         <div className="md:hidden text-center mb-6">
@@ -521,19 +466,19 @@ function RegisterTrader() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Step Indicator */}
             <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-3 gap-0.5 md:gap-2">
                 {[1, 2, 3, 4, 5, 6, 7].map((step) => (
-                  <div key={step} className="flex items-center flex-1">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${currentStep >= step ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                  <div key={step} className="flex items-center flex-1 min-w-0">
+                    <div className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-white text-xs md:text-base flex-shrink-0 ${currentStep >= step ? 'bg-blue-600' : 'bg-gray-300'}`}>
                       {step}
                     </div>
                     {step < 7 && (
-                      <div className={`flex-1 h-1 mx-2 ${currentStep > step ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+                      <div className={`flex-1 h-1 mx-0.5 md:mx-2 min-w-0 ${currentStep > step ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
                     )}
                   </div>
                 ))}
               </div>
-            <p className="text-sm text-gray-600 text-center">{t.step} {currentStep} {t.of} {totalSteps}</p>
+            <p className="text-xs md:text-sm text-gray-600 text-center">{t.step} {currentStep} {t.of} {totalSteps}</p>
             </div>
 
             {/* Step 1: Personal Information */}
@@ -629,27 +574,38 @@ function RegisterTrader() {
               </div>
             )}
 
-            {/* Step 5: Referees */}
-            {currentStep === 5 && (
-              <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.referee}</h3>
-                {referees.map((ref, index) => (
-                  <div key={index} className="bg-white p-3 rounded-lg mb-3 shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <input name="name" placeholder="Name" value={ref.name} onChange={(e)=>handleRefereeChange(index,e)} className="input" required />
-                      <input name="phone" placeholder="Phone" value={ref.phone} onChange={(e)=>handleRefereeChange(index,e)} className="input" required />
-                      <input name="relation" placeholder="Relation" value={ref.relation} onChange={(e)=>handleRefereeChange(index,e)} className="input" required />
-                    </div>
-                  </div>
-                ))}
-                {referees.length < 3 && (
-                  <button type="button" onClick={addReferee} className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                    + {t.add_referee}
-                  </button>
-                )}
-              </div>
-            )}
-
+           {/* Step 5: Referees */}
+{currentStep === 5 && (
+  <div className="bg-gray-50 p-4 rounded-xl">
+    <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.referee}</h3>
+    {referees.map((ref, index) => (
+      <div key={index} className="bg-white p-3 rounded-lg mb-3 shadow-sm">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm font-medium text-gray-600">Mdhamini {index + 1}</span>
+          {index > 0 && (
+            <button
+              type="button"
+              onClick={() => removeReferee(index)}
+              className="text-red-500 hover:text-red-700 font-bold text-lg border border-blue-500 rounded-full w-6 h-6 flex items-center justify-center transition-all"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input name="name" placeholder="Name" value={ref.name} onChange={(e) => handleRefereeChange(index, e)} className="input" />
+          <input name="phone" placeholder="Phone" value={ref.phone} onChange={(e) => handleRefereeChange(index, e)} className="input" />
+          <input name="relation" placeholder="Relation" value={ref.relation} onChange={(e) => handleRefereeChange(index, e)} className="input" />
+        </div>
+      </div>
+    ))}
+    {referees.length < 3 && (
+      <button type="button" onClick={addReferee} className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+        + {t.add_referee}
+      </button>
+    )}
+  </div>
+)}
             {/* Step 6: Security/Password */}
             {currentStep === 6 && (
               <div className="bg-gray-50 p-4 rounded-xl">
@@ -765,7 +721,7 @@ function RegisterTrader() {
                   </button>
                 </>
               ) : (
-                <button type="submit" className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all">
+                <button type="submit" disabled={isSubmitting} className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-all">
                   {t.register}
                 </button>
               )}
