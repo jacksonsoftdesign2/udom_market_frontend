@@ -53,7 +53,7 @@ function RegisterTrader() {
   // FETCH CATEGORIES
 
   useEffect(() => {
-    axios.get(`${API}/api/users/categories`)
+    axios.get(`${API}/users/categories`)
       .then(res => setCategories(res.data))
       .catch(err => console.error(err));
   }, []);
@@ -121,7 +121,7 @@ function RegisterTrader() {
       };
 
       const res = await axios.post(
-        `${API}/api/payment/register-payment`,
+        `${API}/payment/register-payment`,
         paymentData
       );
 
@@ -284,7 +284,7 @@ function RegisterTrader() {
 
     try {
       const res = await axios.post(
-        `${API}/api/users/register-trader`,
+        `${API}/users/register-trader`,
         formData,
         {
           headers: {
