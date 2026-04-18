@@ -60,15 +60,25 @@ export default function Header() {
         <div className="w-full md:w-[99%] 
                         md:max-w-screen-2xl md:mx-auto 
                         px-3 md:px-4 py-2 md:py-2
-                        flex items-center justify-between gap-2 md:gap-4
+                        flex flex-wrap items-center justify-between gap-2 md:gap-4
                         md:rounded-xl 
                         bg-white/20 backdrop-blur-md 
                         border-b md:border border-white/20 
                         text-yellow-700
                         shadow-lg">
 
-          {/* LEFT: LOGO + TITLE */}
-          <div className="flex items-center gap-1 md:gap-2 whitespace-nowrap flex-1 min-w-0">
+          
+         {/* LEFT: MENU BUTTON + LOGO + TITLE */}
+<div className="flex items-center gap-1 md:gap-2 whitespace-nowrap flex-1 min-w-0">
+  <button
+    ref={menuRef}
+    onClick={toggleMenu}
+    className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-full bg-yellow-500 text-white 
+               hover:scale-105 md:hover:scale-110 transition active:scale-95
+               touch-manipulation flex-shrink-0"
+  >
+    ☰
+  </button>
             <div className="w-8 md:w-10 h-8 md:h-10 rounded-full overflow-hidden 
                             bg-white flex items-center justify-center shadow flex-shrink-0">
               <img src={logo} alt="logo" className="w-6 md:w-7 h-6 md:h-7 object-contain" />
@@ -78,41 +88,33 @@ export default function Header() {
                            bg-clip-text text-transparent 
                            transition-all duration-300 
                            hover:scale-105 md:hover:scale-110 hover:brightness-125">
-              UDOM
+              UDOM Market
             </h1>
           </div>
 
           {/* CENTER: SEARCH or TITLE - HIDDEN ON MOBILE */}
-          {variant === "default" && (
-            <div className="hidden md:flex flex-1 max-w-md relative">
-              <input
-                type="text"
-                placeholder={t.search}
-                className="w-full py-2 pl-4 pr-10 rounded-full 
-                         bg-white/20 backdrop-blur-md 
-                         border border-white/30 
-                         text-yellow-700 placeholder:text-yellow-700 
-                         outline-none 
-                         focus:ring-2 focus:ring-white/50"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2">
-                🔍
-              </span>
-            </div>
-          )}
+         {variant === "default" && (
+  <>
+    {/* Desktop: inline */}
+    <div className="hidden md:flex flex-1 max-w-md relative">
+      <input type="text" placeholder={t.search}
+        className="w-full py-2 pl-4 pr-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-yellow-700 placeholder:text-yellow-700 outline-none focus:ring-2 focus:ring-white/50"
+      />
+      <span className="absolute right-3 top-1/2 -translate-y-1/2">🔍</span>
+    </div>
 
+    {/* Mobile: full width row below */}
+    <div className="md:hidden w-full order-last px-3 pb-2 relative">
+      <input type="text" placeholder={t.search}
+        className="w-full py-1.5 pl-4 pr-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-yellow-700 placeholder:text-yellow-700 outline-none focus:ring-2 focus:ring-white/50 text-sm"
+      />
+      <span className="absolute right-6 top-1/2 -translate-y-1/2">🔍</span>
+    </div>
+  </>
+)}
           {/* RIGHT: MENU + LANGUAGE */}
-          <div className="flex items-center gap-2 md:gap-3 flex-shrink-0" ref={menuRef}>
-            {/* MENU */}
-            <button
-              onClick={toggleMenu}
-              className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-full bg-yellow-500 text-white 
-                         hover:scale-105 md:hover:scale-110 transition active:scale-95
-                         touch-manipulation"
-            >
-              ☰
-            </button>
-
+          <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+           
             {/* LANGUAGE */}
             <button
               onClick={toggleLanguage}
@@ -133,81 +135,61 @@ export default function Header() {
       {/* 🔽 DROPDOWN MENU - MOBILE OPTIMIZED */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-40 md:hidden"
+          className="fixed inset-0 z-40 md:hidden bg-black/40 backdrop-blur-sm"
           onClick={() => setMenuOpen(false)}
         />
       )}
       
-      <div
-        ref={dropdownRef}
-        className={`fixed z-50
-                    md:top-20 md:right-2
-                    transition-all duration-300 ease-in-out
-                    ${menuOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
-                    
-                    md:w-56 md:rounded-2xl md:shadow-2xl
-                    md:bg-gradient-to-b md:from-white/95 md:to-blue-50/95 md:backdrop-blur-xl
-                    md:border md:border-white/40
-                    
-                    w-full h-screen top-0 left-0 right-0 bottom-0
-                    md:w-56 md:h-auto md:rounded-2xl
-                    bg-gradient-to-b from-white/98 to-blue-50/98 backdrop-blur-xl
-                    border-0 md:border md:border-white/40
-                    text-black overflow-y-auto md:overflow-hidden
-                    md:translate-x-0
-                    ${menuOpen ? "translate-x-0" : "translate-x-full md:translate-x-10"}
-                    md:scale-100
-                    ${menuOpen ? "md:scale-100" : "md:scale-95"}
-        `}
+    <div
+  ref={dropdownRef}
+  className={`fixed z-50 transition-all duration-300 ease-in-out
+top-0 left-0 w-64 h-screen rounded-none mx-0
+bg-white
+${menuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full pointer-events-none"}
+`}
+>
+{/* HEADER - same for both */}
+<div className="flex items-center justify-between px-4 py-4 border-b border-gray-200">
+  <div className="flex items-center gap-2">
+    <div className="w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center shadow">
+      <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
+    </div>
+    <span className="font-bold text-gray-800 text-lg">UDOM Market</span>
+  </div>
+  <button
+    onClick={() => setMenuOpen(false)}
+    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-100 text-gray-600 hover:text-red-600 font-bold text-lg transition"
+  >
+    ✕
+  </button>
+</div>
+
+  {/* MENU ITEMS */}
+  <nav className="py-2">
+    {menuItems.map((item, index) => (
+      <button
+        key={index}
+        onClick={() => {
+          item.action && item.action();
+          setMenuOpen(false);
+        }}
+        className="flex items-center gap-3 w-full px-4 
+                   py-4 md:py-3
+                   hover:bg-blue-50 transition-all duration-200
+                   group border-b border-gray-100 last:border-0
+                   active:bg-blue-500/30 md:active:bg-transparent
+                   touch-manipulation"
       >
-        {/* CLOSE BUTTON - MOBILE ONLY */}
-        <button
-          onClick={() => setMenuOpen(false)}
-          className="md:hidden absolute top-4 right-4 text-2xl text-gray-600 hover:text-gray-800"
-        >
-          ✕
-        </button>
-
-        {/* MENU HEADER */}
-        <div className="px-5 py-4 md:py-4 border-b border-blue-200/50 bg-gradient-to-r from-blue-500/10 to-blue-600/10 mt-12 md:mt-0">
-          <h2 className="font-bold text-lg md:text-lg text-blue-800 flex items-center gap-2">
-            <span className="text-2xl">🏪</span>
-            UDOM Market
-          </h2>
-          <p className="text-xs md:text-sm text-blue-600 font-medium">{t.menu}</p>
-        </div>
-
-        {/* MENU ITEMS */}
-        {menuItems.map((item, index) => (
-          <div key={index}>
-            <button
-              onClick={() => {
-                item.action && item.action();
-                setMenuOpen(false);
-              }}
-              className="flex items-center gap-4 w-full px-5 py-4 md:py-3
-                         hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-blue-600/20
-                         hover:md:pl-7 transition-all duration-300 ease-out
-                         group relative overflow-hidden
-                         active:bg-blue-500/30 md:active:bg-transparent
-                         touch-manipulation"
-            >
-              <div className="hidden md:block absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-blue-600
-                            transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
-              <span className="text-blue-700 text-xl md:text-lg group-hover:scale-110 transition-transform duration-200 flex-shrink-0">
-                {item.icon}
-              </span>
-              <span className="font-medium text-gray-800 group-hover:text-blue-800 transition-colors duration-200 text-sm md:text-base">
-                {item.label}
-              </span>
-            </button>
-
-            {index !== menuItems.length - 1 && (
-              <div className="border-t border-blue-100/50 mx-2"></div>
-            )}
-          </div>
-        ))}
-      </div>
+        <span className="text-blue-600 text-xl md:text-base w-5 flex-shrink-0">
+          {item.icon}
+        </span>
+        <span className="font-medium text-gray-700 group-hover:text-blue-700 text-sm">
+          {item.label}
+        </span>
+      </button>
+    ))}
+  </nav>
+</div>
     </>
   );
 }

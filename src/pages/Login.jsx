@@ -69,7 +69,7 @@ function Login() {
     setUserCode("");
 	setPassword("");
     try {
-        const response = await fetch(`${API}/api/users/login`, {
+        const response = await fetch(`${API}/users/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_code: userCode, password }),
