@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import Products from "./Products";
+import EditProfile from "./EditProfile";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -125,11 +126,22 @@ useEffect(() => {
               onClick={() => window.innerWidth >= 768 ? null : setShowProfileMenu(!showProfileMenu)}
               className="w-10 h-10 rounded-full border-2 border-gray-300 object-cover hover:border-blue-500 transition overflow-hidden flex-shrink-0"
             >
-              <img 
-                 src={user?.profile_image || "/default-avatar.png"} 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-              />
+              <img
+  src={
+    user?.profile_image
+    ? user.profile_image //use actual profile image if available
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      `${user?.first_name} ${user?.last_name}`
+
+  )}&background=60a5fa&color=fff` // fallback to generated avatar based on name initials
+}
+  alt="Profile"
+  className="w-full h-full object-cover"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${user?.first_name} ${user?.last_name}`)}&background=60a5fa&color=fff`;
+  }}
+/>
             </button>
             
             {/* Profile Dropdown Menu */}
@@ -175,7 +187,18 @@ useEffect(() => {
   {activeSection === "profile" && (
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 space-y-4">
       <h2 className="text-xl font-bold text-gray-800 mb-4">👤 Profile Information</h2>
-      
+        {/* ✅ Profile photo */}
+    <div className="flex justify-center mb-2">
+      <img
+        src={user?.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(`${user?.first_name} ${user?.last_name}`)}&background=60a5fa&color=fff`}
+        alt="Profile"
+        className="w-24 h-24 rounded-full object-cover border-4 border-blue-400 shadow"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${user?.first_name} ${user?.last_name}`)}&background=60a5fa&color=fff`;
+        }}
+      />
+    </div>
       {/* Profile Fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-gray-50 p-4 rounded-lg">
@@ -204,14 +227,21 @@ useEffect(() => {
         </div>
       </div>
       
-      {/* Edit Button */}
-      <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium mt-4">
+      
+    <button
+      onClick={() => setActiveSection("editprofile")}
+      className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium mt-4"
+    >
         ✏️ Edit Profile
       </button>
     </div>
   )}
   
-  {activeSection !== "products" && activeSection !== "profile" && (
+{activeSection === "editprofile" && (
+  <EditProfile user={user} setUser={setUser} />
+)}
+
+{activeSection !== "products" && activeSection !== "profile" && activeSection !== "editprofile" && (
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 text-center text-gray-400">
       <p className="text-3xl md:text-4xl mb-2">{navItems.find(n => n.key === activeSection)?.icon}</p>
       <p className="text-base md:text-lg font-semibold">{navItems.find(n => n.key === activeSection)?.label}</p>

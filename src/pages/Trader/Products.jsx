@@ -11,7 +11,7 @@ import {
 
 const emptyForm = {
   name: "", price: "", stock: "", category: "",
-  status: "Active", description: "", images: [], imageFiles: [], specs: [],
+  status: "Available", description: "", images: [], imageFiles: [], specs: [],
 };
 
 const newSpec = () => ({ id: Date.now() + Math.random(), attribute: "", value: "", unit: "" });
@@ -35,6 +35,7 @@ function Products() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageIndexes, setImageIndexes] = useState({});
   const [, setTick] = useState(0);
+
 // use effect to fetch categories from backend in the future, for now it's just an empty array
 useEffect(() => {
    
@@ -135,7 +136,8 @@ setProducts(Array.isArray(data) ? data.map(p => ({
     return errors;
   };
 
- const handleAddProduct = async () => {
+
+const handleAddProduct = async () => {
     const errors = validateAdd();
     if (Object.keys(errors).length > 0) { setAddErrors(errors); return; }
 
@@ -149,11 +151,12 @@ setProducts(Array.isArray(data) ? data.map(p => ({
     data.append('specs',       JSON.stringify(addForm.specs));
     addForm.imageFiles.forEach(file => data.append('images', file));
 
+    setSaving(true);
     try {
       const res = await fetch(`${API}/products/add`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        body: data  // ⚠️ No Content-Type header — browser sets it automatically
+        body: data
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
@@ -161,8 +164,12 @@ setProducts(Array.isArray(data) ? data.map(p => ({
       setAddForm(emptyForm);
       setAddErrors({});
       setShowAddForm(false);
+      setSuccessMsg("Product saved successfully!");
+      setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
       alert('Error: ' + err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -205,7 +212,8 @@ setProducts(Array.isArray(data) ? data.map(p => ({
   // ── delete ───────────────────────────────────────────────────────────────
 
   const handleDeleteProduct = async (id) => {
-    if (!window.confirm("Delete this product?")) return;
+   setDeleting(id);
+    setConfirmDelete(null);
     try {
       const res = await fetch(`${API}/products/${id}`, {
         method: 'DELETE',
@@ -213,8 +221,12 @@ setProducts(Array.isArray(data) ? data.map(p => ({
       });
       if (!res.ok) throw new Error('Delete failed');
       setProducts(prev => prev.filter(p => p.id !== id));
+      setSuccessMsg("Product deleted successfully!");
+      setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
       alert('Error: ' + err.message);
+    } finally {
+      setDeleting(null);
     }
   };
   // ── renew listing (reset 90-day timer) ──────────────────────────────────
@@ -284,7 +296,8 @@ const openEdit = (product) => {
       specs: prev.specs.filter((s) => s.id !== id),
     }));
 
- const saveEdit = async () => {
+
+const saveEdit = async () => {
     const data = new FormData();
     data.append('name',        editingProduct.name);
     data.append('description', editingProduct.description);
@@ -293,9 +306,9 @@ const openEdit = (product) => {
     data.append('category_id', editingProduct.category_id || editingProduct.category);
     data.append('status',      editingProduct.status);
     data.append('specs',       JSON.stringify(editingProduct.specs));
-    // only new files added during edit
     (editingProduct.newImageFiles || []).forEach(file => data.append('images', file));
 
+    setSaving(true);
     try {
       const res = await fetch(`${API}/products/edit/${editingProduct.id}`, {
         method: 'PUT',
@@ -306,11 +319,22 @@ const openEdit = (product) => {
       if (!res.ok) throw new Error(result.message);
       setProducts(prev => prev.map(p => p.id === editingProduct.id ? result.product : p));
       setEditingProduct(null);
+      setSuccessMsg("Product updated successfully!");
+      setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
       alert('Error: ' + err.message);
+    } finally {
+      setSaving(false);
     }
   };
   const [specLimitMsg, setSpecLimitMsg] = useState("");
+ 
+const [saving, setSaving] = useState(false);
+const [successMsg, setSuccessMsg] = useState("");
+
+const [deleting, setDeleting] = useState(null);
+
+const [confirmDelete, setConfirmDelete] = useState(null);
   // ── styles ────────────────────────────────────────────────────────────────
 
   const inputCls =
@@ -357,6 +381,18 @@ const openEdit = (product) => {
           </button>
         )}
       </div>
+
+      {/* Success message */}
+{successMsg && (
+  <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm animate-fade-in">
+    <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+      <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <p className="text-sm font-medium">{successMsg}</p>
+  </div>
+)}
 
       {/* ── Add Form ── */}
       {showAddForm && (
@@ -433,8 +469,8 @@ const openEdit = (product) => {
                 onChange={(e) => setAddForm({ ...addForm, status: e.target.value })}
                 className={inputCls}
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
               </select>
             </div>
           </div>
@@ -502,7 +538,7 @@ const openEdit = (product) => {
             )}
             <div className="space-y-2">
               {addForm.specs.map((spec) => (
-                <div key={spec.id} className="flex gap-2 items-center">
+            <div key={spec.id} className="grid grid-cols-[1fr_1fr_80px_auto] gap-2 items-center">
                 <input
   type="text"
   placeholder="Attribute (e.g. RAM)"
@@ -542,11 +578,20 @@ const openEdit = (product) => {
           {/* Submit */}
           <div className="flex gap-3">
             <button
-              onClick={handleAddProduct}
-              className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium"
-            >
-              Save Product
-            </button>
+  onClick={handleAddProduct}
+  disabled={saving}
+  className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-70 flex items-center justify-center gap-2"
+>
+  {saving ? (
+    <>
+      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+      </svg>
+      Saving…
+    </>
+  ) : "Save Product"}
+</button>
             <button
               onClick={() => { setShowAddForm(false); setAddForm(emptyForm); setAddErrors({}); }}
               className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
@@ -578,9 +623,18 @@ const openEdit = (product) => {
                   <input type="text" value={editingProduct.name} onChange={(e) => handleEditChange("name", e.target.value)} className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>Category</label>
-                  <input type="text" value={editingProduct.category} onChange={(e) => handleEditChange("category", e.target.value)} className={inputCls} />
-                </div>
+  <label className={labelCls}>Category</label>
+  <select
+    value={editingProduct.category_id || ""}
+    onChange={(e) => handleEditChange("category_id", e.target.value)}
+    className={inputCls}
+  >
+    <option value="">Select category</option>
+    {categories.map(cat => (
+      <option key={cat.id} value={cat.id}>{cat.name}</option>
+    ))}
+  </select>
+</div>
                 <div>
                   <label className={labelCls}>Price (TZS)</label>
                   <input type="number" value={editingProduct.price} onChange={(e) => handleEditChange("price", e.target.value)} className={inputCls} />
@@ -592,8 +646,8 @@ const openEdit = (product) => {
                 <div>
                   <label className={labelCls}>Status</label>
                   <select value={editingProduct.status} onChange={(e) => handleEditChange("status", e.target.value)} className={inputCls}>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Available">Available</option>
+                    <option value="Unavailable">Unavailable</option>
                   </select>
                 </div>
               </div>
@@ -642,10 +696,10 @@ const openEdit = (product) => {
                 )}
                 <div className="space-y-2">
                   {editingProduct.specs.map((spec) => (
-                    <div key={spec.id} className="flex gap-2 items-center">
-                     <input type="text" placeholder="Attribute" value={spec.attribute} onChange={(e) => { handleSpecChange(spec.id, "attribute", e.target.value); if (e.target.value.length >= 10) setSpecLimitMsg("Max 10 characters allowed"); else setSpecLimitMsg(""); }} className={`${inputCls} flex-1`} maxLength={10} />
-                     <input type="text" placeholder="Value" value={spec.value} onChange={(e) => { handleSpecChange(spec.id, "value", e.target.value); if (e.target.value.length >= 10) setSpecLimitMsg("Max 10 characters allowed"); else setSpecLimitMsg(""); }} className={`${inputCls} flex-1`} maxLength={10} />
-                     <input type="text" placeholder="Unit" value={spec.unit} onChange={(e) => { handleSpecChange(spec.id, "unit", e.target.value); if (e.target.value.length >= 10) setSpecLimitMsg("Max 10 characters allowed"); else setSpecLimitMsg(""); }} className={`${inputCls} w-20`} maxLength={10} />
+                    <div key={spec.id} className="flex gap-2 ite">
+                     <input type="text" placeholder="Attribute" value={spec.attribute} onChange={(e) => { handleSpecChange(spec.id, "attribute", e.target.value); if (e.target.value.length >= 10) setSpecLimitMsg("Max 10 characters allowed"); else setSpecLimitMsg(""); }} className={`${inputCls} flex`} maxLength={10} />
+                     <input type="text" placeholder="Value" value={spec.value} onChange={(e) => { handleSpecChange(spec.id, "value", e.target.value); if (e.target.value.length >= 10) setSpecLimitMsg("Max 10 characters allowed"); else setSpecLimitMsg(""); }} className={`${inputCls} flex`} maxLength={10} />
+                     <input type="text" placeholder="Unit" value={spec.unit} onChange={(e) => { handleSpecChange(spec.id, "unit", e.target.value); if (e.target.value.length >= 10) setSpecLimitMsg("Max 10 characters allowed"); else setSpecLimitMsg(""); }} className={`${inputCls} flex`} maxLength={10} />
                      <button onClick={() => removeEditSpec(spec.id)} className="text-red-400 hover:text-red-600 flex-shrink-0">
                         <FaTimes size={13} />
                       </button>
@@ -657,9 +711,21 @@ const openEdit = (product) => {
             </div>
 
             <div className="px-5 flex gap-3" style={{ paddingBottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 1.25rem))" }}>
-              <button onClick={saveEdit} className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium">
-                Save Changes
-              </button>
+              <button
+  onClick={saveEdit}
+  disabled={saving}
+  className="flex-1 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-medium disabled:opacity-70 flex items-center justify-center gap-2"
+>
+  {saving ? (
+    <>
+      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+      </svg>
+      Saving…
+    </>
+  ) : "Save Changes"}
+</button>
               <button onClick={() => setEditingProduct(null)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
                 Cancel
               </button>
@@ -708,7 +774,7 @@ const openEdit = (product) => {
                   )}
 
                   {/* Status badge */}
-                  <span className={`absolute top-2 left-2 text-xs font-semibold px-2.5 py-0.5 rounded-full ${product.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"}`}>
+                  <span className={`absolute top-2 left-2 text-xs font-semibold px-2.5 py-0.5 rounded-full ${product.status === "Available" ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"}`}>
                     {product.status}
                   </span>
 
@@ -811,12 +877,21 @@ const openEdit = (product) => {
                       >
                         <FaEdit size={12} /> Edit
                       </button>
-                      <button
-                        onClick={() => handleDeleteProduct(product.id)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition text-xs font-semibold"
-                      >
-                        <FaTrash size={12} /> Delete
-                      </button>
+                      
+<button
+  onClick={() => setConfirmDelete(product.id)}
+  disabled={deleting === product.id}
+  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition text-xs font-semibold disabled:opacity-70"
+>
+  {deleting === product.id ? (
+    <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+    </svg>
+  ) : (
+    <><FaTrash size={12} /> Delete</>
+  )}
+</button>
                     </div>
                   </div>
                 </div>
@@ -825,8 +900,51 @@ const openEdit = (product) => {
           })}
         </div>
       )}
-    </div>
-  );
-}
 
+      {/* ── Delete Confirmation Card ── */}
+{confirmDelete && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
+    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+      <div className="flex flex-col items-center text-center gap-3">
+        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+          <FaTrash className="text-red-500" size={18} />
+        </div>
+        <h3 className="font-bold text-gray-800 text-base">Delete Product?</h3>
+        <p className="text-sm text-gray-500">
+          This will permanently remove the product and all its images. This action cannot be undone.
+        </p>
+      </div>
+      <div className="flex gap-3 mt-6">
+        <button
+          onClick={() => setConfirmDelete(null)}
+          className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => handleDeleteProduct(confirmDelete)}
+          disabled={deleting === confirmDelete}
+          className="flex-1 bg-red-500 text-white py-2.5 rounded-lg hover:bg-red-600 transition text-sm font-medium disabled:opacity-70 flex items-center justify-center gap-2"
+        >
+          {deleting === confirmDelete ? (
+            <>
+              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+              </svg>
+              Deleting…
+            </>
+          ) : (
+            <><FaTrash size={12} /> Delete</>
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+    </div>
+
+    );
+
+}
 export default Products;
