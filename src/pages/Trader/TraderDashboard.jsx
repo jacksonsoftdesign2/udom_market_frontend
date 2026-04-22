@@ -1,3 +1,4 @@
+import { API } from "../../api";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
@@ -11,14 +12,47 @@ function TraderDashboard() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (!stored) {
-      navigate("/login");
-      return;
+useEffect(() => {
+  const stored = localStorage.getItem("user");
+  if (!stored) { navigate("/login"); return; }
+  const parsedUser = JSON.parse(stored);
+  if (!parsedUser.profile_image) {
+    fetch(`${API}/users/me`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+      const updated = { ...parsedUser, profile_image: data.profile_image };
+      localStorage.setItem("user", JSON.stringify(updated));
+      setUser(updated);
+    })
+    .catch(() => setUser(parsedUser));
+  } else {
+    setUser(parsedUser);
+  }
+}, []);
+
+
+useEffect(() => {
+  const interval = setInterval(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${API}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const updated = { ...JSON.parse(localStorage.getItem("user") || "{}"), ...data };
+        localStorage.setItem("user", JSON.stringify(updated));
+        setUser(updated);
+      }
+    } catch (e) {
+      // fail silently
     }
-    setUser(JSON.parse(stored));
-  }, []);
+  }, 5000); // every 5 seconds
+  return () => clearInterval(interval);
+}, []);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -27,11 +61,13 @@ function TraderDashboard() {
         setShowProfileMenu(false);
       }
     };
-
+  
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
+  
   const navItems = [
   
   { key: "products", label: "Products", icon: "🛍️" },
@@ -58,6 +94,8 @@ useEffect(() => {
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
+
+
 
   //notch path generator for mobile nav icons floating effect
  
@@ -131,6 +169,7 @@ useEffect(() => {
               className="w-10 h-10 rounded-full border-2 border-gray-300 object-cover hover:border-blue-500 transition overflow-hidden flex-shrink-0"
             >
               <img
+              key={user?.profile_image || 'avatar'}
   src={
     user?.profile_image
     ? user.profile_image //use actual profile image if available
@@ -141,10 +180,7 @@ useEffect(() => {
 }
   alt="Profile"
   className="w-full h-full object-cover"
-  onError={(e) => {
-    e.target.onerror = null;
-    e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(`${user?.first_name} ${user?.last_name}`)}&background=60a5fa&color=fff`;
-  }}
+ 
 />
             </button>
             

@@ -39,7 +39,7 @@ function Products() {
 // use effect to fetch categories from backend in the future, for now it's just an empty array
 useEffect(() => {
    
-  fetch(`${API.replace('/api','')}/api/users/categories`)
+  fetch(`${API}/users/categories`)
     .then((res) => res.json())
     .then((data) => setCategories(Array.isArray(data) ? data : (data.categories || [])))
     .catch((err) => console.error("Failed to fetch categories:", err));

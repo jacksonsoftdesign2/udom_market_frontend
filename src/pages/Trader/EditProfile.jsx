@@ -62,6 +62,8 @@ function EditProfile({ user, setUser }) {
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [toast, setToast] = useState(null);
+  const [deletingAddrIndex, setDeletingAddrIndex] = useState(null);
+  const [deletingRefIndex, setDeletingRefIndex] = useState(null);
 
   // single-field modal
   const [modal, setModal] = useState(null);
@@ -75,12 +77,50 @@ function EditProfile({ user, setUser }) {
   const [refModal, setRefModal] = useState(null);
   const emptyRef = { name: "", phone: "", relation: "" };
 
+
+const deleteAddress = async (index) => {
+  const updatedAddresses = profile.addresses.filter((_, i) => i !== index);
+  setDeletingAddrIndex(index);
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-addresses`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ addresses: updatedAddresses }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast("error", data.message || "Failed to delete"); return; }
+    setProfile(prev => ({ ...prev, addresses: updatedAddresses }));
+    showToast("success", "Address deleted!");
+  } catch { showToast("error", "Network error"); }
+  finally { setDeletingAddrIndex(null); }
+};
+
+
+const deleteReferee = async (index) => {
+  const updatedReferees = profile.referees.filter((_, i) => i !== index);
+  setDeletingRefIndex(index);
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-referees`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ referees: updatedReferees }),
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast("error", data.message || "Failed to delete"); return; }
+    setProfile(prev => ({ ...prev, referees: updatedReferees }));
+    showToast("success", "Referee deleted!");
+  } catch { showToast("error", "Network error"); }
+  finally { setDeletingRefIndex(null); }
+};
+
   // ── fetch full profile ──
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -104,6 +144,39 @@ function EditProfile({ user, setUser }) {
     };
     fetchProfile();
   }, []);
+
+  // ADD after the existing fetchProfile useEffect
+useEffect(() => {
+  const interval = setInterval(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(prev => ({
+          ...prev,
+          phone: data.phone || prev.phone,
+          business_name: data.business_name || prev.business_name,
+          gender: data.gender || prev.gender,
+          profile_image: data.profile_image || prev.profile_image,
+          addresses: data.addresses || prev.addresses,
+          referees: data.referees || prev.referees,
+        }));
+        setImagePreview(data.profile_image || null);
+        const stored = localStorage.getItem("user");
+        const current = stored ? JSON.parse(stored) : {};
+        localStorage.setItem("user", JSON.stringify({ ...current, ...data }));
+        setUser(prev => ({ ...prev, ...data }));
+      }
+    } catch (e) {
+      // fail silently
+    }
+  }, 5000);
+  return () => clearInterval(interval);
+}, []);
 
   const showToast = (type, msg) => {
     setToast({ type, msg });
@@ -130,7 +203,7 @@ function EditProfile({ user, setUser }) {
       formData.append("phone", profile.phone);
       formData.append("business_name", profile.business_name);
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -167,7 +240,7 @@ function EditProfile({ user, setUser }) {
         gender: profile.gender,
         [modal.field]: modalValue,
       };
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/profile`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -196,13 +269,16 @@ function EditProfile({ user, setUser }) {
   const saveAddress = async () => {
     const a = addrModal.data;
     if (!a.region || !a.district || !a.street) { showToast("error", "Fill all address fields"); return; }
+     if (addrModal.mode === "add" && profile.addresses.length >= 3) {
+      showToast("error", "Maximum 3 addresses allowed"); return;
+    }
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const updatedAddresses = addrModal.mode === "edit"
         ? profile.addresses.map((ad, i) => i === addrModal.index ? a : ad)
         : [...profile.addresses, a];
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-addresses`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-addresses`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ addresses: updatedAddresses }),
@@ -228,13 +304,17 @@ function EditProfile({ user, setUser }) {
   const saveReferee = async () => {
     const r = refModal.data;
     if (!r.name || !r.phone || !r.relation) { showToast("error", "Fill all referee fields"); return; }
+    if (refModal.mode === "add" && profile.referees.length >= 3) {
+    showToast("error", "Maximum 3 referees allowed"); return;
+  }
+
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const updatedReferees = refModal.mode === "edit"
         ? profile.referees.map((rf, i) => i === refModal.index ? r : rf)
         : [...profile.referees, r];
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-referees`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-referees`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ referees: updatedReferees }),
@@ -334,37 +414,113 @@ function EditProfile({ user, setUser }) {
         </div>
       </div>
 
-      {/* ── ADDRESSES ── */}
-      <div className="bg-white rounded-2xl shadow p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-gray-700 text-sm">📍 Addresses</h3>
-          <button onClick={() => openAddrModal("add")}
-            className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 transition">
-            + Add
-          </button>
-        </div>
-        {profile.addresses.length === 0 ? (
-          <p className="text-xs text-gray-400 text-center py-4">No addresses added yet</p>
-        ) : (
-          <div className="space-y-2">
-            {profile.addresses.map((addr, i) => (
-              <div key={i} className="flex items-start justify-between bg-gray-50 rounded-xl px-4 py-3">
-                <div>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full mr-2 ${
-                    addr.type === "shop" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
-                  }`}>{addr.type}</span>
-                  <p className="text-sm font-medium text-gray-800 mt-1">{addr.street}, {addr.district}</p>
-                  <p className="text-xs text-gray-500">{addr.region}</p>
-                </div>
-                <button onClick={() => openAddrModal("edit", i)}
-                  className="text-xs bg-white text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-50 transition flex-shrink-0 ml-3">
-                  Edit
-                </button>
-              </div>
-            ))}
+     {/* ── ADDRESSES ── */}
+<div className="bg-white rounded-2xl shadow p-5">
+  <div className="flex items-center justify-between mb-4">
+    <h3 className="font-bold text-gray-700 text-sm">📍 Addresses</h3>
+    {profile.addresses.length < 3 ? (
+      <button onClick={() => openAddrModal("add")}
+        className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 transition">
+        + Add
+      </button>
+    ) : (
+      <span className="text-xs text-gray-400">Max 3 reached</span>
+    )}
+  </div>
+  {profile.addresses.length === 0 ? (
+    <p className="text-xs text-gray-400 text-center py-4">No addresses added yet</p>
+  ) : (
+    <div className="space-y-2">
+      {profile.addresses.map((addr, i) => (
+        <div key={i} className="flex items-start justify-between bg-gray-50 rounded-xl px-4 py-3">
+          <div>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded-full mr-2 ${
+              addr.type === "shop" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
+            }`}>{addr.type}</span>
+            <p className="text-sm font-medium text-gray-800 mt-1">{addr.street}, {addr.district}</p>
+            <p className="text-xs text-gray-500">{addr.region}</p>
           </div>
-        )}
-      </div>
+          <div className="flex gap-2 flex-shrink-0 ml-3">
+            <button onClick={() => openAddrModal("edit", i)}
+              className="text-xs bg-white text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-50 transition">
+              Edit
+            </button>
+          {profile.addresses.length > 1 && (
+  <button
+    onClick={() => deleteAddress(i)}
+    disabled={deletingAddrIndex === i}
+    className="text-xs bg-white text-red-500 border border-red-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-50 transition disabled:opacity-60 flex items-center gap-1"
+  >
+    {deletingAddrIndex === i ? (
+      <>
+        <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+        </svg>
+        Deleting...
+      </>
+    ) : "Delete"}
+  </button>
+)}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
+
+{/* ── REFEREES ── */}
+<div className="bg-white rounded-2xl shadow p-5">
+  <div className="flex items-center justify-between mb-4">
+    <h3 className="font-bold text-gray-700 text-sm">👥 Referees</h3>
+    {profile.referees.length < 3 ? (
+      <button onClick={() => openRefModal("add")}
+        className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 transition">
+        + Add
+      </button>
+    ) : (
+      <span className="text-xs text-gray-400">Max 3 reached</span>
+    )}
+  </div>
+  {profile.referees.length === 0 ? (
+    <p className="text-xs text-gray-400 text-center py-4">No referees added yet</p>
+  ) : (
+    <div className="space-y-2">
+      {profile.referees.map((ref, i) => (
+        <div key={i} className="flex items-start justify-between bg-gray-50 rounded-xl px-4 py-3">
+          <div>
+            <p className="text-sm font-bold text-gray-800">{ref.name}</p>
+            <p className="text-xs text-gray-500">{ref.phone} · {ref.relation}</p>
+          </div>
+          <div className="flex gap-2 flex-shrink-0 ml-3">
+            <button onClick={() => openRefModal("edit", i)}
+              className="text-xs bg-white text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-50 transition">
+              Edit
+            </button>
+            {profile.referees.length > 1 && (
+              <button
+                onClick={() => deleteReferee(i)}
+                disabled={deletingRefIndex === i}
+                className="text-xs bg-white text-red-500 border border-red-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-red-50 transition disabled:opacity-60 flex items-center gap-1"
+              >
+                {deletingRefIndex === i ? (
+                  <>
+                    <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : "Delete"}
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
 
 

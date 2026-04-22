@@ -58,6 +58,8 @@ function RegisterTrader() {
       .catch(err => console.error(err));
   }, []);
 
+
+  
   // HANDLE CHANGE
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -387,7 +389,10 @@ function RegisterTrader() {
                   {paymentProcessing ? "Processing..." : "Proceed to Payment"}
                 </button>
                 <button
-                  onClick={() => setShowSuccessModal(false)}
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    navigate("/login");
+                              }}
                   className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-all"
                 >
                   Close for Now
