@@ -6,7 +6,7 @@ import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
 import { FaUser, FaInfoCircle, FaTruckMoving, FaHome } from "react-icons/fa";
 
-export default function Header() {
+export default function Header({ cartCount, stickySearch }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [lang, setLang] = useState("sw");
@@ -16,15 +16,6 @@ export default function Header() {
   
   const t = translations[lang] || translations["sw"];
 
-  // Get variant based on current page
-  const getVariant = () => {
-    const path = location.pathname;
-    if (path === "/login") return "login";
-    if (path === "/register-trader") return "register";
-    return "default";
-  };
-
-  const variant = getVariant();
 
   // MENU ITEMS
   const menuItems = [
@@ -91,27 +82,14 @@ export default function Header() {
               UDOM Market
             </h1>
           </div>
-
-          {/* CENTER: SEARCH or TITLE - HIDDEN ON MOBILE */}
-         {variant === "default" && (
-  <>
-    {/* Desktop: inline */}
-    <div className="hidden md:flex flex-1 max-w-md relative">
-      <input type="text" placeholder={t.search}
-        className="w-full py-2 pl-4 pr-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-yellow-700 placeholder:text-yellow-700 outline-none focus:ring-2 focus:ring-white/50"
-      />
-      <span className="absolute right-3 top-1/2 -translate-y-1/2">🔍</span>
-    </div>
-
-    {/* Mobile: full width row below */}
-    <div className="md:hidden w-full order-last px-3 pb-2 relative">
-      <input type="text" placeholder={t.search}
-        className="w-full py-1.5 pl-4 pr-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-yellow-700 placeholder:text-yellow-700 outline-none focus:ring-2 focus:ring-white/50 text-sm"
-      />
-      <span className="absolute right-6 top-1/2 -translate-y-1/2">🔍</span>
-    </div>
-  </>
+          
+          {/* CENTER: STICKY SEARCH — desktop only, shows when scrolled */}
+{stickySearch && (
+  <div className="hidden md:flex flex-1 max-w-md">
+    {stickySearch}
+  </div>
 )}
+  
           {/* RIGHT: MENU + LANGUAGE */}
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
            

@@ -1,0 +1,170 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.0.6 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36" version="28.0.6">
+  <diagram name="Page-1" id="15441rbZ7BizI2lptpwo">
+    <mxGraphModel dx="1111" dy="600" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="z-5coRuu3UPmt4oduwKP-1" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;COLLEGE MARKET PLATFORM FLOW&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="237" y="13" width="340" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-2" target="z-5coRuu3UPmt4oduwKP-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-2" value="&lt;font style=&quot;font-size: 12px;&quot;&gt;Traader Registers for first time&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFB974;" vertex="1" parent="1">
+          <mxGeometry x="120" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-3" target="z-5coRuu3UPmt4oduwKP-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-3" target="z-5coRuu3UPmt4oduwKP-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-3" value="Trader&amp;nbsp; Login and pay monthly fee" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#FFD8A7;" vertex="1" parent="1">
+          <mxGeometry x="320" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-5" target="z-5coRuu3UPmt4oduwKP-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-5" value="If paid&amp;nbsp;" style="rhombus;whiteSpace=wrap;html=1;rounded=1;fillColor=#47FF22;" vertex="1" parent="1">
+          <mxGeometry x="340" y="220" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-7" value="&lt;span&gt;&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;if not Paid montlhly fee product not visible&lt;/font&gt;&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;rounded=1;fillColor=#FF3333;strokeColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="550" y="55" width="150" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-9" target="z-5coRuu3UPmt4oduwKP-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-9" value="Products listed and buyers can view them" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#A3FF48;" vertex="1" parent="1">
+          <mxGeometry x="480" y="230" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-11" value="&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;Buyers may make orders and delivery process will follow&lt;/font&gt;" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;rounded=1;fillColor=#007FFF;" vertex="1" parent="1">
+          <mxGeometry x="480" y="360" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-13" value="Trader may register more product categories" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#83D9FF;" vertex="1" parent="1">
+          <mxGeometry x="130" y="230" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-14" value="" style="endArrow=classic;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-5" target="z-5coRuu3UPmt4oduwKP-13">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="290" as="sourcePoint" />
+            <mxPoint x="330" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-15" value="&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;Trader management System&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0066CC;" vertex="1" parent="1">
+          <mxGeometry x="70" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-16" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="z-5coRuu3UPmt4oduwKP-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="370" as="sourcePoint" />
+            <mxPoint x="300" y="150" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="120" y="300" />
+              <mxPoint x="60" y="300" />
+              <mxPoint x="60" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-17" value="&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;Product listing management system&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3333FF;" vertex="1" parent="1">
+          <mxGeometry x="700" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-18" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.425;exitY=0.033;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-17" target="z-5coRuu3UPmt4oduwKP-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="750" y="380" as="sourcePoint" />
+            <mxPoint x="530" y="170" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="750" y="200" />
+              <mxPoint x="410" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-19" value="&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;Payment management system&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#79CDFF;" vertex="1" parent="1">
+          <mxGeometry x="560" y="480" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-20" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.583;entryY=1.033;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-19" target="z-5coRuu3UPmt4oduwKP-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="480" as="sourcePoint" />
+            <mxPoint x="700" y="430" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="620" y="450" />
+              <mxPoint x="650" y="450" />
+              <mxPoint x="650" y="220" />
+              <mxPoint x="390" y="220" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-21" value="&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;Platform central management system&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#766CFF;" vertex="1" parent="1">
+          <mxGeometry x="340" y="560" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-23" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.35;exitY=-0.017;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-21" target="z-5coRuu3UPmt4oduwKP-15">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="400" y="440" as="sourcePoint" />
+            <mxPoint x="450" y="390" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="380" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-24" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="z-5coRuu3UPmt4oduwKP-19">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="410" y="560" as="sourcePoint" />
+            <mxPoint x="460" y="510" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="410" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-25" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" target="z-5coRuu3UPmt4oduwKP-17">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="434" y="558" as="sourcePoint" />
+            <mxPoint x="484" y="508" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="434" y="530" />
+              <mxPoint x="520" y="530" />
+              <mxPoint x="520" y="560" />
+              <mxPoint x="760" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-26" value="Colleges" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#FFB974;" vertex="1" parent="1">
+          <mxGeometry x="120" y="540" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-27" value="Colleges" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#FFB366;" vertex="1" parent="1">
+          <mxGeometry x="330" y="710" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-28" value="Colleges" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#FFD966;" vertex="1" parent="1">
+          <mxGeometry x="600" y="590" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-29" value="" style="curved=1;endArrow=classic;html=1;rounded=0;exitX=1.008;exitY=0.633;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-21">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="560" y="670" as="sourcePoint" />
+            <mxPoint x="610" y="620" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="610" y="670" />
+              <mxPoint x="560" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-32" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.96;entryY=0.7;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-21" target="z-5coRuu3UPmt4oduwKP-26">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="330" y="590" as="sourcePoint" />
+            <mxPoint x="450" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-35" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.575;entryY=0.125;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="z-5coRuu3UPmt4oduwKP-21" target="z-5coRuu3UPmt4oduwKP-27">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="390" y="690" as="sourcePoint" />
+            <mxPoint x="440" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-36" value="&lt;ul&gt;&lt;li&gt;&lt;font style=&quot;font-size: 14px; color: rgb(0, 51, 102);&quot;&gt;&lt;b&gt;Enterpreneurs Students&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: rgb(0, 51, 102);&quot; size=&quot;3&quot;&gt;&lt;b&gt;Traders near college&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: rgb(0, 51, 102);&quot; size=&quot;3&quot;&gt;&lt;b&gt;Cross regions traders&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;li&gt;&lt;font style=&quot;color: rgb(0, 51, 102);&quot; size=&quot;3&quot;&gt;&lt;b&gt;Service providers arround colleges&lt;/b&gt;&lt;/font&gt;&lt;/li&gt;&lt;/ul&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="810" width="330" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-37" value="&lt;b&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;FOCUS CUSTOMES OF OUR PLATFORM&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="260" y="810" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="z-5coRuu3UPmt4oduwKP-38" value="Prepared and owned by : JacksonSoftdesigns group" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="231" y="994" width="356" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
