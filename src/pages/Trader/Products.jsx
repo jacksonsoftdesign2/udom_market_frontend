@@ -520,13 +520,13 @@ const [confirmDelete, setConfirmDelete] = useState(null);
            <textarea
           placeholder="Describe your product…"
           value={addForm.description}
-          onChange={(e) => setAddForm({ ...addForm, description: e.target.value.slice(0, 300) })}
+          onChange={(e) => setAddForm({ ...addForm, description: e.target.value.slice(0, 100) })}
           className={inputCls}
           rows={3}
-          maxLength={300}
+          maxLength={100}
         />
-        <p className={`text-xs mt-1 text-right ${addForm.description.length >= 280 ? "text-red-400" : "text-gray-400"}`}>
-          {addForm.description.length}/300
+        <p className={`text-xs mt-1 text-right ${addForm.description.length >= 80 ? "text-red-400" : "text-gray-400"}`}>
+          {addForm.description.length}/100
         </p>
           </div>
 
@@ -725,11 +725,11 @@ const [confirmDelete, setConfirmDelete] = useState(null);
                 <textarea 
                 placeholder="Describe your product..."
                 value={editingProduct.description}
-                onChange={(e) => handleEditChange("description", e.target.value.slice(0,300))} 
+                onChange={(e) => handleEditChange("description", e.target.value.slice(0,100))} 
                 className={inputCls} 
                 rows={3} />
-                <p className={`text-xs mt-1 text-right ${editingProduct.description.length >= 280 ? "text-red-400" : "text-gray-400"}`}>
-              {editingProduct.description.length}/300
+                <p className={`text-xs mt-1 text-right ${editingProduct.description.length >=80 ? "text-red-400" : "text-green-500"}`}>
+              {editingProduct.description.length}/100
             </p>
               </div>
 
