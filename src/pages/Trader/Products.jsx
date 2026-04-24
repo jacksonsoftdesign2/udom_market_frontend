@@ -44,11 +44,6 @@ useEffect(() => {
     .then((data) => setCategories(Array.isArray(data) ? data : (data.categories || [])))
     .catch((err) => console.error("Failed to fetch categories:", err));
 }, []);
-  // Re-render every minute so countdowns stay live
-  useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 60_000);
-    return () => clearInterval(id);
-  }, []);
 
   // ── search ──────────────────────────────────────────────────────────────
 
@@ -260,16 +255,23 @@ const openEdit = (product) => {
   const handleEditChange = (field, value) =>
     setEditingProduct((prev) => ({ ...prev, [field]: value }));
 
-  const handleEditImageUpload = (e) => {
+const handleEditImageUpload = (e) => {
     const files = Array.from(e.target.files);
     const urls = files.map((f) => URL.createObjectURL(f));
+    
+    const currentTotal = editingProduct.images.length + files.length;
+    if (currentTotal > 6) {
+        alert('Maximum 6 images allowed');
+        return;
+    }
+    
     setEditingProduct((prev) => ({
-      ...prev,
-      images: [...prev.images, ...urls].slice(0, 6),
-      newImageFiles: [...(prev.newImageFiles || []), ...files].slice(0, 6), // ← ADD
+        ...prev,
+        images: [...prev.images, ...urls], // blob URLs just for preview
+        newImageFiles: [...(prev.newImageFiles || []), ...files], // actual files for upload
     }));
     e.target.value = "";
-  };
+};
 
   const removeEditImage = (idx) => {
     setEditingProduct((prev) => ({
@@ -296,7 +298,8 @@ const openEdit = (product) => {
       specs: prev.specs.filter((s) => s.id !== id),
     }));
 
-
+;
+    
 const saveEdit = async () => {
     const data = new FormData();
     data.append('name',        editingProduct.name);
@@ -306,7 +309,15 @@ const saveEdit = async () => {
     data.append('category_id', editingProduct.category_id || editingProduct.category);
     data.append('status',      editingProduct.status);
     data.append('specs',       JSON.stringify(editingProduct.specs));
+
+    // ✅ Only send actual files (new uploads)
     (editingProduct.newImageFiles || []).forEach(file => data.append('images', file));
+
+    // ✅ Only send existing http URLs as remaining (not blob URLs)
+    const remainingUrls = editingProduct.images.filter(url => 
+        url.startsWith('http') || url.startsWith('https')
+    );
+    data.append('remainingImages', JSON.stringify(remainingUrls));
 
     setSaving(true);
     try {
@@ -317,7 +328,20 @@ const saveEdit = async () => {
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
-      setProducts(prev => prev.map(p => p.id === editingProduct.id ? result.product : p));
+
+      // ✅ Properly map result back to state
+      setProducts(prev => prev.map(p => p.id === editingProduct.id ? {
+        ...result.product,
+        listingDate: result.product.listing_date,
+        createdDate: result.product.created_at,
+        specs: result.product.specs
+          ? (typeof result.product.specs === 'string'
+              ? JSON.parse(result.product.specs)
+              : result.product.specs)
+          : [],
+        images: result.product.images || [],
+      } : p));
+
       setEditingProduct(null);
       setSuccessMsg("Product updated successfully!");
       setTimeout(() => setSuccessMsg(""), 3000);
@@ -326,7 +350,8 @@ const saveEdit = async () => {
     } finally {
       setSaving(false);
     }
-  };
+};
+
   const [specLimitMsg, setSpecLimitMsg] = useState("");
  
 const [saving, setSaving] = useState(false);
@@ -437,16 +462,23 @@ const [confirmDelete, setConfirmDelete] = useState(null);
               {addErrors.category && <p className="text-xs text-red-500 mt-1">Category is required.</p>}
             </div>
             <div>
-              <label className={labelCls}>
-                Price (TZS) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                placeholder="0"
-                value={addForm.price}
-                onChange={(e) => { setAddForm({ ...addForm, price: e.target.value }); setAddErrors((p) => ({ ...p, price: false })); }}
-                className={addErrors.price ? inputErrCls : inputCls}
-              />
+          <label className={labelCls}>
+  Price (TZS) <span className="text-red-500">*</span>
+</label>
+<input
+  type="text"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  placeholder="0"
+  value={addForm.price}
+  onChange={(e) => {
+    const val = e.target.value.replace(/[^0-9]/g, '');
+    if (Number(val) > 999999999) return; // prevent excessively large numbers
+    setAddForm({ ...addForm, price: val });
+    setAddErrors((p) => ({ ...p, price: false }));
+  }}
+  className={addErrors.price ? inputErrCls : inputCls}
+/>
               {addErrors.price && <p className="text-xs text-red-500 mt-1">Price is required.</p>}
             </div>
             <div>
@@ -454,12 +486,19 @@ const [confirmDelete, setConfirmDelete] = useState(null);
                 Stock <span className="text-red-500">*</span>
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="0"
                 value={addForm.stock}
-                onChange={(e) => { setAddForm({ ...addForm, stock: e.target.value }); setAddErrors((p) => ({ ...p, stock: false })); }}
-                className={addErrors.stock ? inputErrCls : inputCls}
-              />
+              onChange={(e) => {
+    const val = e.target.value.replace(/[^0-9]/g, '');
+    if (Number(val) > 999999) return; // prevent excessively large numbers
+    setAddForm({ ...addForm, stock: val });
+    setAddErrors((p) => ({ ...p, stock: false }));
+  }}
+  className={addErrors.stock ? inputErrCls : inputCls}
+/>
               {addErrors.stock && <p className="text-xs text-red-500 mt-1">Stock is required.</p>}
             </div>
             <div>
@@ -478,13 +517,17 @@ const [confirmDelete, setConfirmDelete] = useState(null);
           {/* Description */}
           <div className="mb-4">
             <label className={labelCls}>Description</label>
-            <textarea
-              placeholder="Describe your product…"
-              value={addForm.description}
-              onChange={(e) => setAddForm({ ...addForm, description: e.target.value })}
-              className={inputCls}
-              rows={3}
-            />
+           <textarea
+          placeholder="Describe your product…"
+          value={addForm.description}
+          onChange={(e) => setAddForm({ ...addForm, description: e.target.value.slice(0, 300) })}
+          className={inputCls}
+          rows={3}
+          maxLength={300}
+        />
+        <p className={`text-xs mt-1 text-right ${addForm.description.length >= 280 ? "text-red-400" : "text-gray-400"}`}>
+          {addForm.description.length}/300
+        </p>
           </div>
 
           {/* Images — required */}
@@ -636,12 +679,36 @@ const [confirmDelete, setConfirmDelete] = useState(null);
   </select>
 </div>
                 <div>
-                  <label className={labelCls}>Price (TZS)</label>
-                  <input type="number" value={editingProduct.price} onChange={(e) => handleEditChange("price", e.target.value)} className={inputCls} />
+                 <label className={labelCls}>Price (TZS)</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="0"
+                  value={editingProduct.price}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    handleEditChange("price", val);
+                    if (Number(val) > 999999999) return; // prevent excessively large numbers
+                  }}
+                  className={inputCls}
+                />
                 </div>
                 <div>
-                  <label className={labelCls}>Stock</label>
-                  <input type="number" value={editingProduct.stock} onChange={(e) => handleEditChange("stock", e.target.value)} className={inputCls} />
+                 <label className={labelCls}>Stock</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="0"
+                  value={editingProduct.stock}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    handleEditChange("stock", val);
+                    if (Number(val) > 999999) return; // prevent excessively large numbers
+                  }}
+                  className={inputCls}
+                />
                 </div>
                 <div>
                   <label className={labelCls}>Status</label>
@@ -655,7 +722,15 @@ const [confirmDelete, setConfirmDelete] = useState(null);
               {/* Description */}
               <div>
                 <label className={labelCls}>Description</label>
-                <textarea value={editingProduct.description} onChange={(e) => handleEditChange("description", e.target.value)} className={inputCls} rows={3} />
+                <textarea 
+                placeholder="Describe your product..."
+                value={editingProduct.description}
+                onChange={(e) => handleEditChange("description", e.target.value.slice(0,300))} 
+                className={inputCls} 
+                rows={3} />
+                <p className={`text-xs mt-1 text-right ${editingProduct.description.length >= 280 ? "text-red-400" : "text-gray-400"}`}>
+              {editingProduct.description.length}/300
+            </p>
               </div>
 
               {/* Images */}

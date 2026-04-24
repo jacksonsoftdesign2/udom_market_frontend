@@ -151,18 +151,24 @@ function Home() {
     return () => observer.disconnect();
   }, []);
 
-  // ── fetch categories ──
-  useEffect(() => {
-    fetch(`${API}/users/categories`)
-      .then(r => r.json())
-      .then(data => setCategories(Array.isArray(data) ? data : []))
-      .catch(() => setCategories([]));
-  }, []);
+  // ── keep backend alive ──
+useEffect(() => {
+  const ping = () => fetch(`${API}/users/categories`).catch(() => {});
+  const id = setInterval(ping, 14 * 60 * 1000);
+  return () => clearInterval(id);
+}, []);
 
-  // ── fetch products ──
-  useEffect(() => {
-    setLoading(true);
-    setError("");
+  // ── fetch categories ──
+useEffect(() => {
+  fetch(`${API}/users/categories`)
+    .then(r => r.json())
+    .then(data => setCategories(Array.isArray(data) ? data : []))
+    .catch(() => setCategories([]));
+}, []);
+
+  // ── fetch products with auto-refresh ──
+useEffect(() => {
+  const fetchProducts = () => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
     if (selectedCategory) params.append("category_id", selectedCategory);
@@ -172,7 +178,16 @@ function Home() {
       .then(data => setProducts(Array.isArray(data) ? data : data.products || []))
       .catch(() => setError("Failed to load products"))
       .finally(() => setLoading(false));
-  }, [search, selectedCategory]);
+  };
+
+  setLoading(true);
+  setError("");
+  fetchProducts();
+
+  const interval = setInterval(fetchProducts, 30000);
+  return () => clearInterval(interval);
+}, [search, selectedCategory]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -282,13 +297,14 @@ function Home() {
           )}
         </div>
 
-        {/* ── PRODUCTS ── */}
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="rounded-2xl bg-white/40 animate-pulse h-64" />
-            ))}
-          </div>
+      
+      {/* ── PRODUCTS ── */}
+{loading ? (
+  <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+    <div className="animate-spin w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full mb-4" />
+    <p className="font-semibold text-gray-600">Loading products...</p>
+    <p className="text-xs mt-1 text-gray-400">This may take a moment on first load</p>
+  </div>
         ) : error ? (
           <div className="text-center py-16 text-red-400">
             <p className="text-3xl mb-2">⚠️</p>

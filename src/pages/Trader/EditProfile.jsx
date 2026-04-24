@@ -1,3 +1,4 @@
+import { API } from "../../api";
 import { useState, useRef, useEffect } from "react";
 
 // ── tiny modal wrapper ──────────────────────────────────────────────
@@ -83,7 +84,7 @@ const deleteAddress = async (index) => {
   setDeletingAddrIndex(index);
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-addresses`, {
+    const res = await fetch(`${API}/users/update-addresses`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ addresses: updatedAddresses }),
@@ -102,7 +103,7 @@ const deleteReferee = async (index) => {
   setDeletingRefIndex(index);
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-referees`, {
+    const res = await fetch(`${API}/users/update-referees`, {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ referees: updatedReferees }),
@@ -120,7 +121,7 @@ const deleteReferee = async (index) => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+        const res = await fetch(`${API}/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -151,7 +152,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+      const res = await fetch(`${API}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -203,7 +204,7 @@ useEffect(() => {
       formData.append("phone", profile.phone);
       formData.append("business_name", profile.business_name);
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile`, {
+      const res = await fetch(`${API}/users/profile`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -240,7 +241,7 @@ useEffect(() => {
         gender: profile.gender,
         [modal.field]: modalValue,
       };
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/profile`, {
+      const res = await fetch(`${API}/users/profile`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -278,7 +279,7 @@ useEffect(() => {
       const updatedAddresses = addrModal.mode === "edit"
         ? profile.addresses.map((ad, i) => i === addrModal.index ? a : ad)
         : [...profile.addresses, a];
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-addresses`, {
+      const res = await fetch(`${API}/users/update-addresses`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ addresses: updatedAddresses }),
@@ -314,7 +315,7 @@ useEffect(() => {
       const updatedReferees = refModal.mode === "edit"
         ? profile.referees.map((rf, i) => i === refModal.index ? r : rf)
         : [...profile.referees, r];
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/users/update-referees`, {
+      const res = await fetch(`${API}/users/update-referees`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ referees: updatedReferees }),
