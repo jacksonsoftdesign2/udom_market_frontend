@@ -17,6 +17,15 @@ export default function Header({ cartCount, stickySearch }) {
   const t = translations[lang] || translations["sw"];
 
 
+const [visitors24h, setVisitors24h] = useState(0);
+const [onlineUsers, setOnlineUsers] = useState(0);
+const [displayVisitors, setDisplayVisitors] = useState(0);
+const [displayOnline, setDisplayOnline] = useState(0);
+const [showTooltip, setShowTooltip] = useState(false);
+const [weekly, setWeekly] = useState([]);
+
+
+
   // MENU ITEMS
   const menuItems = [
     { label: t.home, icon: <FaHome />, action: () => navigate("/") },
@@ -29,20 +38,52 @@ export default function Header({ cartCount, stickySearch }) {
   const toggleLanguage = () => setLang((prev) => (prev === "sw" ? "en" : "sw"));
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        menuRef.current && !menuRef.current.contains(event.target) &&
-        dropdownRef.current && !dropdownRef.current.contains(event.target)
-      ) {
-        setMenuOpen(false);
-      }
-    };
+  
+// WebSocket connection
+useEffect(() => {
+  let vid = localStorage.getItem('_vid');
+  if (!vid) {
+  vid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  localStorage.setItem('_vid', vid);
+}
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+ const ws = new WebSocket(`wss://udom-market-backend.onrender.com?vid=${vid}`);
+
+  ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (data.type === 'update') {
+      setVisitors24h(data.visitors24h);
+      setOnlineUsers(data.onlineNow);
+      setWeekly(data.weekly || []);
+    }
+  };
+
+  return () => ws.close();
+}, []);
+
+// Counting animation
+useEffect(() => {
+  const duration = 1200;
+  const steps = 30;
+  const intervalTime = duration / steps;
+  let vCurrent = displayVisitors;
+  let oCurrent = displayOnline;
+
+  const interval = setInterval(() => {
+    vCurrent += (visitors24h - vCurrent) * 0.15;
+    oCurrent += (onlineUsers - oCurrent) * 0.15;
+    if (Math.abs(vCurrent - visitors24h) < 1 && Math.abs(oCurrent - onlineUsers) < 1) {
+      setDisplayVisitors(visitors24h);
+      setDisplayOnline(onlineUsers);
+      clearInterval(interval);
+    } else {
+      setDisplayVisitors(Math.floor(vCurrent));
+      setDisplayOnline(Math.floor(oCurrent));
+    }
+  }, intervalTime);
+
+  return () => clearInterval(interval);
+}, [visitors24h, onlineUsers]);
 
   return (
     <>
@@ -81,7 +122,114 @@ export default function Header({ cartCount, stickySearch }) {
                            hover:scale-105 md:hover:scale-110 hover:brightness-125">
               UDOM Market
             </h1>
+           
           </div>
+<div
+  className="relative flex items-center cursor-pointer select-none"
+  onMouseEnter={() => setShowTooltip(true)}
+  onMouseLeave={() => setShowTooltip(false)}
+  onClick={() => setShowTooltip(prev => !prev)}
+>
+  {/* MOBILE */}
+  <div className="flex md:hidden items-center gap-1.5 bg-slate-900 rounded-full px-3 py-1.5">
+    <span className="relative flex h-2 w-2 flex-shrink-0">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60"></span>
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+    </span>
+    <span className="text-green-400 text-xs font-bold">{displayOnline}</span>
+    <span className="w-px h-3 bg-slate-600"></span>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span className="text-blue-400 text-xs font-bold">{displayVisitors.toLocaleString()}</span>
+  </div>
+
+  {/* DESKTOP */}
+  <div className="hidden md:flex items-center gap-2 bg-slate-900 rounded-full px-4 py-2">
+    <span className="relative flex h-2 w-2 flex-shrink-0">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60"></span>
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+    </span>
+    <span className="text-green-400 text-sm font-semibold">Online</span>
+    <span className="text-green-400 text-sm font-bold">{displayOnline}</span>
+    <span className="w-px h-3.5 bg-slate-600"></span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <span className="text-blue-400 text-sm font-bold">{displayVisitors.toLocaleString()}</span>
+  </div>
+
+  {/* DROPDOWN */}
+  {showTooltip && (
+    <div className="fixed right-2 top-16 z-[9999] w-60 rounded-2xl p-4 border border-slate-800"
+         style={{ background: '#0f172a' }}>
+
+      <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+          <span className="text-slate-400 text-xs">Online now</span>
+        </div>
+        <span className="text-green-400 font-bold text-sm">{displayOnline}</span>
+      </div>
+
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-2">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span className="text-slate-400 text-xs">Visitors (24 hrs)</span>
+        </div>
+        <span className="text-blue-400 font-bold text-sm">{displayVisitors.toLocaleString()}</span>
+      </div>
+
+      {weekly.length > 0 && (
+        <>
+          <div className="flex items-end gap-1 h-12 mb-1">
+            {(() => {
+              const max = Math.max(...weekly.map(d => d.visitors), 1);
+              return weekly.map((d, i) => (
+                <div key={i} className="flex flex-col justify-end flex-1 h-full">
+                  <div
+                    title={`${d.visitors} visitors`}
+                    style={{
+                      height: `${Math.max(Math.round((d.visitors / max) * 100), 4)}%`,
+                      background: d.visitors === max ? '#22c55e' : '#3b82f6',
+                      borderRadius: '3px 3px 0 0',
+                      width: '100%'
+                    }}
+                  />
+                </div>
+              ));
+            })()}
+          </div>
+          <div className="flex gap-1 mb-3">
+            {weekly.map((d, i) => (
+              <div key={i} className="flex-1 text-center text-slate-500" style={{ fontSize: '9px' }}>
+                {d.label}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="border-t border-slate-800 pt-3 text-center">
+        <div className="text-blue-400 text-xs font-semibold">
+          {(() => {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 1);
+            const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+            return `${now.getFullYear()} | Week of ${week}`;
+          })()}
+        </div>
+        <div className="text-slate-500 mt-0.5" style={{ fontSize: '10px' }}>
+          {(() => {
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - 6);
+            const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `${fmt(weekStart)} – ${fmt(now)}`;
+          })()}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+
           
           {/* CENTER: STICKY SEARCH — desktop only, shows when scrolled */}
 {stickySearch && (

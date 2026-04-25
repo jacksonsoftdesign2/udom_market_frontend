@@ -117,35 +117,37 @@ const deleteReferee = async (index) => {
 };
 
   // ── fetch full profile ──
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${API}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setProfile(prev => ({
-            ...prev,
-            phone: data.phone || prev.phone,
-            business_name: data.business_name || prev.business_name,
-            gender: data.gender || prev.gender,
-            profile_image: data.profile_image || prev.profile_image,
-            addresses: data.addresses || [],
-            referees: data.referees || [],
-          }));
-          setImagePreview(data.profile_image || null);
-        }
-      } catch (e) {
-        // use localStorage data silently
-      } finally {
-        setFetchLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
+useEffect(() => {
+  // ✅ Instantly fill from localStorage — no wait
+  setProfile(prev => ({
+    ...prev,
+    phone: user?.phone || "",
+    business_name: user?.business_name || "",
+    gender: user?.gender || "",
+    profile_image: user?.profile_image || null,
+  }));
+  setImagePreview(user?.profile_image || null);
 
+  // ✅ Fetch addresses/referees in background only
+  const fetchExtra = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(prev => ({
+          ...prev,
+          addresses: data.addresses || [],
+          referees: data.referees || [],
+        }));
+      }
+    } catch (e) {}
+    finally { setFetchLoading(false); }
+  };
+  fetchExtra();
+}, []);
   // ADD after the existing fetchProfile useEffect
 useEffect(() => {
   const interval = setInterval(async () => {
@@ -166,7 +168,12 @@ useEffect(() => {
           addresses: data.addresses || prev.addresses,
           referees: data.referees || prev.referees,
         }));
-        setImagePreview(data.profile_image || null);
+       // ✅ fix — only update preview if no new image is being selected
+setImagePreview(prev => {
+  // don't overwrite if user has selected a new file
+  if (imageFile) return prev;
+  return data.profile_image || null;
+});
         const stored = localStorage.getItem("user");
         const current = stored ? JSON.parse(stored) : {};
         localStorage.setItem("user", JSON.stringify({ ...current, ...data }));
@@ -210,7 +217,10 @@ useEffect(() => {
         body: formData,
       });
       const data = await res.json();
-      if (!res.ok) { showToast("error", data.message || "Failed to update image"); return; }
+      if (!res.ok) { 
+        showToast("error", data.message || "Failed to update image");
+        setImagePreview(profile.profile_image || null); 
+        return; }
       const updatedUser = { ...user, ...data.user };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -218,7 +228,10 @@ useEffect(() => {
       setImagePreview(data.user.profile_image);
       setImageFile(null);
       showToast("success", "Profile photo updated!");
-    } catch { showToast("error", "Network error"); }
+    } catch { 
+      showToast("error", "Network error");
+      setImagePreview(profile.profile_image || null);
+    }
     finally { setLoading(false); }
   };
 
@@ -332,12 +345,7 @@ useEffect(() => {
   const avatarSrc = imagePreview ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(`${user?.first_name} ${user?.last_name}`)}&background=60a5fa&color=fff`;
 
-  if (fetchLoading) return (
-    <div className="flex items-center justify-center py-20 text-gray-400">
-      <div className="animate-spin w-6 h-6 border-2 border-blue-400 border-t-transparent rounded-full mr-3" />
-      Loading profile...
-    </div>
-  );
+ 
 
   return (
     <div className="max-w-xl mx-auto space-y-5 pb-10">

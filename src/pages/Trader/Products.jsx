@@ -301,6 +301,7 @@ const handleEditImageUpload = (e) => {
 ;
     
 const saveEdit = async () => {
+  
     const data = new FormData();
     data.append('name',        editingProduct.name);
     data.append('description', editingProduct.description);
@@ -314,9 +315,10 @@ const saveEdit = async () => {
     (editingProduct.newImageFiles || []).forEach(file => data.append('images', file));
 
     // ✅ Only send existing http URLs as remaining (not blob URLs)
-    const remainingUrls = editingProduct.images.filter(url => 
-        url.startsWith('http') || url.startsWith('https')
-    );
+   const remainingUrls = (editingProduct.images || []).filter(url => 
+    typeof url === 'string' && (url.startsWith('http') || url.startsWith('https'))
+);
+    console.log('remainingUrls:', remainingUrls);
     data.append('remainingImages', JSON.stringify(remainingUrls));
 
     setSaving(true);
