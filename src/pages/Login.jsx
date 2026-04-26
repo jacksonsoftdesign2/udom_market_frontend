@@ -313,25 +313,25 @@ function Login() {
 				<div className="w-full md:w-1/2 bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border-4 border-white/20 p-8 flex flex-col justify-center min-h-[300px] md:min-h-[500px]">
 					<div className="flex flex-col items-center mb-6">
 						<img src={logo} alt="UDOM Market Logo" className="w-16 h-16 mb-2 object-contain" />
-						<h2 className="text-2xl font-bold text-gray-800 mb-1">{t.login}</h2>
+						<h2 className="text-2xl font-bold text-gray-800 mb-1">Login</h2>
 						
 					</div>
 					<form className="space-y-5" onSubmit={handleLogin}>
 
 						{/*login data inputs*/}
 						<div>
-							<label className="block text-gray-700 font-medium mb-1">{t.tr}</label>
-							<input type="text" className="input" placeholder="TR/--/---" value={userCode}
+							<label className="block text-gray-700 font-medium mb-1">Registration Number</label>
+							<input type="text" className="input" placeholder="TR  --/---" value={userCode}
 							onChange={(e) => setUserCode(e.target.value)} required
 							/>
 						</div>
 						<div>
-							<label className="block text-gray-700 font-medium mb-1">{t.password}</label>
+							<label className="block text-gray-700 font-medium mb-1">Password</label>
 							<div className="relative">
     <input
         type={showPassword ? "text" : "password"}
         className="input pr-10"
-        placeholder={t.password}
+        placeholder="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
@@ -360,12 +360,12 @@ type="submit"
 disabled={loading}
 className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 transition-all disabled:opacity-60"
 >
-{loading ? "Logging in..." : t.login}
+{loading ? "Logging in..." : "login"}
 </button>
 
 <div className="flex justify-between text-sm mt-2">
 <button type="button" className="text-blue-600 underline" onClick={() => {}}>{t["forgot_password"] || "Forgot password?"}</button>
-<button type="button" className="text-blue-600 underline" onClick={() => navigate("/register-trader")}>{t["register"]}</button>
+<button type="button" className="text-blue-600 underline" onClick={() => navigate("/register-trader")}>{["Register"] || "Register"}</button>
 </div>
 </form>
 </div>

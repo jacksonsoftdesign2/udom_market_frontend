@@ -41,24 +41,47 @@ const [weekly, setWeekly] = useState([]);
   
 // WebSocket connection
 useEffect(() => {
-  let vid = localStorage.getItem('_vid');
-  if (!vid) {
-  vid = Math.random().toString(36).slice(2) + Date.now().toString(36);
-  localStorage.setItem('_vid', vid);
-}
+  let ws;
+  let retryTimeout;
 
- const ws = new WebSocket(`wss://udom-market-backend.onrender.com?vid=${vid}`);
-
-  ws.onmessage = (e) => {
-    const data = JSON.parse(e.data);
-    if (data.type === 'update') {
-      setVisitors24h(data.visitors24h);
-      setOnlineUsers(data.onlineNow);
-      setWeekly(data.weekly || []);
+  function connect() {
+    let vid = localStorage.getItem('_vid');
+    if (!vid) {
+      vid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('_vid', vid);
     }
-  };
 
-  return () => ws.close();
+    ws = new WebSocket(`wss://udom-market-backend.onrender.com?vid=${vid}`);
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'update') {
+        setOnlineUsers(data.onlineNow);       // small number — people online now
+        setVisitors24h(data.visitors24h);     // bigger number — 24hr visitors
+        setWeekly(data.weekly || []);
+      }
+    };
+
+    ws.onclose = () => { retryTimeout = setTimeout(connect, 5000); };
+    ws.onerror = () => ws.close();
+  }
+
+  // Load instantly on mount — no waiting for WS handshake
+  fetch('https://udom-market-backend.onrender.com/api/visitor-stats')
+    .then(r => r.json())
+    .then(data => {
+      setOnlineUsers(data.onlineNow);
+      setVisitors24h(data.visitors24h);
+      setWeekly(data.weekly || []);
+    })
+    .catch(() => {});
+
+  connect();
+
+  return () => {
+    clearTimeout(retryTimeout);
+    ws?.close();
+  };
 }, []);
 
 // Counting animation
@@ -73,8 +96,8 @@ useEffect(() => {
     vCurrent += (visitors24h - vCurrent) * 0.15;
     oCurrent += (onlineUsers - oCurrent) * 0.15;
     if (Math.abs(vCurrent - visitors24h) < 1 && Math.abs(oCurrent - onlineUsers) < 1) {
-      setDisplayVisitors(visitors24h);
-      setDisplayOnline(onlineUsers);
+      setDisplayVisitors(onlineUsers);
+      setDisplayOnline(visitors24h);
       clearInterval(interval);
     } else {
       setDisplayVisitors(Math.floor(vCurrent));

@@ -857,7 +857,7 @@ const [confirmDelete, setConfirmDelete] = useState(null);
 
                   {/* Days badge */}
                   <span className={`absolute top-2 right-2 text-xs font-semibold px-2.5 py-0.5 rounded-full ${isExpired ? "bg-red-200 text-red-700" : isLowDays ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}>
-                    {isExpired ? "Expired" : `${remaining}d left`}
+                    {isExpired ? "Expired" : `${remaining}days left`}
                   </span>
 
                   {/* Image carousel nav */}

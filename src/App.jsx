@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import ProductDetail from "./pages/ProductDetail";
 
 import Home from "./pages/Home";
 import RegisterTrader from "./pages/RegisterTrader";
@@ -22,6 +22,7 @@ function App() {
         <Route path="/register-trader" element={<RegisterTrader />} />
         {/* trader-DASHBOARD */}
         <Route path="/trader/dashboard" element={<TraderDashboard />} />
+         <Route path="/product/:id" element={<ProductDetail />} />
       </Routes>
     
   );
