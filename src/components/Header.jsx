@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { API } from "../api";
 import { useNavigate, useLocation } from "react-router-dom";
 import tzFlag from "../assets/tz.png";
 import gbFlag from "../assets/gb.png";
@@ -51,7 +52,9 @@ useEffect(() => {
       localStorage.setItem('_vid', vid);
     }
 
-    ws = new WebSocket(`wss://udom-market-backend.onrender.com?vid=${vid}`);
+ const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const wsBase = API.replace(/^https?:\/\//, '').replace('/api', '');
+ws = new WebSocket(`${wsProtocol}://${wsBase}?vid=${vid}`);
 
     ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
@@ -67,7 +70,7 @@ useEffect(() => {
   }
 
   // Load instantly on mount — no waiting for WS handshake
-  fetch('https://udom-market-backend.onrender.com/api/visitor-stats')
+ fetch(`${API}/visitor-stats`)
     .then(r => r.json())
     .then(data => {
       setOnlineUsers(data.onlineNow);

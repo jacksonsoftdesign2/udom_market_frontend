@@ -18,12 +18,13 @@ export default function ProductGrid({ items, t, onAddToCart }) {
     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
       {items.map((item, i) => (
         <ProductCard
-          key={item.id || i}
-          item={item}
-          t={t}
-          onAddToCart={onAddToCart}
-          onClick={() => navigate(`/product/${item.id || item.name}`)}
-        />
+  key={item.id || i}
+  item={item}
+  t={t}
+  onAddToCart={onAddToCart}
+  onBuy={() => navigate(`/product/${item.id || item.name}?order=1`)}
+  onClick={() => navigate(`/product/${item.id || item.name}`)}
+/>
       ))}
     </div>
   );

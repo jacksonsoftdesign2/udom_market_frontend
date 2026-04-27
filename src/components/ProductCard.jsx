@@ -111,12 +111,12 @@ export default function ProductCard({ item, onClick, onAddToCart, t }) {
           >
             <FiEye size={12} /> View
           </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onAddToCart?.(item); }}
-            className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1.5 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
-          >
-            <FiShoppingCart size={12} /> Buy
-          </button>
+         <button
+  onClick={(e) => { e.stopPropagation(); onBuy?.(item); }}
+  className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1.5 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+>
+  <FiShoppingCart size={12} /> Buy
+</button>
         </div>
       </div>
     </div>
