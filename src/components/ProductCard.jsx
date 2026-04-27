@@ -4,8 +4,11 @@ import { FiEye, FiShoppingCart, FiShoppingBag, FiUser, FiHome } from "react-icon
 const daysRemaining = (date) =>
   date ? Math.max(0, 90 - Math.floor((Date.now() - new Date(date).getTime()) / 86400000)) : null;
 
-export default function ProductCard({ item, onClick, onAddToCart, t }) {
+
+
+export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
   const [imgIdx, setImgIdx] = useState(0);
+  
 
   useEffect(() => {
     if (!item.images || item.images.length <= 1) return;
@@ -111,7 +114,7 @@ export default function ProductCard({ item, onClick, onAddToCart, t }) {
           >
             <FiEye size={12} /> View
           </button>
-         <button
+     <button
   onClick={(e) => { e.stopPropagation(); onBuy?.(item); }}
   className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1.5 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
 >

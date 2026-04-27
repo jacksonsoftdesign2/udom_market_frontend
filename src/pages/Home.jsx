@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import OrderModal from "../components/OrderModal";
+import BuyOptionsModal from "../components/BuyOptionsModal";
+import ContactModal from "../components/ContactModal";
 import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
@@ -126,7 +129,7 @@ function Home() {
   const navigate = useNavigate();
   const [lang] = useState("sw");
   const t = translations[lang] || translations["sw"];
-
+  const [orderItem, setOrderItem] = useState(null);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -137,8 +140,10 @@ function Home() {
   const [cart, setCart] = useState([]);
   const [cartToast, setCartToast] = useState(false);
   const [searchSticky, setSearchSticky] = useState(false);
+  const [buyItem, setBuyItem] = useState(null);
+  const [contactItem, setContactItem] = useState(null);
   const searchRef = useRef(null);
-
+  
   const API = import.meta.env.VITE_API_URL;
 
   // ── sticky observer ──
@@ -314,11 +319,21 @@ useEffect(() => {
             </button>
           </div>
         ) : (
-          <ProductGrid items={displayed} t={t} onAddToCart={handleAddToCart} />
+          <ProductGrid items={displayed} t={t} onAddToCart={handleAddToCart} onBuy={(item) => setBuyItem(item)} />
+
         )}
 
       </div>
-
+ {buyItem && (
+  <BuyOptionsModal
+    product={buyItem}
+    onClose={() => setBuyItem(null)}
+    onOrder={() => { setOrderItem(buyItem); setBuyItem(null); }}
+    onContact={() => { setContactItem(buyItem); setBuyItem(null); }}
+  />
+)}
+{orderItem && <OrderModal product={orderItem} onClose={() => setOrderItem(null)} />}
+{contactItem && <ContactModal product={contactItem} onClose={() => setContactItem(null)} />}
       {/* ── FOOTER ── */}
       <Footer />
     </div>

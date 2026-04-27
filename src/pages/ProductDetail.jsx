@@ -1,3 +1,5 @@
+import OrderModal from "../components/OrderModal";
+import ContactModal from "../components/ContactModal";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
@@ -59,226 +61,6 @@ function RelatedCard({ item, onClick }) {
   );
 }
 
-//order model
-
-function OrderModal({ product, onClose }) {
-  const [form, setForm] = useState({ name: "", phone: "", region: "", district: "", street: "", explanation: "", quantity: 1 });
-  const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const validate = () => {
-    const e = {};
-    if (!form.name.trim()) e.name = "Required";
-    if (!form.phone.trim()) e.phone = "Required";
-    return e;
-  };
-
-  const handleSubmit = async () => {
-    const e = validate();
-    if (Object.keys(e).length > 0) { setErrors(e); return; }
-    setSubmitting(true);
-    try {
-      const res = await fetch(`${API}/orders/place`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          product_id: product.id,
-          customer_name: form.name.trim(),
-          customer_phone: form.phone.trim(),
-          customer_location: [form.region, form.district, form.street].filter(Boolean).join(", "),
-          note: form.explanation.trim(),
-          quantity: form.quantity,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setSuccess(true);
-    } catch (err) {
-      alert("Error: " + err.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const inp = (field) => `w-full px-3 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-400 transition ${errors[field] ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"}`;
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <div>
-            <h3 className="font-bold text-gray-800 text-base">Place Order</h3>
-            <p className="text-xs text-gray-400 truncate max-w-[240px]">{product.name}</p>
-          </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">✕</button>
-        </div>
-
-        {success ? (
-          <div className="flex flex-col items-center py-10 px-6 text-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-3xl">✓</div>
-            <h4 className="font-bold text-gray-800 text-lg">Order Placed!</h4>
-            <p className="text-sm text-gray-500">The trader will contact you on <b>{form.phone}</b></p>
-            <button onClick={onClose} className="mt-2 px-8 py-2.5 bg-blue-500 text-white rounded-xl font-semibold text-sm">Done</button>
-          </div>
-        ) : (
-          <div className="p-5 space-y-3">
-            <div className="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-3">
-              <div>
-  <p className="text-xs text-gray-400">Unit price</p>
-  <p className="text-xs text-gray-500 font-semibold">Tsh {Number(product.price).toLocaleString()}</p>
-  <p className="text-xs text-gray-400 mt-1">Total</p>
-  <p className="text-lg font-black text-blue-700">Tsh {(Number(product.price) * form.quantity).toLocaleString()}</p>
-</div>
-              <div className="flex flex-col items-center gap-1">
-  <p className="text-xs text-gray-400">Quantity (Items)</p>
-  <div className="flex items-center gap-2">
-    <button onClick={() => setForm(f => ({ ...f, quantity: Math.max(1, f.quantity - 1) }))}
-      className="w-8 h-8 rounded-full bg-white border border-gray-200 font-bold text-gray-600">−</button>
-    <span className="w-6 text-center font-bold">{form.quantity}</span>
-    <button onClick={() => setForm(f => ({ ...f, quantity: Math.min(product.stock, f.quantity + 1) }))}
-      className="w-8 h-8 rounded-full bg-white border border-gray-200 font-bold text-gray-600">+</button>
-  </div>
-</div>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-gray-500 mb-1 block">Full Name *</label>
-              <input type="text" placeholder="Your full name" value={form.name}
-                onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: "" })); }}
-                className={inp("name")} />
-              {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-gray-500 mb-1 block">Phone Number *</label>
-              <input type="tel" placeholder="e.g. 0712 345 678" value={form.phone}
-                onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(er => ({ ...er, phone: "" })); }}
-                className={inp("phone")} />
-              {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
-            </div>
-
-            <div>
-  <label className="text-xs font-semibold text-gray-500 mb-1 block">Region</label>
-  <input type="text" placeholder="e.g. Dodoma" value={form.region}
-    onChange={e => setForm(f => ({ ...f, region: e.target.value }))}
-    className={inp("region")} />
-</div>
-
-<div>
-  <label className="text-xs font-semibold text-gray-500 mb-1 block">District</label>
-  <input type="text" placeholder="e.g. Bahi" value={form.district}
-    onChange={e => setForm(f => ({ ...f, district: e.target.value }))}
-    className={inp("district")} />
-</div>
-
-<div>
-  <label className="text-xs font-semibold text-gray-500 mb-1 block">Street</label>
-  <input type="text" placeholder="e.g. Msalato Street" value={form.street}
-    onChange={e => setForm(f => ({ ...f, street: e.target.value }))}
-    className={inp("street")} />
-</div>
-
-            <div>
-              <label className="text-xs font-semibold text-gray-500 mb-1 block">Explanation (optional)</label>
-              <textarea placeholder="Any special request..." value={form.explanation}
-                onChange={e => setForm(f => ({ ...f, explanation: e.target.value }))}
-                className={inp("explanation")} rows={2} />
-            </div>
-
-            <div className="flex gap-3 pt-1">
-              <button onClick={onClose}
-                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50">
-                Cancel
-              </button>
-              <button onClick={handleSubmit} disabled={submitting}
-                className="flex-1 py-2.5 rounded-xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 disabled:opacity-70">
-                {submitting ? "Placing…" : "🛒 Place Order"}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-//contact model
-
-function ContactModal({ product, onClose }) {
-  const phone = product.trader_phone || "";
-  const email = product.trader_email || "";
-  const whatsapp = phone.replace(/\D/g, "").replace(/^0/, "255");
-  const mapsUrl = product.trader_lat && product.trader_lng
-    ? `https://maps.google.com/?q=${product.trader_lat},${product.trader_lng}`
-    : null;
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h3 className="font-bold text-gray-800 text-base">Contact Trader</h3>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">✕</button>
-        </div>
-
-        <div className="p-5 space-y-3">
-          <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3">
-            {product.trader_image ? (
-              <img src={product.trader_image} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-blue-100" />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-xl font-black text-blue-600">
-                {product.trader_name?.charAt(0).toUpperCase() || "T"}
-              </div>
-            )}
-            <div>
-              <p className="font-bold text-gray-800">{product.trader_name || "Trader"}</p>
-              {email && <p className="text-xs text-gray-400">{email}</p>}
-              {phone && <p className="text-xs text-gray-400">{phone}</p>}
-            </div>
-          </div>
-
-          {phone && (
-            <a href={`tel:${phone}`}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-blue-50 text-blue-700 font-semibold text-sm hover:bg-blue-100 transition">
-              <span className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-lg">📞</span>
-              Call {phone}
-            </a>
-          )}
-
-          {whatsapp && (
-            <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-green-50 text-green-700 font-semibold text-sm hover:bg-green-100 transition">
-              <span className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center text-lg">💬</span>
-              WhatsApp
-            </a>
-          )}
-
-          {email && (
-            <a href={`mailto:${email}`}
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-purple-50 text-purple-700 font-semibold text-sm hover:bg-purple-100 transition">
-              <span className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-lg">✉️</span>
-              Email Trader
-            </a>
-          )}
-
-          {mapsUrl && (
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-orange-50 text-orange-700 font-semibold text-sm hover:bg-orange-100 transition">
-              <span className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center text-lg">📍</span>
-              View on Map
-            </a>
-          )}
-
-          <button onClick={onClose}
-            className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 
 // ── Main ProductDetail ──────────────────────────────────────────────
 export default function ProductDetail() {
@@ -291,7 +73,6 @@ export default function ProductDetail() {
   const [error, setError] = useState("");
   const [activeImg, setActiveImg] = useState(0);
   const [imgZoomed, setImgZoomed] = useState(false);
-  const [addedToCart, setAddedToCart] = useState(false);
   const [showOrder, setShowOrder] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const touchStartX = useRef(null);
@@ -362,11 +143,6 @@ useEffect(() => {
     touchStartX.current = null;
   };
 
-  const handleAddToCart = () => {
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2500);
-    // You can wire this up to your global cart state / context
-  };
 
   // ── loading ──
   if (loading) return (

@@ -1,7 +1,7 @@
 import ProductCard from "./ProductCard";
 import { useNavigate } from "react-router-dom";
 
-export default function ProductGrid({ items, t, onAddToCart }) {
+export default function ProductGrid({ items, t, onAddToCart, onBuy }) {
   const navigate = useNavigate();
 
   if (!items || items.length === 0) {
@@ -22,7 +22,7 @@ export default function ProductGrid({ items, t, onAddToCart }) {
   item={item}
   t={t}
   onAddToCart={onAddToCart}
-  onBuy={() => navigate(`/product/${item.id || item.name}?order=1`)}
+ onBuy={() => onBuy?.(item)}
   onClick={() => navigate(`/product/${item.id || item.name}`)}
 />
       ))}
