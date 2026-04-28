@@ -24,6 +24,7 @@ const [displayVisitors, setDisplayVisitors] = useState(0);
 const [displayOnline, setDisplayOnline] = useState(0);
 const [showTooltip, setShowTooltip] = useState(false);
 const [weekly, setWeekly] = useState([]);
+const [today, setToday] = useState(new Date());
 
 
 
@@ -51,6 +52,24 @@ useEffect(() => {
       vid = Math.random().toString(36).slice(2) + Date.now().toString(36);
       localStorage.setItem('_vid', vid);
     }
+
+    useEffect(() => {
+  function scheduleMidnightUpdate() {
+   const now = today;
+
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0); // next 00:00
+
+    const msUntilMidnight = nextMidnight - now;
+
+    setTimeout(() => {
+      setToday(new Date()); // 🔥 force re-render
+      scheduleMidnightUpdate(); // schedule next day
+    }, msUntilMidnight);
+  }
+
+  scheduleMidnightUpdate();
+}, []);
 
  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 const wsBase = API.replace(/^https?:\/\//, '').replace('/api', '');
@@ -223,11 +242,34 @@ useEffect(() => {
             })()}
           </div>
           <div className="flex gap-1 mb-3">
-            {weekly.map((d, i) => (
-              <div key={i} className="flex-1 text-center text-slate-500" style={{ fontSize: '9px' }}>
-                {d.label}
-              </div>
-            ))}
+   {(() => {
+  const now = today;
+  now.setHours(0,0,0,0);
+
+  const start = new Date(now);
+  start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+
+  return weekly.map((d, i) => {
+    const date = new Date(d.date + "T00:00:00"); // 🔥 TZ FIX
+
+    const isCurrentWeek = date >= start && date <= end;
+
+    return (
+      <div
+        key={i}
+        className={`flex-1 text-center ${
+          isCurrentWeek ? "text-green-400" : "text-slate-500"
+        }`}
+        style={{ fontSize: '9px' }}
+      >
+        {d.label}
+      </div>
+    );
+  });
+})()}
           </div>
         </>
       )}
@@ -235,7 +277,7 @@ useEffect(() => {
       <div className="border-t border-slate-800 pt-3 text-center">
         <div className="text-blue-400 text-xs font-semibold">
           {(() => {
-            const now = new Date();
+            const now = today;
             const start = new Date(now.getFullYear(), 0, 1);
             const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
             return `${now.getFullYear()} | Week of ${week}`;
@@ -243,11 +285,16 @@ useEffect(() => {
         </div>
         <div className="text-slate-500 mt-0.5" style={{ fontSize: '10px' }}>
           {(() => {
-            const now = new Date();
+            const now = today;
+            const day = now.getDay();
+            const diffToMonday = (day === 0 ? -6 : 1 - day);
             const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - 6);
-            const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            return `${fmt(weekStart)} – ${fmt(now)}`;
+            weekStart.setDate(now.getDate() + diffToMonday);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            const fmt = (d) =>
+            d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `${fmt(weekStart)} – ${fmt(weekEnd)}`;
           })()}
         </div>
       </div>
