@@ -189,50 +189,139 @@ useEffect(() => {
 
       <Header />
 
-      {showOrder && <OrderModal product={product} onClose={() => setShowOrder(false)} />}
+      {showOrder && <OrderModal product={product} onClose={() => setShowOrder(false)} onContact={() => { setShowOrder(false); setShowContact(true); }} />}
       {showContact && <ContactModal product={product} onClose={() => setShowContact(false)} />}
 
   
 
-      {/* ── ZOOM MODAL ── */}
-      {imgZoomed && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setImgZoomed(false)}
-        >
-          <button
-            className="absolute top-4 right-4 text-white text-3xl font-light w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition"
-            onClick={() => setImgZoomed(false)}
-          >×</button>
-          <img
-            src={images[activeImg]}
-            alt=""
-            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
-          />
-          {images.length > 1 && (
-            <div className="absolute bottom-6 flex gap-3">
-              {images.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={e => { e.stopPropagation(); setActiveImg(i); }}
-                  className={`w-2.5 h-2.5 rounded-full transition-all ${i === activeImg ? "bg-white scale-125" : "bg-white/40"}`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+{/* ── ZOOM MODAL ── */}
+{imgZoomed && (
+  <div
+    className="fixed inset-0 z-[100] flex flex-col"
+    style={{ background: "rgba(15,23,42,0.97)" }}
+    onClick={() => setImgZoomed(false)}
+  >
+    {/* Top bar */}
+    <div
+      className="flex items-center justify-between px-4 py-3 border-b border-white/10 flex-shrink-0"
+      onClick={e => e.stopPropagation()}
+    >
+      <span className="text-white/60 text-xs font-medium tracking-widest uppercase">
+        {activeImg + 1} / {images.length}
+      </span>
+      <button
+        onClick={() => setImgZoomed(false)}
+        className="flex items-center gap-2 text-white hover:text-white text-xs font-bold px-3 py-1.5 rounded-lg bg-red-500 hover:bg-white/20 transition"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Close
+      </button>
+    </div>
 
+   {/* Image area */}
+<div
+  className="flex-1 flex items-center justify-center p-4 relative overflow-hidden"
+  onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
+  onTouchEnd={e => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      e.stopPropagation();
+      if (diff > 0) setActiveImg(i => (i + 1) % images.length);
+      else setActiveImg(i => (i - 1 + images.length) % images.length);
+    }
+    touchStartX.current = null;
+  }}
+>
+      <img
+        key={activeImg}
+        src={images[activeImg]}
+        alt=""
+        className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+        onClick={e => e.stopPropagation()}
+        onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.png"; }}
+      />
+
+      {/* Navigation arrows — both mobile and desktop */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={e => { e.stopPropagation(); setActiveImg(i => (i - 1 + images.length) % images.length); }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <button
+            onClick={e => { e.stopPropagation(); setActiveImg(i => (i + 1) % images.length); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </>
+      )}
+    </div>
+
+    {/* Bottom thumbnail strip */}
+    {images.length > 1 && (
+      <div
+        className="flex-shrink-0 border-t border-white/10 px-4 py-3"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex gap-2 overflow-x-auto justify-center" style={{ scrollbarWidth: "none" }}>
+          {images.map((src, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveImg(i)}
+              className={`flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
+                i === activeImg ? "border-blue-400 scale-105" : "border-white/20 opacity-50 hover:opacity-80"
+              }`}
+            >
+              <img src={src} alt="" className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Hint */}
+    <p
+      className="text-center text-white/30 text-[10px] pb-2 flex-shrink-0"
+      onClick={e => e.stopPropagation()}
+    >
+      Click anywhere outside image to close
+    </p>
+  </div>
+)}
       <div className="pt-24 pb-12 px-3 md:px-6 lg:px-12 max-w-5xl mx-auto relative z-10">
 
         {/* ── BACK BUTTON ── */}
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-5 flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 font-semibold transition group"
-        >
-          <span className="group-hover:-translate-x-1 transition-transform">←</span> Back
-        </button>
+  <div className="mb-5 flex items-center gap-2">
+  <button
+    onClick={() => navigate(-1)}
+    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl bg-white/70 backdrop-blur border border-gray-200 text-blue-600 hover:border-blue-300 hover:bg-white shadow-sm transition group"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+    </svg>
+    Back
+  </button>
 
+  <button
+    onClick={() => navigate("/")}
+    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl bg-white/70 backdrop-blur border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-white shadow-sm transition group"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+    </svg>
+    Home
+  </button>
+</div>
         {/* ── MAIN CARD ── */}
         <div className="bg-white/60 backdrop-blur-lg border border-white/60 rounded-3xl shadow-xl overflow-hidden mb-8">
           <div className="flex flex-col md:flex-row">
@@ -315,21 +404,59 @@ useEffect(() => {
                 <span className="text-sm text-gray-400 mb-1">/ Product</span>
               </div>
 
-              {/* Trader info */}
-              {product.trader_name && (
-                <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm font-bold text-blue-600">
-                    {product.trader_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium">Sold by</p>
-                    <p className="text-sm font-bold text-gray-700">{product.trader_name}</p>
-                  </div>
-                  {product.location && (
-                    <p className="ml-auto text-xs text-gray-400">📍 {product.location}</p>
-                  )}
-                </div>
-              )}
+            {/* Trader info */}
+{product.trader_name && (
+  <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100 space-y-2">
+    <div className="flex items-center gap-2">
+      {product.trader_image ? (
+        <img src={product.trader_image} alt="" className="w-9 h-9 rounded-full object-cover border-2 border-blue-100" />
+      ) : (
+        <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-sm font-bold text-blue-600 flex-shrink-0">
+          {product.trader_name.charAt(0).toUpperCase()}
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-gray-400 font-medium">Sold by</p>
+        <p className="text-sm font-bold text-gray-700 truncate">{product.trader_name}</p>
+      </div>
+    </div>
+
+    {/* Trader contact details */}
+    <div className="grid grid-cols-2 gap-1.5 pt-1 border-t border-gray-100">
+      {product.trader_phone && (
+        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+          </svg>
+          <span className="truncate">{product.trader_phone}</span>
+        </div>
+      )}
+      {product.trader_email && (
+        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          </svg>
+          <span className="truncate">{product.trader_email}</span>
+        </div>
+      )}
+      {product.trader_lat && product.trader_lng && (
+        
+         <a href={`https://maps.google.com/?q=${product.trader_lat},${product.trader_lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={e => e.stopPropagation()}
+          className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 col-span-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+          </svg>
+          View trader location on map
+        </a>
+      )}
+    </div>
+  </div>
+)}
 
               {/* Description */}
               {product.description && (
@@ -376,9 +503,12 @@ useEffect(() => {
 </button>
 <button
   onClick={() => setShowContact(true)}
-  className="px-4 py-3 rounded-2xl font-bold text-sm border-2 border-blue-400 text-blue-600 hover:bg-blue-50 transition"
+  className="px-4 py-3 rounded-2xl font-bold text-sm border-2 bg-green-500 text-white hover:bg-white hover:text-green-500 tansition"
 >
-  💬 Contact
+ <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+</svg>
+Contact
 </button>
               </div>
             </div>

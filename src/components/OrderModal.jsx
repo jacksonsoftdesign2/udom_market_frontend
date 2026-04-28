@@ -4,7 +4,7 @@ import { FiX } from "react-icons/fi";
 const API = import.meta.env.VITE_API_URL;
 
 
-export default function OrderModal({ product, onClose }) {
+export default function OrderModal({ product, onClose, onContact }) {
   const [form, setForm] = useState({
     name: "", phone: "", region: "", district: "", street: "",
     explanation: "", quantity: 1
@@ -52,7 +52,49 @@ export default function OrderModal({ product, onClose }) {
       errors[field] ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"
     }`;
 
-  return (
+ // ── Out of stock apology ──
+if (!product.stock || product.stock <= 0) return (
+  <div
+    className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+    onClick={onClose}
+  >
+    <div
+      className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <h3 className="font-bold text-red-500 text-base">Out of Stock</h3>
+        <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200">✕</button>
+      </div>
+      <div className="p-6 flex flex-col items-center text-center gap-3">
+        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+        </svg>
+        </div>
+        <h4 className="font-bold text-gray-800 text-lg">We're Sorry!</h4>
+        <p className="text-sm text-gray-500">
+          This product is currently out of stock. You may contact the trader directly for more information or to request a restock.
+        </p>
+        <div className="flex gap-3 w-full mt-2">
+          <button onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50">
+            Cancel
+          </button>
+          <button onClick={onContact}
+            className="flex-1 py-2.5 rounded-xl bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+        </svg>
+        Contact Trader
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+return (
     <div
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}

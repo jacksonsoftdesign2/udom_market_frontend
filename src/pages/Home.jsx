@@ -332,7 +332,7 @@ useEffect(() => {
     onContact={() => { setContactItem(buyItem); setBuyItem(null); }}
   />
 )}
-{orderItem && <OrderModal product={orderItem} onClose={() => setOrderItem(null)} />}
+{orderItem && <OrderModal product={orderItem} onClose={() => setOrderItem(null)} onContact={() => { setOrderItem(null); setContactItem(orderItem); }} />}
 {contactItem && <ContactModal product={contactItem} onClose={() => setContactItem(null)} />}
       {/* ── FOOTER ── */}
       <Footer />
