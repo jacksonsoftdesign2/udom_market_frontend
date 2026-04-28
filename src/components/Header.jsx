@@ -40,7 +40,31 @@ const [today, setToday] = useState(new Date());
   const toggleLanguage = () => setLang((prev) => (prev === "sw" ? "en" : "sw"));
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
+  // auto update time in midnight hours
   
+ useEffect(() => {
+  let timeout;
+
+  function scheduleMidnightUpdate() {
+    const now = new Date(); // ✅ ALWAYS fresh time
+
+    const nextMidnight = new Date(now);
+    nextMidnight.setHours(24, 0, 0, 0);
+
+    const msUntilMidnight = nextMidnight - now;
+
+    timeout = setTimeout(() => {
+      setToday(new Date()); // update state
+      scheduleMidnightUpdate(); // loop
+    }, msUntilMidnight);
+  }
+
+  scheduleMidnightUpdate();
+
+  return () => clearTimeout(timeout);
+}, []);
+
+
 // WebSocket connection
 useEffect(() => {
   let ws;
@@ -53,23 +77,6 @@ useEffect(() => {
       localStorage.setItem('_vid', vid);
     }
 
-    useEffect(() => {
-  function scheduleMidnightUpdate() {
-   const now = today;
-
-    const nextMidnight = new Date(now);
-    nextMidnight.setHours(24, 0, 0, 0); // next 00:00
-
-    const msUntilMidnight = nextMidnight - now;
-
-    setTimeout(() => {
-      setToday(new Date()); // 🔥 force re-render
-      scheduleMidnightUpdate(); // schedule next day
-    }, msUntilMidnight);
-  }
-
-  scheduleMidnightUpdate();
-}, []);
 
  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 const wsBase = API.replace(/^https?:\/\//, '').replace('/api', '');
@@ -243,8 +250,8 @@ useEffect(() => {
           </div>
           <div className="flex gap-1 mb-3">
    {(() => {
-  const now = today;
-  now.setHours(0,0,0,0);
+  const now = new Date(today);
+ now.setHours(0,0,0,0);
 
   const start = new Date(now);
   start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
@@ -253,7 +260,7 @@ useEffect(() => {
   end.setDate(start.getDate() + 6);
 
   return weekly.map((d, i) => {
-    const date = new Date(d.date + "T00:00:00"); // 🔥 TZ FIX
+    const date = new Date(d.date + "T00:00:00Z"); // 🔥 TZ FIX
 
     const isCurrentWeek = date >= start && date <= end;
 
@@ -277,7 +284,7 @@ useEffect(() => {
       <div className="border-t border-slate-800 pt-3 text-center">
         <div className="text-blue-400 text-xs font-semibold">
           {(() => {
-            const now = today;
+            const now = new Date(today);
             const start = new Date(now.getFullYear(), 0, 1);
             const week = Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
             return `${now.getFullYear()} | Week of ${week}`;
@@ -285,7 +292,7 @@ useEffect(() => {
         </div>
         <div className="text-slate-500 mt-0.5" style={{ fontSize: '10px' }}>
           {(() => {
-            const now = today;
+           const now = new Date(today);
             const day = now.getDay();
             const diffToMonday = (day === 0 ? -6 : 1 - day);
             const weekStart = new Date(now);
