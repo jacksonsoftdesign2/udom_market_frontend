@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import OrderModal from "../components/OrderModal";
 import BuyOptionsModal from "../components/BuyOptionsModal";
-import ContactModal from "../components/ContactModal";
+import ContactModal from "../components/Contactmodal";
 import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
