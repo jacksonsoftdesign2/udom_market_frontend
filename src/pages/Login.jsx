@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
 import Header from "../components/Header";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import adv from '../assets/advertisements/adv.jpeg';
 import adv1 from '../assets/advertisements/adv1.jpeg';
 import adv2 from '../assets/advertisements/adv2.jpeg';
@@ -21,6 +22,7 @@ function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
 
+
 	// ✅ NEW: Form state
 	const [userCode, setUserCode] = useState("");
 	const [password, setPassword] = useState("");
@@ -28,6 +30,7 @@ function Login() {
 	const [loading, setLoading] = useState(false);
 	const [stage, setStage] = useState("idle"); // idle | searching | success | redirecting
     const [successData, setSuccessData] = useState(null);
+    const [showForgot, setShowForgot] = useState(false);
 
 	const images = [
 		{ src: adv, subtitle: "Welcome to UDOM Market" },
@@ -364,13 +367,14 @@ className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3
 </button>
 
 <div className="flex justify-between text-sm mt-2">
-<button type="button" className="text-blue-600 underline" onClick={() => {}}>{t["forgot_password"] || "Forgot password?"}</button>
+<button type="button" className="text-blue-600 underline" onClick={() => setShowForgot(true)}>{t["forgot_password"] || "Forgot password?"}</button>
 <button type="button" className="text-blue-600 underline" onClick={() => navigate("/register-trader")}>{["Register"] || "Register"}</button>
 </div>
 </form>
 </div>
 </div>
 </div>
+  {showForgot && <ForgotPasswordModal onClose={() => setShowForgot(false)} />}
 </>
 );
 }
