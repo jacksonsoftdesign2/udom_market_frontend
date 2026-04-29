@@ -5,6 +5,9 @@ import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
 import Header from "../components/Header";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
+import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
+import { MdAdminPanelSettings, MdStorefront } from "react-icons/md";
+import { BsCheckCircleFill } from "react-icons/bs";
 import adv from '../assets/advertisements/adv.jpeg';
 import adv1 from '../assets/advertisements/adv1.jpeg';
 import adv2 from '../assets/advertisements/adv2.jpeg';
@@ -196,7 +199,9 @@ function Login() {
         <div className="bg-white rounded-3xl shadow-2xl border border-green-100 px-12 py-10 flex flex-col items-center text-center max-w-sm w-full mx-4">
 
             {/* Big checkmark */}
-            <div className="pop-in text-7xl mb-4">✅</div>
+           <div className="pop-in mb-4 text-green-500">
+  <BsCheckCircleFill size={72} />
+</div>
 
             {/* Welcome message */}
             <div className="fade-in-1">
@@ -264,7 +269,11 @@ function Login() {
                 Taking you to your dashboard
             </p>
             <p className="text-yellow-600 font-bold text-base">
-                {successData.role === "admin" ? "⚙️ Admin Dashboard" : "🏪 Trader Dashboard"}
+               <span className="flex items-center justify-center gap-2">
+  {successData.role === "admin"
+    ? <><MdAdminPanelSettings size={20} /> Admin Dashboard</>
+    : <><MdStorefront size={20} /> Trader Dashboard</>}
+</span>
             </p>
         </div>
 
@@ -344,7 +353,7 @@ function Login() {
         onClick={() => setShowPassword((v) => !v)}
         className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-sm"
     >
-        {showPassword ? "🙈" : "👁️"}
+       {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
     </button>
 </div>
 </div>
@@ -353,7 +362,7 @@ function Login() {
 {/* Error message from backend */}
 {error && (
 <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2 rounded-lg">
-⚠️ {error}
+<FiAlertCircle className="inline mr-1" size={15} /> {error}
 </div>
 )}
 
