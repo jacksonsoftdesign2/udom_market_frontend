@@ -9,6 +9,7 @@ import banner from "../assets/banner.jpg";
 import Header from "../components/Header";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
+import QuickLinks from "../components/QuickLinks";
 
 // ── Ad Banner Slides ────────────────────────────────────────────────
 const AD_SLIDES = [
@@ -17,50 +18,14 @@ const AD_SLIDES = [
   { bg: "from-emerald-500 to-teal-600", tag: "🏪 LOCAL TRADERS", title: "Support UDOM Market", sub: "Buy directly from campus traders", emoji: "🤝" },
 ];
 
-// ── Search Form — OUTSIDE Home to prevent remount on every render ───
-function SearchForm({ searchInput, setSearchInput, onSearch, compact = false }) {
-return (
-  <form onSubmit={onSearch} className="flex gap-1.5 w-full">
-    <div className={`flex-1 flex items-center bg-white/80 backdrop-blur border border-gray-200 shadow-sm ${compact ? "rounded-xl px-2" : "rounded-2xl px-3"}`}>
-      <span className="text-gray-400 mr-1.5 text-sm flex-shrink-0">🔍</span>
-      <input
-        type="text"
-        value={searchInput}
-        onChange={e => setSearchInput(e.target.value)}
-        placeholder="Search products, traders..."
-        className={`flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 min-w-0 ${compact ? "py-1.5 text-xs" : "py-2.5 text-xs sm:text-sm"}`}
-        autoComplete="off"
-      />
-      {searchInput && (
-        <button
-          type="button"
-          onClick={() => setSearchInput("")}
-          className="text-gray-400 hover:text-gray-600 ml-1 text-base leading-none flex-shrink-0"
-        >×</button>
-      )}
-    </div>
-    <button
-      type="submit"
-      className={`bg-blue-500 text-white font-semibold hover:bg-blue-600 transition flex-shrink-0 whitespace-nowrap
-        ${compact ? "px-3 py-1.5 rounded-xl text-xs" : "px-3 py-2.5 rounded-2xl text-xs sm:text-sm sm:px-5 shadow-sm"}`}
-    >
-      Search
-    </button>
-  </form>
-);
-}
-
-// ── Ad Banner Component ─────────────────────────────────────────────
+// ── Ad Banner ───────────────────────────────────────────────────────
 function AdBanner({ bannerImg }) {
   const [slide, setSlide] = useState(0);
-
   useEffect(() => {
     const id = setInterval(() => setSlide(s => (s + 1) % AD_SLIDES.length), 4000);
     return () => clearInterval(id);
   }, []);
-
   const s = AD_SLIDES[slide];
-
   return (
     <div className="relative rounded-2xl overflow-hidden shadow-xl h-[160px] md:h-[220px] mb-5 select-none">
       <img src={bannerImg} alt="banner" className="absolute inset-0 w-full h-full object-cover object-center" />
@@ -101,25 +66,198 @@ function CategoryBar({ categories, selected, onSelect }) {
   );
 }
 
-// ── Quick Links ─────────────────────────────────────────────────────
-function QuickLinks() {
-  const items = [
-    { icon: "❤️", label: "Wish List" },
-    { icon: "🆕", label: "New Arrival" },
-    { icon: "💸", label: "Bargain" },
-    { icon: "📦", label: "Wholesale" },
-  ];
+// ── Quick link labels ───────────────────────────────────────────────
+const QUICK_LABELS = {
+  new_arrival: "✨ New Arrivals",
+  popular:     "🔥 Popular",
+  nearby:      "📍 Nearby",
+  deals:       "💸 Deals & Offers",
+};
+
+// ── Instant search algorithm ────────────────────────────────────────
+function buildInstantResults(query, products, categories) {
+  const q = query.toLowerCase().trim();
+  if (!q) return { products: [], matchedCategories: [], matchedTraders: [] };
+
+  const nameStarts = [];
+  const nameContains = [];
+  const otherMatch = [];
+
+  products.forEach(p => {
+    const name = (p.name || "").toLowerCase();
+    const desc = (p.description || "").toLowerCase();
+    if (name.startsWith(q)) {
+      nameStarts.push(p);
+    } else if (name.includes(q)) {
+      nameContains.push(p);
+    } else if (desc.includes(q)) {
+      otherMatch.push(p);
+    }
+  });
+
+  const matchedProducts = [...nameStarts, ...nameContains, ...otherMatch];
+
+  const matchedCategories = categories.filter(c =>
+    (c.name || "").toLowerCase().includes(q)
+  );
+
+  const traderMap = new Map();
+  products.forEach(p => {
+    if (p.trader_name && p.trader_name.toLowerCase().includes(q)) {
+      if (!traderMap.has(p.trader_id)) {
+        traderMap.set(p.trader_id, { id: p.trader_id, name: p.trader_name });
+      }
+    }
+  });
+  const matchedTraders = [...traderMap.values()];
+
+  return { products: matchedProducts, matchedCategories, matchedTraders };
+}
+
+// ── Instant Search Results Panel ────────────────────────────────────
+function InstantResults({ results, onSelectCategory, onSelectTrader, onClose }) {
+  const { products, matchedCategories, matchedTraders } = results;
+  const hasAny = products.length > 0 || matchedCategories.length > 0 || matchedTraders.length > 0;
+
+  if (!hasAny) {
+    return (
+      <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur rounded-2xl shadow-xl border border-gray-100 z-50 px-4 py-5 text-center text-gray-400 text-sm">
+        No results found
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-4 gap-2 mb-5">
-      {items.map((item) => (
-        <button key={item.label}
-          className="flex flex-col items-center gap-1 bg-white/50 backdrop-blur rounded-xl py-3 border border-white/60 hover:bg-blue-50 transition">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl shadow-sm">
-            {item.icon}
+    <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur rounded-2xl shadow-xl border border-gray-100 z-50 max-h-[60vh] overflow-y-auto">
+
+      {products.length > 0 && (
+        <div className="px-3 pt-3 pb-1">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Products</p>
+          <div className="space-y-1">
+            {products.slice(0, 6).map(p => (
+              <button
+                key={p.id}
+                onClick={() => onClose(p)}
+                className="w-full flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-blue-50 transition text-left"
+              >
+                {p.images?.[0] ? (
+                  <img src={p.images[0]} alt={p.name}
+                    className="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-gray-100" />
+                ) : (
+                  <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 text-base">📦</div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-gray-800 truncate">{p.name}</p>
+                  <p className="text-[10px] text-gray-400 truncate">{p.category} · Tsh {Number(p.price).toLocaleString()}</p>
+                </div>
+              </button>
+            ))}
+            {products.length > 6 && (
+              <p className="text-[10px] text-blue-400 px-2 pb-1">+{products.length - 6} more — press Search</p>
+            )}
           </div>
-          <span className="text-xs text-gray-700 font-medium">{item.label}</span>
+        </div>
+      )}
+
+      {matchedCategories.length > 0 && (
+        <div className="px-3 pt-2 pb-1 border-t border-gray-100">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Categories</p>
+          <div className="flex flex-wrap gap-1.5 px-1 pb-1">
+            {matchedCategories.map(c => (
+              <button
+                key={c.id}
+                onClick={() => onSelectCategory(c)}
+                className="px-3 py-1 bg-green-50 text-green-700 border border-green-200 rounded-full text-xs font-semibold hover:bg-green-100 transition"
+              >
+                🏷️ {c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {matchedTraders.length > 0 && (
+        <div className="px-3 pt-2 pb-3 border-t border-gray-100">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Traders</p>
+          <div className="flex flex-wrap gap-1.5 px-1">
+            {matchedTraders.map(tr => (
+              <button
+                key={tr.id}
+                onClick={() => onSelectTrader(tr)}
+                className="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-xs font-semibold hover:bg-purple-100 transition"
+              >
+                🏪 {tr.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Search With Instant Panel ───────────────────────────────────────
+// IMPORTANT: defined at module level (outside Home) so it never remounts on re-render
+function SearchWithInstant({
+  searchInput,
+  onInputChange,
+  onSearch,
+  onSelectCategory,
+  onSelectTrader,
+  onSelectProduct,
+  showInstant,
+  setShowInstant,
+  instantResults,
+  hasInstantResults,
+  instantRef,
+  compact = false,
+}) {
+  return (
+    <div className="relative w-full" ref={!compact ? instantRef : undefined}>
+      <form onSubmit={onSearch} className="flex gap-1.5 w-full">
+        <div
+          className={`flex-1 flex items-center bg-white/80 backdrop-blur border border-gray-200 shadow-sm
+            ${compact ? "rounded-xl px-2" : "rounded-2xl px-3"}
+            ${showInstant && !compact ? "border-blue-300 ring-2 ring-blue-100" : ""}`}
+        >
+          <span className="text-gray-400 mr-1.5 text-sm flex-shrink-0">🔍</span>
+          <input
+            type="search"
+            value={searchInput}
+            onChange={e => onInputChange(e.target.value)}
+            onFocus={() => searchInput.trim() && setShowInstant(true)}
+            placeholder="Search products, traders..."
+            className={`flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 min-w-0
+              ${compact ? "py-1.5 text-xs" : "py-2.5 text-xs sm:text-sm"}`}
+            autoComplete="off"
+            enterKeyHint="search"
+          />
+          {searchInput && (
+            <button
+              type="button"
+              onClick={() => { onInputChange(""); setShowInstant(false); }}
+              className="text-gray-400 hover:text-gray-600 ml-1 text-base leading-none flex-shrink-0"
+            >×</button>
+          )}
+        </div>
+        <button
+          type="submit"
+          className={`bg-blue-500 text-white font-semibold hover:bg-blue-600 transition flex-shrink-0 whitespace-nowrap
+            ${compact ? "px-3 py-1.5 rounded-xl text-xs" : "px-3 py-2.5 rounded-2xl text-xs sm:text-sm sm:px-5 shadow-sm"}`}
+        >
+          Search
         </button>
-      ))}
+      </form>
+
+      {/* Instant results dropdown — only on main (non-compact) search */}
+      {!compact && showInstant && hasInstantResults && (
+        <InstantResults
+          results={instantResults}
+          onSelectCategory={onSelectCategory}
+          onSelectTrader={onSelectTrader}
+          onClose={onSelectProduct}
+        />
+      )}
     </div>
   );
 }
@@ -143,8 +281,33 @@ function Home() {
   const [buyItem, setBuyItem] = useState(null);
   const [contactItem, setContactItem] = useState(null);
   const searchRef = useRef(null);
-  
+
+  // ── instant search ──
+  const [showInstant, setShowInstant] = useState(false);
+  const instantRef = useRef(null);
+
+  // ── QuickLinks state ──
+  const [quickFilter, setQuickFilter] = useState(null);
+  const [nearbyProducts, setNearbyProducts] = useState([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [nearbyError, setNearbyError] = useState("");
+
   const API = import.meta.env.VITE_API_URL;
+
+  // ── close instant panel on outside click ──
+  useEffect(() => {
+    const handler = (e) => {
+      if (instantRef.current && !instantRef.current.contains(e.target)) {
+        setShowInstant(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("touchstart", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("touchstart", handler);
+    };
+  }, []);
 
   // ── sticky observer ──
   useEffect(() => {
@@ -157,47 +320,122 @@ function Home() {
   }, []);
 
   // ── keep backend alive ──
-useEffect(() => {
-  const ping = () => fetch(`${API}/users/categories`).catch(() => {});
-  const id = setInterval(ping, 14 * 60 * 1000);
-  return () => clearInterval(id);
-}, []);
+  useEffect(() => {
+    const ping = () => fetch(`${API}/users/categories`).catch(() => {});
+    const id = setInterval(ping, 14 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
 
   // ── fetch categories ──
-useEffect(() => {
-  fetch(`${API}/users/categories`)
-    .then(r => r.json())
-    .then(data => setCategories(Array.isArray(data) ? data : []))
-    .catch(() => setCategories([]));
-}, []);
+  useEffect(() => {
+    fetch(`${API}/users/categories`)
+      .then(r => r.json())
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => setCategories([]));
+  }, []);
 
   // ── fetch products with auto-refresh ──
-useEffect(() => {
-  const fetchProducts = () => {
-    const params = new URLSearchParams();
-    if (search) params.append("search", search);
-    if (selectedCategory) params.append("category_id", selectedCategory);
+  useEffect(() => {
+    if (quickFilter === "nearby") return;
 
-    fetch(`${API}/products/public?${params}`)
-      .then(r => r.json())
-      .then(data => setProducts(Array.isArray(data) ? data : data.products || []))
-      .catch(() => setError("Failed to load products"))
-      .finally(() => setLoading(false));
+    const fetchProducts = () => {
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (selectedCategory) params.append("category_id", selectedCategory);
+
+      fetch(`${API}/products/public?${params}`)
+        .then(r => r.json())
+        .then(data => setProducts(Array.isArray(data) ? data : data.products || []))
+        .catch(() => setError("Failed to load products"))
+        .finally(() => setLoading(false));
+    };
+
+    setLoading(true);
+    setError("");
+    fetchProducts();
+
+    const interval = setInterval(fetchProducts, 30000);
+    return () => clearInterval(interval);
+  }, [search, selectedCategory, quickFilter]);
+
+  // ── instant results (derived) ──
+  const instantResults = buildInstantResults(searchInput, products, categories);
+  const hasInstantResults = searchInput.trim().length > 0;
+
+  // ── handle typing ──
+  const handleInputChange = (val) => {
+    setSearchInput(val);
+    if (!val.trim()) setSearch("");
+    setShowInstant(val.trim().length > 0);
   };
 
-  setLoading(true);
-  setError("");
-  fetchProducts();
-
-  const interval = setInterval(fetchProducts, 30000);
-  return () => clearInterval(interval);
-}, [search, selectedCategory]);
-
-
+  // ── commit search (Enter / Search button) ──
   const handleSearch = (e) => {
     e.preventDefault();
+    setShowInstant(false);
     setSearch(searchInput.trim());
   };
+
+  // ── user taps a product in instant panel ──
+  const handleInstantProduct = (product) => {
+    setShowInstant(false);
+    setSearch(product.name);
+    setSearchInput(product.name);
+  };
+
+  // ── user taps a category chip in instant panel ──
+  const handleInstantCategory = (cat) => {
+    setShowInstant(false);
+    setSearchInput("");
+    setSearch("");
+    setSelectedCategory(cat.id);
+    setQuickFilter(null);
+  };
+
+  // ── user taps a trader chip in instant panel ──
+  const handleInstantTrader = (trader) => {
+    setShowInstant(false);
+    setSearchInput(trader.name);
+    setSearch(trader.name);
+  };
+
+  // ── QuickLinks ──
+  const handleQuickSelect = (key) => {
+    if (key === null) {
+      setQuickFilter(null);
+      setNearbyProducts([]);
+      setNearbyError("");
+      return;
+    }
+    setQuickFilter(key);
+    if (key === "nearby") {
+      setNearbyError("🚧 Nearby feature coming soon! We're working on map integration.");
+      return;
+    }
+  };
+
+  // ── derive displayed products ──
+  const getDisplayed = () => {
+    if (quickFilter === "nearby") return nearbyProducts;
+
+    let base = products.filter(p => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
+        p.name?.toLowerCase().includes(q) ||
+        p.trader_name?.toLowerCase().includes(q) ||
+        p.category?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q)
+      );
+    });
+
+    if (quickFilter === "new_arrival") return [...base].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    if (quickFilter === "popular") return [...base].sort((a, b) => (b.sold ?? 0) - (a.sold ?? 0));
+    if (quickFilter === "deals") return [...base].sort((a, b) => Number(a.price) - Number(b.price));
+    return base;
+  };
+
+  const displayed = getDisplayed();
 
   const handleAddToCart = (item) => {
     setCart(prev => {
@@ -209,22 +447,26 @@ useEffect(() => {
     setTimeout(() => setCartToast(false), 2000);
   };
 
-  const displayed = products.filter(p => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    return (
-      p.name?.toLowerCase().includes(q) ||
-      p.trader_name?.toLowerCase().includes(q) ||
-      p.category?.toLowerCase().includes(q) ||
-      p.description?.toLowerCase().includes(q)
-    );
-  });
+  const sectionTitle = () => {
+    if (quickFilter && QUICK_LABELS[quickFilter]) return QUICK_LABELS[quickFilter];
+    if (selectedCategory) return categories.find(c => c.id === selectedCategory)?.name;
+    if (search) return `Results for "${search}"`;
+    return "🛍️ All Products";
+  };
 
-  // shared search props — passed to every SearchForm instance
+  // ── shared props for SearchWithInstant ──
   const searchProps = {
     searchInput,
-    setSearchInput,
+    onInputChange: handleInputChange,
     onSearch: handleSearch,
+    onSelectCategory: handleInstantCategory,
+    onSelectTrader: handleInstantTrader,
+    onSelectProduct: handleInstantProduct,
+    showInstant,
+    setShowInstant,
+    instantResults,
+    hasInstantResults,
+    instantRef,
   };
 
   return (
@@ -241,13 +483,10 @@ useEffect(() => {
         <img src={logo} alt="" className="w-[60vw] max-w-[600px] opacity-[0.07] object-contain" />
       </div>
 
-      {/* ── HEADER — passes sticky search for desktop ── */}
+      {/* ── HEADER ── */}
       <Header
         cartCount={cart.reduce((s, c) => s + c.qty, 0)}
-        stickySearch={searchSticky
-          ? <SearchForm {...searchProps} compact />
-          : null
-        }
+        stickySearch={searchSticky ? <SearchWithInstant {...searchProps} compact /> : null}
       />
 
       {/* ── STICKY SEARCH — mobile only ── */}
@@ -256,7 +495,7 @@ useEffect(() => {
           className="fixed left-0 right-0 z-40 bg-white/90 backdrop-blur-md shadow-sm px-3 py-2 md:hidden"
           style={{ top: "56px" }}
         >
-          <SearchForm {...searchProps} compact />
+          <SearchWithInstant {...searchProps} compact />
         </div>
       )}
 
@@ -270,46 +509,67 @@ useEffect(() => {
       {/* ── CONTENT ── */}
       <div className="pt-24 pb-10 px-3 md:px-6 lg:px-12 max-w-7xl mx-auto relative z-10">
 
-        {/* INLINE SEARCH */}
+        {/* INLINE SEARCH with instant panel */}
         <div ref={searchRef} className="mb-5">
-          <SearchForm {...searchProps} />
+          <SearchWithInstant {...searchProps} />
         </div>
 
         {/* ── AD BANNER ── */}
         <AdBanner bannerImg={banner} />
 
         {/* ── QUICK LINKS ── */}
-        <QuickLinks />
+        <QuickLinks
+          activeKey={quickFilter}
+          onSelect={handleQuickSelect}
+          nearbyLoading={nearbyLoading}
+        />
 
         {/* ── CATEGORY BAR ── */}
         <CategoryBar
           categories={categories}
           selected={selectedCategory}
-          onSelect={setSelectedCategory}
+          onSelect={(id) => {
+            setSelectedCategory(id);
+            setQuickFilter(null);
+            setNearbyProducts([]);
+          }}
         />
 
         {/* ── SECTION TITLE ── */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-extrabold text-lg text-gray-800">
-            {selectedCategory
-              ? categories.find(c => c.id === selectedCategory)?.name
-              : search ? `Results for "${search}"` : "🛍️ All Products"}
-          </h2>
-          {!loading && (
+          <h2 className="font-extrabold text-lg text-gray-800">{sectionTitle()}</h2>
+          {!loading && !nearbyLoading && (
             <span className="text-xs text-gray-400 bg-white/60 px-3 py-1 rounded-full border border-gray-200">
               {displayed.length} item{displayed.length !== 1 ? "s" : ""}
             </span>
           )}
         </div>
 
-      
-      {/* ── PRODUCTS ── */}
-{loading ? (
-  <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-    <div className="animate-spin w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full mb-4" />
-    <p className="font-semibold text-gray-600">Loading products...</p>
-    <p className="text-xs mt-1 text-gray-400">This may take a moment on first load</p>
-  </div>
+        {/* ── Nearby / coming soon banner ── */}
+        {nearbyError && (
+          <div className="mb-4 flex items-center gap-3 bg-blue-50 border border-blue-200 text-blue-700 text-sm px-4 py-3 rounded-xl">
+            <span className="text-xl">🗺️</span>
+            <p className="flex-1">{nearbyError}</p>
+            <button
+              onClick={() => { setQuickFilter(null); setNearbyError(""); }}
+              className="ml-auto flex-shrink-0 text-xs bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded-lg transition"
+            >
+              Got it
+            </button>
+          </div>
+        )}
+
+        {/* ── PRODUCTS ── */}
+        {(loading && quickFilter !== "nearby") || nearbyLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div className="animate-spin w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full mb-4" />
+            <p className="font-semibold text-gray-600">
+              {nearbyLoading ? "Finding nearby products..." : "Loading products..."}
+            </p>
+            <p className="text-xs mt-1 text-gray-400">
+              {nearbyLoading ? "Getting your location" : "This may take a moment on first load"}
+            </p>
+          </div>
         ) : error ? (
           <div className="text-center py-16 text-red-400">
             <p className="text-3xl mb-2">⚠️</p>
@@ -319,22 +579,33 @@ useEffect(() => {
             </button>
           </div>
         ) : (
-          <ProductGrid items={displayed} t={t} onAddToCart={handleAddToCart} onBuy={(item) => setBuyItem(item)} />
-
+          <ProductGrid
+            items={displayed}
+            t={t}
+            onAddToCart={handleAddToCart}
+            onBuy={(item) => setBuyItem(item)}
+          />
         )}
 
       </div>
- {buyItem && (
-  <BuyOptionsModal
-    product={buyItem}
-    onClose={() => setBuyItem(null)}
-    onOrder={() => { setOrderItem(buyItem); setBuyItem(null); }}
-    onContact={() => { setContactItem(buyItem); setBuyItem(null); }}
-  />
-)}
-{orderItem && <OrderModal product={orderItem} onClose={() => setOrderItem(null)} onContact={() => { setOrderItem(null); setContactItem(orderItem); }} />}
-{contactItem && <ContactModal product={contactItem} onClose={() => setContactItem(null)} />}
-      {/* ── FOOTER ── */}
+
+      {buyItem && (
+        <BuyOptionsModal
+          product={buyItem}
+          onClose={() => setBuyItem(null)}
+          onOrder={() => { setOrderItem(buyItem); setBuyItem(null); }}
+          onContact={() => { setContactItem(buyItem); setBuyItem(null); }}
+        />
+      )}
+      {orderItem && (
+        <OrderModal
+          product={orderItem}
+          onClose={() => setOrderItem(null)}
+          onContact={() => { setOrderItem(null); setContactItem(orderItem); }}
+        />
+      )}
+      {contactItem && <ContactModal product={contactItem} onClose={() => setContactItem(null)} />}
+
       <Footer />
     </div>
   );
