@@ -1,9 +1,11 @@
+import ChangePassword from "./ChangePassword";
 import { API } from "../../api";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import Products from "./Products";
 import EditProfile from "./EditProfile";
+
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -197,11 +199,10 @@ useEffect(() => {
                   ✏️ Edit Profile
                 </button>
                 <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    // Add change password logic here
-                    alert("Change password feature coming soon");
-                  }}
+                 onClick={() => {
+                setActiveSection("changepassword");
+                setShowProfileMenu(false);
+              }}
                   className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-200 flex items-center gap-2 text-gray-700 font-medium"
                 >
                   🔐 Change Password
@@ -235,6 +236,9 @@ useEffect(() => {
   )}
 {activeSection === "editprofile" && (
   <EditProfile user={user} setUser={setUser} />
+)}
+{activeSection === "changepassword" && (
+  <ChangePassword />
 )}
 
 </div>
