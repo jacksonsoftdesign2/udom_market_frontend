@@ -9,3 +9,15 @@ body {
 .input {
   @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
 }
+
+.input-icon-left {
+  @apply w-full py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
+  padding-left: 2.5rem;
+  padding-right: 1rem;
+}
+
+.input-icon-both {
+  @apply w-full py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}

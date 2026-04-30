@@ -14,12 +14,22 @@ function normalizePhone(raw) {
   if (/^0[67]\d{8}$/.test(p)) p = "+255" + p.slice(1);
   if (/^255[67]\d{8}$/.test(p)) p = "+" + p;
   if (/^\+255[67]\d{8}$/.test(p)) {
+  return p; // compact: +255748399067
+}
+return raw;
+}
+
+function displayPhone(compact) {
+  if (!compact) return "";
+  const p = compact.replace(/\s/g, "");
+  if (/^\+255[67]\d{8}$/.test(p)) {
     return `+255 ${p.slice(4, 7)} ${p.slice(7, 10)} ${p.slice(10)}`;
   }
-  return raw;
+  return compact;
 }
 
 function RegisterTrader() {
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
   const [lang, setLang] = useState("sw");
   const t = translations[lang] || translations["sw"];
@@ -169,12 +179,7 @@ useEffect(() => {
     }
   };
 
-  const getProfilePictureUrl = () => {
-    if (registrationData?.profile_image instanceof File) {
-      return URL.createObjectURL(registrationData.profile_image);
-    }
-    return registrationData?.profile_image || logo;
-  };
+const getProfilePictureUrl = () => registrationData?.profile_image || logo;
 
   // VALIDATE STEP
   const validateStep = (step) => {
@@ -219,13 +224,18 @@ useEffect(() => {
           return false;
         }
         const normalized = normalizePhone(form.phone);
-        if (!/^\+255 [67]\d{2} \d{3} \d{3}$/.test(normalized)) {
+        if (!/^\+255[67]\d{8}$/.test(normalized)) {
           setErrorMessage("Enter a valid Tanzanian number e.g. 0748 399 067 or +255 748 399 067. Must start with 07 or 06.");
           setShowErrorModal(true);
           return false;
         }
-        setForm(prev => ({ ...prev, phone: normalized }));
-        return true;
+                // Store compact for backend, show spaced for user
+       setForm(prev => ({ ...prev, phone: normalized }));
+    // Show spaced format to user in the input field
+    setTimeout(() => {
+      setForm(prev => ({ ...prev, phone: displayPhone(prev.phone) }));
+    }, 0);
+    return true;
       }
       case 3: // Business Information
         if (!form.business_name.trim()) {
@@ -322,12 +332,14 @@ useEffect(() => {
     
     // Add all form fields
     Object.keys(form).forEach(key => {
-      if (key === 'profile_image' && form[key]) {
-        formData.append('profile_image', form[key]);
-      } else if (key !== 'confirm_password') {
-        formData.append(key, form[key]);
-      }
-    });
+  if (key === 'profile_image' && form[key]) {
+    formData.append('profile_image', form[key]);
+  } else if (key === 'phone') {
+    formData.append('phone', form[key].replace(/\s/g, "")); // compact for backend
+  } else if (key !== 'confirm_password') {
+    formData.append(key, form[key]);
+  }
+});
 
     // Add addresses and referees
     formData.append('addresses', JSON.stringify([address]));
@@ -344,13 +356,18 @@ useEffect(() => {
         }
       );
 
-      setRegistrationData({
-        user_code: res.data.user_code,
-        name: form.first_name + " " + form.last_name,
-        email: form.email,
-        profile_image: form.profile_image
-      });
-      setShowSuccessModal(true);
+     setRegistrationData({
+  user_code: res.data.user_code,
+  name: form.first_name + " " + form.last_name,
+  email: form.email,
+  profile_image: form.profile_image instanceof File
+    ? URL.createObjectURL(form.profile_image)
+    : form.profile_image
+});
+           setCopied(false);
+           setShowSuccessModal(true);
+      
+
 
     } catch (err) {
       const errorMsg = err.response?.data?.error || "Registration failed. Please try again.";
@@ -391,6 +408,7 @@ useEffect(() => {
 
 
       {showSuccessModal && (
+        
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
             {/* Green Header */}
@@ -414,7 +432,43 @@ useEffect(() => {
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-1">{registrationData?.name}</h3>
                 <p className="text-sm text-gray-600 mb-2">{registrationData?.email}</p>
-                <p className="text-lg font-semibold text-green-600">ID: {registrationData?.user_code}</p>
+         
+       <div className="flex items-center justify-center gap-3 mt-2">
+  <p className="text-lg font-semibold text-green-600">
+    ID: {registrationData?.user_code}
+  </p>
+
+ <button
+  type="button"
+  onClick={async () => {
+    try {
+      await navigator.clipboard.writeText(registrationData?.user_code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Copy failed", err);
+    }
+  }}
+  className="flex items-center gap-1 bg-gray-100 hover:bg-green-300 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+>
+  {copied ? (
+    <>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Copied
+    </>
+  ) : (
+    <>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copy
+    </>
+  )}
+</button>
+</div>
               </div>
 
               {/* Payment Info */}
@@ -473,7 +527,7 @@ useEffect(() => {
         </div>
         {/* Auto-dismiss progress bar */}
         <div className="ml-auto w-1 self-stretch rounded-full bg-red-100 overflow-hidden">
-          <div className="w-full bg-red-300 rounded-full animate-[shrink_10s_linear_forwards]" style={{height: "100%"}}/>
+          <div className="w-full bg-green-500 rounded-full animate-[shrink_10s_linear_forwards]" style={{height: "100%"}}/>
         </div>
       </div>
 
@@ -696,7 +750,7 @@ useEffect(() => {
         placeholder={t.password}
         value={form.password}
         onChange={handleChange}
-        className="input pl-9 pr-10"
+        className="input-icon-both"
         required
       />
       <span onClick={() => setShowPassword(!showPassword)}
@@ -776,7 +830,7 @@ useEffect(() => {
         placeholder={t.confirm_password}
         value={form.confirm_password}
         onChange={handleChange}
-        className="input pl-9"
+        className="input-icon-both"
         required
       />
       {/* Match indicator */}
@@ -824,7 +878,7 @@ useEffect(() => {
                   <h4 className="font-semibold text-gray-800 mb-2">📧 {t.contact_info}</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="col-span-2"><span className="text-gray-600">{t.email}:</span> <span className="font-medium">{form.email}</span></div>
-                    <div className="col-span-2"><span className="text-gray-600">{t.phone}:</span> <span className="font-medium">{form.phone}</span></div>
+                    <div className="col-span-2"><span className="text-gray-600">{t.phone}:</span> <span className="font-medium">{displayPhone(form.phone)}</span></div>
                   </div>
                 </div>
 
