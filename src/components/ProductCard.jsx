@@ -16,7 +16,7 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
     return () => clearInterval(id);
   }, [item.images]);
 
-  const imgSrc = item.images?.[imgIdx] || item.imageUrl || "/placeholder.png";
+  const imgSrc = item.images?.[imgIdx] || item.imageUrl || null;
   const remaining = daysRemaining(item.listing_date || item.listingDate);
   const isAvailable = item.status === "Available";
   const isLowDays = remaining !== null && remaining <= 10;
@@ -28,13 +28,20 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
       onClick={onClick}
     >
       {/* IMAGE */}
-      <div className="relative overflow-hidden h-32">
-        <img
-          src={imgSrc}
-          alt={item.name}
-          className="w-full h-full object-cover"
-          onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.png"; }}
-        />
+     <div className="relative overflow-hidden h-32 bg-gray-100">
+  {imgSrc ? (
+    <img
+      src={imgSrc}
+      alt={item.name}
+      className="w-full h-full object-cover"
+      onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
+    />
+  ) : (
+    <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
+      <FiShoppingBag size={28} />
+      <p className="text-[10px] mt-1 text-gray-400">No image</p>
+    </div>
+  )}
 
         {/* Category */}
         <span className="absolute top-1.5 left-1.5 text-[10px] px-1.5 py-0.5 bg-blue-500 text-white rounded-full font-semibold leading-tight">

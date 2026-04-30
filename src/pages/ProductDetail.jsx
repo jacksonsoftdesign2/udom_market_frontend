@@ -39,10 +39,10 @@ function RelatedCard({ item, onClick }) {
     >
       <div className="relative h-36 overflow-hidden">
         <img
-          src={item.images?.[0] || item.imageUrl || "/placeholder.png"}
+          src={item.images?.[0] || item.imageUrl || null}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
-          onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.png"; }}
+          onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
         />
         <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 bg-blue-500 text-white rounded-full font-semibold">
           {item.category || "General"}
@@ -174,7 +174,7 @@ useEffect(() => {
     </div>
   );
 
-  const images = product.images?.length ? product.images : ["/placeholder.png"];
+  const images = product.images?.length ? product.images : [];
   const isAvailable = product.status === "Available";
 
   return (
@@ -241,7 +241,7 @@ useEffect(() => {
         alt=""
         className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
         onClick={e => e.stopPropagation()}
-        onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.png"; }}
+        onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
       />
 
       {/* Navigation arrows — both mobile and desktop */}
@@ -341,7 +341,7 @@ useEffect(() => {
                   src={images[activeImg]}
                   alt={product.name}
                   className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-                  onError={(e) => { e.target.onerror = null; e.target.src = "/placeholder.png"; }}
+                  onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
                 />
 
                 {/* prev / next arrows — only when multiple images */}
