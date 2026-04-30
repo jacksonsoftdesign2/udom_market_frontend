@@ -494,7 +494,11 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
                 <button
                   onClick={() => {
                     setShowSuccessModal(false);
-                    navigate("/login");
+                    
+                    localStorage.setItem("user_code", registrationData?.user_code);
+                    navigate("/login", {
+                      state: { user_code: registrationData?.user_code }
+                    });
                               }}
                   className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-all"
                 >

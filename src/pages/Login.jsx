@@ -28,7 +28,8 @@ function Login() {
     const location = useLocation();
 
 	// ✅ NEW: Form state
-	const [userCode, setUserCode] = useState(location.state?.user_code || "");
+	const [userCode, setUserCode] = useState(
+    location.state?.user_code || localStorage.getItem("user_code") || "");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -93,7 +94,7 @@ function Login() {
         // Save to localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-
+        localStorage.removeItem("user_code");
         setSuccessData(data.user);
         setStage("success"); // Stage 2 — success card
 
@@ -335,7 +336,9 @@ function Login() {
 						<div>
 							<label className="block text-gray-700 font-medium mb-1">Registration Number</label>
 							<input type="text" className="input" placeholder="TR  --/---" value={userCode}
-							onChange={(e) => setUserCode(e.target.value)} required
+							onChange={(e) => setUserCode(e.target.value)}
+                            readOnly={!!location.state?.user_code}
+                            required
 							/>
 						</div>
 						<div>
