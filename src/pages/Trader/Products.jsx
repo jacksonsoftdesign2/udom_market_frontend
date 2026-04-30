@@ -5,6 +5,7 @@ import {
   FaBox, FaEdit, FaTrash, FaPlus, FaSearch,
   FaChevronLeft, FaChevronRight, FaTimes, FaRedo, FaUpload,
 } from "react-icons/fa";
+import { FiCheckCircle } from "react-icons/fi";
 //fetching categories from backend to populate category options in add/edit forms will be done in the future, for now it's just a free text input
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -35,6 +36,7 @@ function Products() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [imageIndexes, setImageIndexes] = useState({});
   const [, setTick] = useState(0);
+  const [imageLimitMsg, setImageLimitMsg] = useState("");
 
 // use effect to fetch categories from backend in the future, for now it's just an empty array
 useEffect(() => {
@@ -277,11 +279,13 @@ const handleEditImageUpload = (e) => {
     const files = Array.from(e.target.files);
     const urls = files.map((f) => URL.createObjectURL(f));
     
-    const currentTotal = editingProduct.images.length + files.length;
-    if (currentTotal > 6) {
-        alert('Maximum 6 images allowed');
-        return;
-    }
+  const existingCount = editingProduct.images.length;
+const alreadyNewCount = (editingProduct.newImageFiles || []).length;
+const totalAfter = existingCount + files.length;
+if (totalAfter > 6) {
+   setImageLimitMsg(`You have ${existingCount} image${existingCount !== 1 ? "s" : ""}. You can only add ${6 - existingCount} more (max 6).`);
+return;
+}
     
     setEditingProduct((prev) => ({
         ...prev,
@@ -289,6 +293,7 @@ const handleEditImageUpload = (e) => {
         newImageFiles: [...(prev.newImageFiles || []), ...files], // actual files for upload
     }));
     e.target.value = "";
+    setImageLimitMsg("");
 };
 
 
@@ -358,9 +363,13 @@ const saveEdit = async () => {
         images: result.product.images || [],
       } : p));
 
-      setEditingProduct(null);
-      setSuccessMsg("Product updated successfully!");
-      setTimeout(() => setSuccessMsg(""), 3000);
+setEditSuccessMsg("updated");
+setTimeout(() => {
+  setEditSuccessMsg("");
+  setEditingProduct(null);
+  setSuccessMsg("Product updated successfully!");
+  setTimeout(() => setSuccessMsg(""), 3000);
+}, 5000);
     } catch (err) {
       alert('Error: ' + err.message);
     } finally {
@@ -376,6 +385,7 @@ const [successMsg, setSuccessMsg] = useState("");
 const [deleting, setDeleting] = useState(null);
 
 const [confirmDelete, setConfirmDelete] = useState(null);
+const [editSuccessMsg, setEditSuccessMsg] = useState("");
   // ── styles ────────────────────────────────────────────────────────────────
 
   const inputCls =
@@ -425,16 +435,11 @@ const [confirmDelete, setConfirmDelete] = useState(null);
 
       {/* Success message */}
 {successMsg && (
-  <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm animate-fade-in">
-    <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-      <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-      </svg>
-    </div>
+  <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm">
+    <FiCheckCircle size={20} className="text-green-500 flex-shrink-0" />
     <p className="text-sm font-medium">{successMsg}</p>
   </div>
 )}
-
       {/* ── Add Form ── */}
       {showAddForm && (
         <div className="bg-white rounded-xl shadow border border-blue-100 p-5">
@@ -669,7 +674,7 @@ const [confirmDelete, setConfirmDelete] = useState(null);
               <h3 className="font-bold text-gray-800 text-base flex items-center gap-2">
                 <FaEdit className="text-blue-500" size={14} /> Edit Product
               </h3>
-              <button onClick={() => setEditingProduct(null)} className="text-gray-400 hover:text-gray-700">
+              <button onClick={() => { setEditingProduct(null); setImageLimitMsg(""); setEditSuccessMsg(""); }} className="text-gray-400 hover:text-gray-700">
                 <FaTimes size={16} />
               </button>
             </div>
@@ -757,6 +762,23 @@ const [confirmDelete, setConfirmDelete] = useState(null);
                   <span className="text-xs text-gray-500">Click to add more images</span>
                   <input type="file" multiple accept="image/*" className="hidden" onChange={handleEditImageUpload} />
                 </label>
+                        {imageLimitMsg && (
+          <div className="mt-3 flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+            <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
+              <FaUpload className="text-orange-500" size={13} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-orange-700 mb-0.5">Image Limit Reached</p>
+              <p className="text-xs text-orange-600">{imageLimitMsg}</p>
+            </div>
+            <button
+              onClick={() => setImageLimitMsg("")}
+              className="text-orange-400 hover:text-orange-600 flex-shrink-0"
+            >
+              <FaTimes size={12} />
+            </button>
+          </div>
+        )}
                 {editingProduct.images.length > 0 && (
                   <div className="flex gap-2 flex-wrap mt-3">
                     {editingProduct.images.map((url, idx) => (
@@ -801,6 +823,20 @@ const [confirmDelete, setConfirmDelete] = useState(null);
                   {specLimitMsg && <p className="text-xs text-red-500 mt-1">{specLimitMsg}</p>}
             </div>
 
+{editSuccessMsg && (
+  <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+    <div className="bg-white rounded-2xl shadow-2xl border border-green-200 px-8 py-8 flex flex-col items-center justify-center gap-3 text-center max-w-xs w-full">
+      <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+        <FiCheckCircle size={36} className="text-green-500" />
+      </div>
+      <div>
+        <p className="text-base font-bold text-green-700">Product Updated!</p>
+        <p className="text-xs text-green-500 mt-1">Changes saved successfully. Closing...</p>
+      </div>
+    </div>
+  </div>
+)}
+
             <div className="px-5 flex gap-3" style={{ paddingBottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 1.25rem))" }}>
               <button
   onClick={saveEdit}
@@ -817,9 +853,9 @@ const [confirmDelete, setConfirmDelete] = useState(null);
     </>
   ) : "Save Changes"}
 </button>
-              <button onClick={() => setEditingProduct(null)} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
-                Cancel
-              </button>
+              <button onClick={() => { setEditingProduct(null); setImageLimitMsg("");  setEditSuccessMsg(""); }} className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+  Cancel
+</button>
             </div>
           </div>
         </div>
