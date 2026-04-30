@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
+import { FiZoomIn } from "react-icons/fi";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -336,13 +336,22 @@ useEffect(() => {
                 onTouchEnd={handleTouchEnd}
                 onClick={() => setImgZoomed(true)}
               >
-                <img
-                  key={activeImg}
-                  src={images[activeImg]}
-                  alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-                  onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
-                />
+                {images.length > 0 ? (
+                  <img
+                    key={activeImg}
+                    src={images[activeImg]}
+                    alt={product.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                    onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 bg-gray-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                    <p className="text-xs mt-2 text-gray-400">No image available</p>
+                  </div>
+                )}
 
                 {/* prev / next arrows — only when multiple images */}
                 {images.length > 1 && (
@@ -366,11 +375,12 @@ useEffect(() => {
                 )}
 
                 {/* zoom hint */}
-                <span className="absolute top-2 right-2 text-[10px] bg-black/40 text-white px-2 py-0.5 rounded-full">
-                  🔍 Tap to zoom
-                </span>
+               {images.length > 0 && (
+                  <span className="absolute top-2 right-2 text-[10px] bg-black/40 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
+          <FiZoomIn size={10} /> Tap to zoom
+        </span>
+        )}
               </div>
-
               {/* Thumbnail strip */}
               <ThumbStrip images={images} active={activeImg} onSelect={setActiveImg} />
             </div>
