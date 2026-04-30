@@ -180,13 +180,21 @@ const handleAddProduct = async () => {
     e.target.value = "";
   };
 
-  const removeAddImage = (idx) => {
-    setAddForm((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== idx),
-      imageFiles: prev.imageFiles.filter((_, i) => i !== idx),
-    }));
-  };
+const removeEditImage = (idx) => {
+    setEditingProduct((prev) => {
+        const removedUrl = prev.images[idx];
+        const isBlobUrl = removedUrl?.startsWith('blob:');
+        const blobUrls = prev.images.filter(u => u?.startsWith('blob:'));
+        const blobIdx = blobUrls.indexOf(removedUrl);
+        return {
+            ...prev,
+            images: prev.images.filter((_, i) => i !== idx),
+            newImageFiles: isBlobUrl
+                ? (prev.newImageFiles || []).filter((_, i) => i !== blobIdx)
+                : (prev.newImageFiles || []),
+        };
+    });
+};
 
   // Add-form spec helpers
   const addAddSpec = () =>
@@ -204,6 +212,14 @@ const handleAddProduct = async () => {
       specs: prev.specs.filter((s) => s.id !== id),
     }));
 
+
+    const removeAddImage = (idx) => {
+    setAddForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== idx),
+      imageFiles: prev.imageFiles.filter((_, i) => i !== idx),
+    }));
+};
   // ── delete ───────────────────────────────────────────────────────────────
 
   const handleDeleteProduct = async (id) => {
@@ -249,8 +265,10 @@ const openEdit = (product) => {
       price: String(product.price),
       stock: String(product.stock),
       specs: (product.specs || []).map((s) => ({ ...s })),
+      images: (product.images || []).filter(url => url && typeof url === 'string' && url.startsWith('http')),
+      newImageFiles: [], // ← always reset new files on open
     });
-  };
+};
 
   const handleEditChange = (field, value) =>
     setEditingProduct((prev) => ({ ...prev, [field]: value }));
@@ -273,12 +291,6 @@ const handleEditImageUpload = (e) => {
     e.target.value = "";
 };
 
-  const removeEditImage = (idx) => {
-    setEditingProduct((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== idx),
-    }));
-  };
 
   const handleSpecChange = (id, field, value) =>
     setEditingProduct((prev) => ({
@@ -318,9 +330,11 @@ const saveEdit = async () => {
    const remainingUrls = (editingProduct.images || []).filter(url => 
     typeof url === 'string' && (url.startsWith('http') || url.startsWith('https'))
 );
-    console.log('remainingUrls:', remainingUrls);
+    
     data.append('remainingImages', JSON.stringify(remainingUrls));
 
+
+   
     setSaving(true);
     try {
       const res = await fetch(`${API}/products/edit/${editingProduct.id}`, {
