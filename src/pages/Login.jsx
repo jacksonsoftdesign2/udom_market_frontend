@@ -20,6 +20,24 @@ import adv7 from '../assets/advertisements/adv7.jpeg';
 import adv8 from '../assets/advertisements/adv8.jpeg';
 import adv9 from '../assets/advertisements/adv9.jpeg';
 
+
+function formatUserCode(value, isDeleting = false) {
+  let v = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 7);
+
+  let result = "";
+
+  if (v.length >= 1) result += v.slice(0, 2);
+  if (v.length > 2) result += " " + v.slice(2, 4);
+
+  if (v.length >= 4 && !isDeleting) {
+    result += "/" + v.slice(4, 7);
+  } else if (v.length > 4) {
+    result += "/" + v.slice(4, 7);
+  }
+
+  return result;
+}
+
 function Login() {
 	const [lang, setLang] = useState("sw");
 	const t = translations[lang] || translations["sw"];
@@ -335,11 +353,21 @@ function Login() {
 						{/*login data inputs*/}
 						<div>
 							<label className="block text-gray-700 font-medium mb-1">Registration Number</label>
-							<input type="text" className="input" placeholder="TR  --/---" value={userCode}
-							onChange={(e) => setUserCode(e.target.value)}
+                           <input
+                            type="text"
+                            className="input"
+                            placeholder="TR --/---"
+                            value={userCode}
+                            maxLength={9}
+                            onChange={(e) => {
+                                const inputValue = e.target.value;
+                                    const isDeleting = inputValue.length < userCode.length;
+
+                                    setUserCode(formatUserCode(inputValue, isDeleting));
+                                }}
                             readOnly={!!location.state?.user_code}
                             required
-							/>
+                            />
 						</div>
 						<div>
 							<label className="block text-gray-700 font-medium mb-1">Password</label>
