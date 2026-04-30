@@ -7,12 +7,25 @@ import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
 
+
+// normalizer function for phone number
+function normalizePhone(raw) {
+  let p = raw.replace(/[\s\-]/g, "");
+  if (/^0[67]\d{8}$/.test(p)) p = "+255" + p.slice(1);
+  if (/^255[67]\d{8}$/.test(p)) p = "+" + p;
+  if (/^\+255[67]\d{8}$/.test(p)) {
+    return `+255 ${p.slice(4, 7)} ${p.slice(7, 10)} ${p.slice(10)}`;
+  }
+  return raw;
+}
+
 function RegisterTrader() {
   const navigate = useNavigate();
   const [lang, setLang] = useState("sw");
   const t = translations[lang] || translations["sw"];
 
   const [categories, setCategories] = useState([]);
+
 
   const [form, setForm] = useState({
     first_name: "",
@@ -58,27 +71,44 @@ function RegisterTrader() {
       .catch(err => console.error(err));
   }, []);
 
-
+// Auto-dismiss error modal after 10 seconds
+useEffect(() => {
+  if (!showErrorModal) return;
+  const id = setTimeout(() => {
+    setShowErrorModal(false);
+    setErrorMessage("");
+  }, 10000);
+  return () => clearTimeout(id);
+}, [showErrorModal]);
   
   // HANDLE CHANGE
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+  const noCapFields = ["email", "password", "confirm_password", "phone", "gender", "category_id"];
+  setForm({
+    ...form,
+    [name]: noCapFields.includes(name)
+      ? value
+      : value.toUpperCase(),
+  });
+};
 
-  const handleAddressChange = (e) => {
-    setAddress({ ...address, [e.target.name]: e.target.value });
-  };
+ const handleAddressChange = (e) => {
+  const { name, value } = e.target;
+ setAddress({ ...address, [name]: value.toUpperCase() });
+};
 
   const handleFileChange = (e) => {
     setForm({ ...form, profile_image: e.target.files[0] });
   };
 
   // REFEREES
-  const handleRefereeChange = (index, e) => {
-    const updated = [...referees];
-    updated[index][e.target.name] = e.target.value;
-    setReferees(updated);
-  };
+ const handleRefereeChange = (index, e) => {
+  const { name, value } = e.target;
+  const updated = [...referees];
+ updated[index][name] = name === "phone" ? value : value.toUpperCase();
+  setReferees(updated);
+};
 
   const addReferee = () => {
     if (referees.length < 3) {
@@ -171,7 +201,7 @@ function RegisterTrader() {
           return false;
         }
         return true;
-      case 2: // Contact Information
+      case 2: {// Contact Information
         if (!form.email.trim()) {
           setErrorMessage("Email is required");
           setShowErrorModal(true);
@@ -182,12 +212,21 @@ function RegisterTrader() {
           setShowErrorModal(true);
           return false;
         }
+       
         if (!form.phone.trim()) {
           setErrorMessage("Phone number is required");
           setShowErrorModal(true);
           return false;
         }
+        const normalized = normalizePhone(form.phone);
+        if (!/^\+255 [67]\d{2} \d{3} \d{3}$/.test(normalized)) {
+          setErrorMessage("Enter a valid Tanzanian number e.g. 0748 399 067 or +255 748 399 067. Must start with 07 or 06.");
+          setShowErrorModal(true);
+          return false;
+        }
+        setForm(prev => ({ ...prev, phone: normalized }));
         return true;
+      }
       case 3: // Business Information
         if (!form.business_name.trim()) {
           setErrorMessage("Business name is required");
@@ -224,7 +263,7 @@ function RegisterTrader() {
           return false;
         }
         return true;
-      case 6: // Security
+      case 6: {// Security
         if (!form.password) {
           setErrorMessage("Password is required");
           setShowErrorModal(true);
@@ -235,12 +274,22 @@ function RegisterTrader() {
           setShowErrorModal(true);
           return false;
         }
+
+            const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    if (!strongPassword.test(form.password)) {
+      setErrorMessage("Password must be 8+ characters with uppercase, lowercase, number and special character (@$!%*?&)");
+      setShowErrorModal(true);
+      return false;
+    }
+
+
         if (form.password !== form.confirm_password) {
           setErrorMessage(t.passwords_not_match);
           setShowErrorModal(true);
           return false;
         }
         return true;
+      }
       default:
         return true;
     }
@@ -404,35 +453,53 @@ function RegisterTrader() {
       )}
 
       {/* ERROR MODAL */}
-      {showErrorModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            {/* Red Header */}
-            <div className="bg-gradient-to-r from-red-500 to-red-700 p-6 text-center">
-              <h2 className="text-3xl font-bold text-white mb-2">❌ {t.error}</h2>
-              <p className="text-red-50">{t.something_went_wrong}</p>
-            </div>
+    {/* ERROR MODAL */}
+{showErrorModal && (
+  <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+    <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden border border-red-100">
 
-            {/* Content */}
-            <div className="p-6">
-              <p className="text-gray-700 text-center mb-6 text-lg">
-                {errorMessage}
-              </p>
-
-              {/* Action Button */}
-              <button
-                onClick={() => {
-                  setShowErrorModal(false);
-                  setErrorMessage("");
-                }}
-                className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white py-3 rounded-lg font-semibold hover:from-red-600 hover:to-red-800 transition-all"
-              >
-                {t.try_again}
-              </button>
-            </div>
-          </div>
+      {/* Soft header */}
+      <div className="bg-red-50 px-5 py-4 flex items-center gap-3 border-b border-red-100">
+        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
         </div>
-      )}
+        <div>
+          <p className="font-semibold text-red-700 text-sm">{t.error}</p>
+          <p className="text-xs text-red-400">{t.something_went_wrong}</p>
+        </div>
+        {/* Auto-dismiss progress bar */}
+        <div className="ml-auto w-1 self-stretch rounded-full bg-red-100 overflow-hidden">
+          <div className="w-full bg-red-300 rounded-full animate-[shrink_10s_linear_forwards]" style={{height: "100%"}}/>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="px-5 py-4">
+        <p className="text-gray-600 text-sm mb-4">{errorMessage}</p>
+        <div className="space-y-2">
+          {(errorMessage.includes("already registered") || errorMessage.includes("already in use")) && (
+            <button
+              onClick={() => { setShowErrorModal(false); navigate("/login"); }}
+              className="w-full bg-blue-500 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-600 transition-all"
+            >
+              Go to Login
+            </button>
+          )}
+          <button
+            onClick={() => { setShowErrorModal(false); setErrorMessage(""); }}
+            className="w-full bg-gray-100 text-gray-600 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-all"
+          >
+            {t.try_again}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-center p-4 pt-20">
         {/* Small Screen Welcome Section */}
@@ -612,38 +679,129 @@ function RegisterTrader() {
   </div>
 )}
             {/* Step 6: Security/Password */}
-            {currentStep === 6 && (
-              <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.security}</h3>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder={t.password}
-                    value={form.password}
-                    onChange={handleChange}
-                    className="input pr-10"
-                    required
-                  />
-                  <span
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 cursor-pointer text-gray-500"
-                  >
-                    {showPassword ? '🙈' : '👁️'}
-                  </span>
-                </div>
-                <input
-                  type="password"
-                  name="confirm_password"
-                  placeholder={t.confirm_password}
-                  value={form.confirm_password}
-                  onChange={handleChange}
-                  className="input mt-3"
-                  required
-                />
-              </div>
-            )}
+           {currentStep === 6 && (
+  <div className="bg-gray-50 p-4 rounded-xl">
+    <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.security}</h3>
 
+    {/* Password field */}
+    <div className="relative mb-3">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </span>
+      <input
+        type={showPassword ? "text" : "password"}
+        name="password"
+        placeholder={t.password}
+        value={form.password}
+        onChange={handleChange}
+        className="input pl-9 pr-10"
+        required
+      />
+      <span onClick={() => setShowPassword(!showPassword)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-600">
+        {showPassword ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        )}
+      </span>
+    </div>
+
+
+
+    {/* Strength bar */}
+{form.password.length > 0 && (() => {
+  const checks = {
+    length:    form.password.length >= 8,
+    uppercase: /[A-Z]/.test(form.password),
+    lowercase: /[a-z]/.test(form.password),
+    number:    /\d/.test(form.password),
+    special:   /[@$!%*?&]/.test(form.password),
+  };
+  const strength = Object.values(checks).filter(Boolean).length;
+  const strengthLabel = ["", "Weak", "Weak", "Fair", "Good", "Strong"][strength];
+  const strengthColor = ["", "bg-red-400", "bg-red-400", "bg-yellow-400", "bg-blue-400", "bg-green-500"][strength];
+
+  return (
+    <div className="mt-2 mb-3">
+      {/* Bar */}
+      <div className="flex gap-1 mb-1">
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${i <= strength ? strengthColor : "bg-gray-200"}`} />
+        ))}
+      </div>
+      <p className="text-xs text-gray-400 mb-2">Strength: <span className="font-semibold text-gray-600">{strengthLabel}</span></p>
+
+      {/* Checklist */}
+      <div className="grid grid-cols-2 gap-1">
+        {[
+          { key: "length",    label: "8+ characters" },
+          { key: "uppercase", label: "Uppercase letter" },
+          { key: "lowercase", label: "Lowercase letter" },
+          { key: "number",    label: "Number" },
+          { key: "special",   label: "Special char (@$!%*?&)" },
+        ].map(r => (
+          <div key={r.key} className={`flex items-center gap-1 text-xs ${checks[r.key] ? "text-green-600" : "text-gray-400"}`}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+              stroke={checks[r.key] ? "#22c55e" : "#d1d5db"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            {r.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+})()}
+
+    {/* Confirm password field */}
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </span>
+      <input
+        type="password"
+        name="confirm_password"
+        placeholder={t.confirm_password}
+        value={form.confirm_password}
+        onChange={handleChange}
+        className="input pl-9"
+        required
+      />
+      {/* Match indicator */}
+      {form.confirm_password.length > 0 && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2">
+          {form.password === form.confirm_password ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          )}
+        </span>
+      )}
+  </div>
+    {form.confirm_password && form.confirm_password !== form.password && (
+      <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
+    )}
+    {form.confirm_password && form.confirm_password === form.password && (
+      <p className="text-xs text-green-500 mt-1">✓ Passwords match</p>
+    )}
+  </div>
+)}
             {/* Step 7: Review/Summary */}
             {currentStep === 7 && (
               <div className="bg-gray-50 p-4 rounded-xl space-y-4">
