@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import Products from "./Products";
 import EditProfile from "./EditProfile";
-
+import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList } from "react-icons/fi";
+import React from "react";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -70,19 +71,17 @@ useEffect(() => {
 
 
   
-  const navItems = [
-  
-  { key: "products", label: "Products", icon: "🛍️" },
-  { key: "orders", label: "Orders", icon: "📦" },
-  { key: "payments", label: "Payments", icon: "💳" },
-  { key: "analytics", label: "Analytics", icon: "📊" },
-  { key: "category", label: "Request Category", icon: "📋" },
- 
+const navItems = [
+  { key: "products",  label: "Products",         icon: <FiShoppingBag size={16} /> },
+  { key: "orders",    label: "Orders",            icon: <FiPackage size={16} /> },
+  { key: "payments",  label: "Payments",          icon: <FiCreditCard size={16} /> },
+  { key: "analytics", label: "Analytics",         icon: <FiBarChart2 size={16} /> },
+  { key: "category",  label: "Request Category",  icon: <FiList size={16} /> },
 ];
 
 const sidebarOnlyItems = [
-  { key: "editprofile", label: "Edit Profile", icon: "✏️" },
-  { key: "changepassword", label: "Change Password", icon: "🔐" },
+  { key: "editprofile",    label: "Edit Profile",    icon: <FiEdit size={16} /> },
+  { key: "changepassword", label: "Change Password", icon: <FiLock size={16} /> },
 ];
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -153,7 +152,7 @@ useEffect(() => {
     onClick={handleLogout}
     className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left font-medium transition-all text-sm text-red-600 hover:bg-red-50"
   >
-    <span>🚪</span>
+    <FiLogOut size={16} />
     <span>Logout</span>
   </button>
         </nav>
@@ -196,7 +195,7 @@ useEffect(() => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-200 flex items-center gap-2 text-gray-700 font-medium"
                 >
-                  ✏️ Edit Profile
+               <FiEdit size={15} /> Edit Profile
                 </button>
                 <button
                  onClick={() => {
@@ -205,7 +204,7 @@ useEffect(() => {
               }}
                   className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-200 flex items-center gap-2 text-gray-700 font-medium"
                 >
-                  🔐 Change Password
+                 <FiLock size={15} /> Change Password
                 </button>
                 <button
                   onClick={() => {
@@ -214,7 +213,7 @@ useEffect(() => {
                   }}
                   className="w-full text-left px-4 py-3 hover:bg-red-50 flex items-center gap-2 text-red-600 font-medium"
                 >
-                  🚪 Logout
+                  <FiLogOut size={15} /> Logout
                 </button>
               </div>
             )}
@@ -229,7 +228,13 @@ useEffect(() => {
   
   {activeSection !== "products"  && activeSection !== "editprofile" &&  activeSection !== "changepassword" &&(
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 text-center text-gray-400">
-      <p className="text-3xl md:text-4xl mb-2">{navItems.find(n => n.key === activeSection)?.icon}</p>
+      <div className="flex justify-center mb-2 text-gray-300">
+  {(() => {
+    const found = navItems.find(n => n.key === activeSection);
+    if (!found) return null;
+    return React.cloneElement(found.icon, { size: 48 });
+  })()}
+</div>
       <p className="text-base md:text-lg font-semibold">{navItems.find(n => n.key === activeSection)?.label}</p>
       <p className="text-xs md:text-sm mt-1">This section is coming soon.</p>
     </div>
@@ -267,7 +272,9 @@ useEffect(() => {
           className="flex flex-col items-center gap-0.5"
           style={{ opacity: isActive ? 0 : 1, transition: 'opacity 0.2s' }}
         >
-          <span style={{ fontSize: 16 }}>{item.icon}</span>
+          <span className="flex items-center justify-center">
+  {React.cloneElement(item.icon, { size: 16 })}
+</span>
           <span className="text-blue-900" style={{ fontSize: 9 }}>
             {item.label.split(' ')[0]}
           </span>
@@ -293,7 +300,9 @@ useEffect(() => {
       }}
     >
       <div className="w-9 h-9 rounded-full bg-blue-400 shadow shadow-yellow-600 flex items-center justify-center">
-        <span style={{ fontSize: 16 }}>{item.icon}</span>
+        <span className="flex items-center justify-center text-white">
+  {React.cloneElement(item.icon, { size: 16 })}
+</span>
       </div>
       <span className="font-semibold text-yellow-600" style={{ fontSize: 9 }}>
         {item.label.split(' ')[0]}

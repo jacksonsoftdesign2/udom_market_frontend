@@ -1,5 +1,6 @@
 import{ API } from "../api";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
@@ -24,10 +25,10 @@ function Login() {
 	const t = translations[lang] || translations["sw"];
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
-
+    const location = useLocation();
 
 	// ✅ NEW: Form state
-	const [userCode, setUserCode] = useState("");
+	const [userCode, setUserCode] = useState(location.state?.user_code || "");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
