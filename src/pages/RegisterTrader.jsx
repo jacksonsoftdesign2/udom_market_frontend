@@ -271,7 +271,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
     setShowErrorModal(true);
     return false;
   }
-  if (!address.latitude || !address.longitude) {
+  if (address.latitude == null || address.longitude == null) {
     setErrorMessage("Please pin your location on the map or use 'Use My Current Location'");
     setShowErrorModal(true);
     return false;
