@@ -578,7 +578,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
 )}
 
 
-//kwaajili ya mockup ya payment ntaitoa baadae
+
 {showPaymentModal && (
   <PaymentMockup onClose={() => setShowPaymentModal(false)} />
 )}
