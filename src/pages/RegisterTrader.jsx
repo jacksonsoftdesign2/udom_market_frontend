@@ -4,6 +4,7 @@ import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
+import AddressMapPicker from "../components/AddressMapPicker";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
 
@@ -52,12 +53,14 @@ function RegisterTrader() {
   });
 
   const [address, setAddress] = useState({
-    type: "shop",
-    region: "",
-    district: "",
-    street: "",
-    is_primary: true,
-  });
+  type: "shop",
+  region: "",
+  district: "",
+  street: "",
+  latitude: null,
+  longitude: null,
+  is_primary: true,
+});
 
   const [referees, setReferees] = useState([
     { name: "", phone: "", relation: "" }
@@ -103,6 +106,7 @@ useEffect(() => {
   });
 };
 
+// kwa sasa haitumiki kwenye address
  const handleAddressChange = (e) => {
   const { name, value } = e.target;
  setAddress({ ...address, [name]: value.toUpperCase() });
@@ -249,23 +253,29 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
           return false;
         }
         return true;
-      case 4: // Address
-        if (!address.region.trim()) {
-          setErrorMessage("Region is required");
-          setShowErrorModal(true);
-          return false;
-        }
-        if (!address.district.trim()) {
-          setErrorMessage("District is required");
-          setShowErrorModal(true);
-          return false;
-        }
-        if (!address.street.trim()) {
-          setErrorMessage("Street is required");
-          setShowErrorModal(true);
-          return false;
-        }
-        return true;
+     case 4: // Address
+  if (!address.region.trim()) {
+    setErrorMessage("Region is required");
+    setShowErrorModal(true);
+    return false;
+  }
+  if (!address.district.trim()) {
+    setErrorMessage("District is required");
+    setShowErrorModal(true);
+    return false;
+  }
+  if (!address.street.trim()) {
+    setErrorMessage("Street is required");
+    setShowErrorModal(true);
+    return false;
+  }
+  if (!address.latitude || !address.longitude) {
+    setErrorMessage("Please pin your location on the map or use 'Use My Current Location'");
+    setShowErrorModal(true);
+    return false;
+  }
+  return true;
+
       case 5: // Referees
         if (referees.some(ref => !ref.name.trim() || !ref.phone.trim() || !ref.relation.trim())) {
           setErrorMessage("All referee fields are required");
@@ -494,7 +504,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
                 <button
                   onClick={() => {
                     setShowSuccessModal(false);
-                    
+
                     localStorage.setItem("user_code", registrationData?.user_code);
                     navigate("/login", {
                       state: { user_code: registrationData?.user_code }
@@ -693,16 +703,15 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
             )}
 
             {/* Step 4: Address */}
-            {currentStep === 4 && (
-              <div className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.address}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <input name="region" placeholder={t.region} value={address.region} onChange={handleAddressChange} className="input" required />
-                  <input name="district" placeholder={t.district} value={address.district} onChange={handleAddressChange} className="input" required />
-                  <input name="street" placeholder={t.street} value={address.street} onChange={handleAddressChange} className="input" required />
+              {currentStep === 4 && (
+                <div className="bg-gray-50 p-4 rounded-xl">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.address}</h3>
+                  <AddressMapPicker
+                    address={address}
+                    onChange={setAddress}
+                  />
                 </div>
-              </div>
-            )}
+              )}
 
            {/* Step 5: Referees */}
 {currentStep === 5 && (
