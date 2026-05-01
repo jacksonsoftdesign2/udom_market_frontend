@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import AddressMapPicker from "../components/AddressMapPicker";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
-
+import PaymentMockup from "../components/PaymentMockup";
 
 // normalizer function for phone number
 function normalizePhone(raw) {
@@ -37,6 +37,8 @@ function RegisterTrader() {
 
   const [categories, setCategories] = useState([]);
 
+  // hii ni kwaajili ya payment mockup tu kwa sasa
+const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const [form, setForm] = useState({
     first_name: "",
@@ -495,7 +497,13 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
-                  onClick={handlePayment}
+
+                //hii ndo original nitairudisha
+                 // onClick={handlePayment}
+
+
+                //hii ni kwaajili ya payment mockup for now
+                 onClick={() => setShowPaymentModal(true)}
                   disabled={paymentProcessing}
                   className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -520,7 +528,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
         </div>
       )}
 
-      {/* ERROR MODAL */}
+     
     {/* ERROR MODAL */}
 {showErrorModal && (
   <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -568,6 +576,14 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
     </div>
   </div>
 )}
+
+
+//kwaajili ya mockup ya payment ntaitoa baadae
+{showPaymentModal && (
+  <PaymentMockup onClose={() => setShowPaymentModal(false)} />
+)}
+
+
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-center p-4 pt-20">
         {/* Small Screen Welcome Section */}
