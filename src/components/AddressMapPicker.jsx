@@ -228,37 +228,42 @@ export default function AddressMapPicker({ address, onChange }) {
     if (!navigator.geolocation) return;
     setGpsLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setMarkerPos([lat, lng]);
-        setMapCenter([lat, lng]);
-        setMapZoom(STREET_ZOOM);
-        onChange({ ...address, latitude: lat, longitude: lng });
-        setGpsLoading(false);
+(pos) => {
+  const lat = pos.coords.latitude;
+  const lng = pos.coords.longitude;
+  setMarkerPos([lat, lng]);
+  setMapCenter([lat, lng]);
+  setMapZoom(STREET_ZOOM);
+  setGpsLoading(false);
 
-        // Reverse geocode to fill region/district/street
-        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
-          .then(r => r.json())
-          .then(data => {
-            const addr = data.address || {};
-            const detectedRegion = REGIONS.find(r =>
-              addr.state?.toLowerCase().includes(r.toLowerCase()) ||
-              r.toLowerCase().includes(addr.state?.toLowerCase())
-            ) || addr.state || "";
-            const detectedDistrict = addr.county || addr.city_district || addr.town || "";
-            const detectedStreet = addr.road || addr.neighbourhood || addr.suburb || "";
-            onChange({
-              ...address,
-              region: detectedRegion || address.region,
-              district: detectedDistrict || address.district,
-              street: detectedStreet || address.street,
-              latitude: lat,
-              longitude: lng,
-            });
-          })
-          .catch(() => {});
-      },
+  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+    .then(r => r.json())
+    .then(data => {
+      const a = data.address || {};
+      const stateName = (a.state || "").replace(/\s*region\s*/i, "").trim();
+      const detectedRegion = REGIONS.find(r =>
+        r.toLowerCase() === stateName.toLowerCase() ||
+        r.toLowerCase().includes(stateName.toLowerCase()) ||
+        stateName.toLowerCase().includes(r.toLowerCase())
+      ) || stateName;
+      const detectedDistrict = a.county || a.city_district || a.town || a.city || "";
+      const detectedStreet = a.road || a.neighbourhood || a.suburb || a.village || "";
+
+      onChange({
+        type: "shop",
+        is_primary: true,
+        region: detectedRegion,
+        district: detectedDistrict,
+        street: detectedStreet,
+        latitude: lat,
+        longitude: lng,
+      });
+    })
+    .catch(() => {
+        // // Even if reverse geocode fails, at least save coordinates
+    onChange({ ...address, latitude: lat, longitude: lng });
+    });
+},
       () => setGpsLoading(false),
       { enableHighAccuracy: true, timeout: 10000 }
     );
