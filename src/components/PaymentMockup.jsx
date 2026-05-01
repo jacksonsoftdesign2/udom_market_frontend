@@ -9,11 +9,11 @@ function PaymentMockup({ onClose }) {
 
   const paymentMethods = [
     { name: "M-Pesa", src: "/payment-logos/mpesa.png" },
-    { name: "Mix by YAS", src: "/payment-logos/mixbyyas.png" },
+    { name: "Mix by YAS", src: "/payment-logos/mixx.png" },
     { name: "Airtel Money", src: "/payment-logos/airtel.png" },
     { name: "HaloPesa", src: "/payment-logos/halopesa.png" },
     { name: "Azam Pesa", src: "/payment-logos/azampesa.png" },
-    { name: "Visa", src: "/payment-logos/visa.png" },
+    { name: "Visa", src: "/payment-logos/visa.svg" },
   ];
 
   const handleClick = () => {
