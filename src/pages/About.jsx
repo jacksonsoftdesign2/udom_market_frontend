@@ -79,10 +79,10 @@ function HeroSection() {
         {/* Stats row */}
         <div className="flex flex-wrap justify-center gap-6 mb-10">
           {[
-            { label: "Founded", value: "Nov 2024" },
-            { label: "Institution", value: "UDOM" },
-            { label: "Location", value: "Dodoma, TZ" },
-            { label: "Program", value: "BSc SE" },
+            { label: "Verified Sellers", value: "Trusted" },
+            { label: "Any Time", value: "Access" },
+            { label: "Save Time", value: "Shop easy" },
+            { label: "Quick Orders", value: "Fast delivery" },
           ].map(({ label, value }) => (
             <div key={label} className="text-center">
               <p className="text-2xl font-extrabold" style={{ color: ORANGE }}>{value}</p>
