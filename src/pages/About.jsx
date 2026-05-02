@@ -487,69 +487,113 @@ function DeveloperSection() {
   className="rounded-2xl p-6 text-white"
   style={{ background: ORANGE }}
 >
-  <h4 className="font-bold mb-4" style={{ color: BLUE }}>
-    Get In Touch
-  </h4>
+<h2 className="font-bold mb-4 text-center text-xl md:text-2xl tracking-wide" style={{ color: BLUE }}>
+  Get In Touch
+</h2>
 
-  <div className="space-y-3 text-sm font-medium" style={{ color: BLUE }}>
-    
-    {/* 📞 Phone */}
-    <div className="flex items-center gap-2">
-      <span>📞</span>
-      <a href="tel:+255748399067" className="hover:underline">
-        +255 748 399 067
+ <div className="space-y-3 text-sm font-medium" style={{ color: BLUE }}>
+
+{/* Phones */}
+<div className="grid grid-cols-2 gap-3">
+
+  <a
+    href="tel:+255748399067"
+    className="flex items-center justify-center gap-2 bg-white rounded-xl px-3 py-2 shadow-md
+               hover:scale-105 hover:shadow-lg transition text-sm font-semibold"
+    style={{ color: BLUE }}
+  >
+    <FaPhoneAlt className="text-green-600" />
+    <span>0748 399 067</span>
+  </a>
+
+  <a
+    href="tel:+255759599067"
+    className="flex items-center justify-center gap-2 bg-white rounded-xl px-3 py-2 shadow-md
+               hover:scale-105 hover:shadow-lg transition text-sm font-semibold"
+    style={{ color: BLUE }}
+  >
+    <FaPhoneAlt className="text-green-600" />
+    <span>0759 599 067</span>
+  </a>
+
+</div>
+
+  {/* Socials */}
+{/* Social Media Grid */}
+<div className="pt-4 border-t border-blue-900/20">
+  <div className="grid grid-cols-3 gap-4 place-items-center">
+
+    {[
+      {
+        icon: <FaInstagram className="text-pink-500" />,
+        label: "Instagram",
+        link: "https://instagram.com/jacksonsoftdesign"
+      },
+      {
+        icon: <FaTiktok className="text-black" />,
+        label: "TikTok",
+        link: "https://tiktok.com/@jacksonsoftdesign"
+      },
+      {
+        icon: <FaFacebookF className="text-blue-600" />,
+        label: "Facebook",
+        link: "https://facebook.com/jacksonsoftdesign"
+      },
+      {
+        icon: <FaLinkedinIn className="text-blue-700" />,
+        label: "LinkedIn",
+        link: "https://linkedin.com/company/jacksonsoftdesign"
+      },
+      {
+        icon: <FaPinterestP className="text-red-500" />,
+        label: "Pinterest",
+        link: "https://pinterest.com/jacksonsoftdesign"
+      },
+      {
+        icon: <FaWhatsapp className="text-green-500" />,
+        label: "WhatsApp",
+        link: "https://wa.me/255748399067"
+      }
+    ].map((item, i) => (
+      <a
+        key={i}
+        href={item.link}
+        target="_blank"
+        rel="noreferrer"
+        className="flex flex-col items-center gap-1 group"
+      >
+        {/* 🔥 ICON BUTTON */}
+        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-md
+                        group-hover:scale-110 group-hover:shadow-lg transition-all duration-200">
+          <span className="text-lg">{item.icon}</span>
+        </div>
+
+        {/* LABEL */}
+        <span className="text-xs" style={{ color: BLUE }}>
+          {item.label}
+        </span>
       </a>
-    </div>
+    ))}
 
-    <div className="flex items-center gap-2">
-      <span>📞</span>
-      <a href="tel:+255759599067" className="hover:underline">
-        +255 759 599 067
-      </a>
-    </div>
-
-    {/* 🌍 Social Media */}
-    <div className="flex items-center gap-2">
-      <span>📸</span>
-      <a href="https://instagram.com/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
-        Instagram
-      </a>
-    </div>
-
-    <div className="flex items-center gap-2">
-      <span>🎵</span>
-      <a href="https://tiktok.com/@jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
-        TikTok
-      </a>
-    </div>
-
-    <div className="flex items-center gap-2">
-      <span>📘</span>
-      <a href="https://facebook.com/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
-        Facebook
-      </a>
-    </div>
-
-    <div className="flex items-center gap-2">
-      <span>💼</span>
-      <a href="https://linkedin.com/company/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
-        LinkedIn
-      </a>
-    </div>
-
-    <div className="flex items-center gap-2">
-      <span>📌</span>
-      <a href="https://pinterest.com/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
-        Pinterest
-      </a>
-    </div>
-
-    {/* 📍 Location */}
-    <div className="flex items-center gap-2">
-      <span>📍</span>
-      <span>CIVE — UDOM, Dodoma, Tanzania</span>
-    </div>
   </div>
+</div>
+{/* Location */}
+<div className="flex flex-col items-center text-center mt-2">
+
+  <div className="flex items-center justify-center gap-2 bg-white rounded-xl px-4 py-2 shadow-md">
+    <FaMapMarkerAlt className="text-red-500" />
+    <span className="font-semibold text-sm" style={{ color: BLUE }}>
+      Dodoma, Tanzania
+    </span>
+  </div>
+
+  <span className="text-xs mt-1 opacity-100" style={{ color: BLUE }}>
+    CIVE — University of Dodoma
+  </span>
+
+</div>
+
+</div>
 </div>
           </div>
         </div>
