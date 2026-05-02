@@ -140,7 +140,7 @@ function AboutSection() {
             {[
               { icon: "🎓", label: "Students", sub: "Browse & buy" },
               { icon: "🏪", label: "Traders", sub: "Sell & grow" },
-              { icon: "⚙️", label: "Admin", sub: "Monitor & control" },
+              { icon: "⚙️", label: "Management", sub: "Monitor & control" },
             ].map(({ icon, label, sub }) => (
               <div
                 key={label}
@@ -170,7 +170,7 @@ function AboutSection() {
             "Order placement & delivery system",
             "Distance-based delivery cost calculation",
             "Multi-channel notification system (SMS, Email, In-app)",
-            "Admin control & governance dashboard",
+            "Designed for a smooth and hassle-free experience",
             "Scalable to other universities across Tanzania",
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
