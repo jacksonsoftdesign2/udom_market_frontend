@@ -306,8 +306,8 @@ function FeaturesSection() {
     },
     {
       icon: "⚙️",
-      title: "Admin Control",
-      desc: "Full governance dashboard. Admin approves traders, monitors products, handles complaints, and enforces platform rules.",
+      title: "Platform Management",
+      desc: "Full governance on approving traders, monitoring products, handling complaints, and enforcing platform rules.",
       color: "#0891b2",
     },
   ];
@@ -416,8 +416,10 @@ function DeveloperSection() {
                 { label: "Institution", value: "University of Dodoma (UDOM)" },
                 { label: "Program", value: "BSc Software Engineering" },
                 { label: "Year", value: "2nd Year (2024 – 2028)" },
-                { label: "Program", value: "Innovation Challenge 2026 — DRPC/UDOM" },
+                { label: "Skills", value: "Software, Graphics, Branding and Animations" },
                 { label: "Started", value: "November 2024" },
+                { label: "Contacts", value: "+255 748 399 067" },
+                { label: "Email", value: "jacksonduwanghe@gmail.com" }
               ].map(({ label, value }) => (
                 <div key={label} className="flex gap-2 text-sm">
                   <span className="text-white/50 flex-shrink-0 w-24">{label}:</span>
@@ -434,7 +436,7 @@ function DeveloperSection() {
                 <img
                   src={jsdLogo}
                   alt="JacksonSoftDesigns"
-                  className="w-16 h-16 object-contain"
+                  className="w-20 h-20 object-contain"
                   onError={e => {
                     e.target.style.display = "none";
                     e.target.nextSibling.style.display = "flex";
@@ -448,7 +450,7 @@ function DeveloperSection() {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-lg" style={{ color: BLUE }}>JacksonSoftDesigns</h3>
-                  <p className="text-gray-500 text-xs">Independent Software Company — Tanzania</p>
+                  <p className="text-gray-500 text-xs">Software development & Graphics designs Company</p>
                 </div>
               </div>
 
@@ -463,9 +465,12 @@ function DeveloperSection() {
 
               <div className="space-y-2">
                 {[
-                  { label: "Role", value: "Developed & Maintained By JacksonSoftDesigns" },
-                  { label: "Managed By", value: "JacksonSoftDesigns Company" },
-                  { label: "Location", value: "CIVE — UDOM, Dodoma, Tanzania" },
+                  { label: "Role", value: "Platform Development & Maintenance" },
+                  { label: "Location", value: "Dodoma, Tanzania" },
+                  { label: "Contacts", value: "+255 759 599 067" },
+                  { label: "Email", value: "jacksonduwanghe@gmail.com" },
+                  { label: "Instagram", value: "@jacksonsoftdesigns" },
+                  
                 ].map(({ label, value }) => (
                   <div key={label} className="flex gap-2 text-sm">
                     <span className="text-gray-400 flex-shrink-0 w-24">{label}:</span>
