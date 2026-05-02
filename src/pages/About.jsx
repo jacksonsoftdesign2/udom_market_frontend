@@ -580,15 +580,21 @@ function DeveloperSection() {
 {/* Location */}
 <div className="flex flex-col items-center text-center mt-2">
 
-  <div className="flex items-center justify-center gap-2 bg-white rounded-xl px-4 py-2 shadow-md">
+  <a
+    href="https://www.google.com/maps/search/JacksonSoftdesigns"
+    target="_blank"
+    rel="noreferrer"
+    className="flex items-center justify-center gap-2 bg-white rounded-xl px-4 py-2 shadow-md
+               hover:scale-105 hover:shadow-lg transition"
+  >
     <FaMapMarkerAlt className="text-red-500" />
     <span className="font-semibold text-sm" style={{ color: BLUE }}>
-      Dodoma, Tanzania
+      JacksonSoftdesigns
     </span>
-  </div>
+  </a>
 
-  <span className="text-xs mt-1 opacity-100" style={{ color: BLUE }}>
-    CIVE — University of Dodoma
+  <span className="text-xs mt-1 opacity-70" style={{ color: BLUE }}>
+    Dodoma, Tanzania
   </span>
 
 </div>
