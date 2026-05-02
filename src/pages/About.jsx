@@ -5,6 +5,8 @@ import jsdLogo from "../assets/jacksonsoftdesigns_logo.png";
 import udomCampus from "../assets/udom_campus.jpg";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { FaPhoneAlt, FaWhatsapp, FaInstagram, FaTiktok, FaFacebookF,
+         FaLinkedinIn, FaPinterestP, FaMapMarkerAlt } from "react-icons/fa";
 
 // ── Brand Colors (matching brochure) ──────────────────────────────
 const BLUE = "#1a3a6b";
@@ -419,7 +421,7 @@ function DeveloperSection() {
                 { label: "Skills", value: "Software, Graphics, Branding and Animations" },
                 { label: "Started", value: "November 2024" },
                 { label: "Contacts", value: "+255 748 399 067" },
-                { label: "Email", value: "jacksonduwanghe@gmail.com" }
+                
               ].map(({ label, value }) => (
                 <div key={label} className="flex gap-2 text-sm">
                   <span className="text-white/50 flex-shrink-0 w-24">{label}:</span>
@@ -436,7 +438,7 @@ function DeveloperSection() {
                 <img
                   src={jsdLogo}
                   alt="JacksonSoftDesigns"
-                  className="w-20 h-20 object-contain"
+                  className="w-16 h-16 object-contain"
                   onError={e => {
                     e.target.style.display = "none";
                     e.target.nextSibling.style.display = "flex";
@@ -468,9 +470,8 @@ function DeveloperSection() {
                   { label: "Role", value: "Platform Development & Maintenance" },
                   { label: "Location", value: "Dodoma, Tanzania" },
                   { label: "Contacts", value: "+255 759 599 067" },
-                  { label: "Email", value: "jacksonduwanghe@gmail.com" },
                   { label: "Instagram", value: "@jacksonsoftdesigns" },
-                  
+
                 ].map(({ label, value }) => (
                   <div key={label} className="flex gap-2 text-sm">
                     <span className="text-gray-400 flex-shrink-0 w-24">{label}:</span>
@@ -481,25 +482,75 @@ function DeveloperSection() {
             </div>
 
             {/* Contact */}
-            <div
-              className="rounded-2xl p-6 text-white"
-              style={{ background: ORANGE }}
-            >
-              <h4 className="font-bold mb-3" style={{ color: BLUE }}>Get In Touch</h4>
-              <div className="space-y-2">
-                {[
-                  { icon: "📞", value: "+255 748 399 067" },
-                  { icon: "📞", value: "+255 759 599 067" },
-                  { icon: "📸", value: "@jacksonsoftdesign" },
-                  { icon: "📍", value: "CIVE — UDOM, Dodoma, Tanzania" },
-                ].map(({ icon, value }) => (
-                  <div key={value} className="flex items-center gap-2 text-sm font-medium" style={{ color: BLUE }}>
-                    <span>{icon}</span>
-                    <span>{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          {/* Contact */}
+<div
+  className="rounded-2xl p-6 text-white"
+  style={{ background: ORANGE }}
+>
+  <h4 className="font-bold mb-4" style={{ color: BLUE }}>
+    Get In Touch
+  </h4>
+
+  <div className="space-y-3 text-sm font-medium" style={{ color: BLUE }}>
+    
+    {/* 📞 Phone */}
+    <div className="flex items-center gap-2">
+      <span>📞</span>
+      <a href="tel:+255748399067" className="hover:underline">
+        +255 748 399 067
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span>📞</span>
+      <a href="tel:+255759599067" className="hover:underline">
+        +255 759 599 067
+      </a>
+    </div>
+
+    {/* 🌍 Social Media */}
+    <div className="flex items-center gap-2">
+      <span>📸</span>
+      <a href="https://instagram.com/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
+        Instagram
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span>🎵</span>
+      <a href="https://tiktok.com/@jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
+        TikTok
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span>📘</span>
+      <a href="https://facebook.com/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
+        Facebook
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span>💼</span>
+      <a href="https://linkedin.com/company/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
+        LinkedIn
+      </a>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span>📌</span>
+      <a href="https://pinterest.com/jacksonsoftdesign" target="_blank" rel="noreferrer" className="hover:underline">
+        Pinterest
+      </a>
+    </div>
+
+    {/* 📍 Location */}
+    <div className="flex items-center gap-2">
+      <span>📍</span>
+      <span>CIVE — UDOM, Dodoma, Tanzania</span>
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </div>
