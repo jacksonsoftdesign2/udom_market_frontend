@@ -67,7 +67,7 @@ function HeroSection() {
           The Campus Marketplace
         </p>
         <p className="font-bold text-xl md:text-3xl mb-8" style={{ color: ORANGE }}>
-          Built by Students, For Students
+         Trade Without Limits
         </p>
 
         {/* Subtitle */}
