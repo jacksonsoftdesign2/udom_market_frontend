@@ -90,9 +90,9 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
         <div className="grid grid-cols-3 gap-1 text-center">
           <div className={`rounded-lg py-1 px-0.5 ${isLowDays ? "bg-red-50" : "bg-blue-50"}`}>
             <p className={`text-[10px] font-bold leading-tight ${isLowDays ? "text-red-500" : "text-blue-500"}`}>
-              {remaining !== null ? `${remaining}d` : "—"}
+              {remaining !== null ? `${remaining}` : "—"}
             </p>
-            <p className="text-[9px] text-gray-400 leading-tight">left</p>
+            <p className="text-[9px] text-gray-400 leading-tight">days left</p>
           </div>
           <div className={`rounded-lg py-1 px-0.5 ${isLowStock ? "bg-yellow-50" : "bg-green-50"}`}>
             <p className={`text-[10px] font-bold leading-tight ${isLowStock ? "text-yellow-600" : "text-green-600"}`}>
