@@ -140,7 +140,7 @@ function AboutSection() {
             {[
               { icon: "🎓", label: "Students", sub: "Browse & buy" },
               { icon: "🏪", label: "Traders", sub: "Sell & grow" },
-              { icon: "⚙️", label: "Management", sub: "Monitor & control" },
+              { icon: "⚙️", label: "Platform", sub: "Monitor & control" },
             ].map(({ icon, label, sub }) => (
               <div
                 key={label}
