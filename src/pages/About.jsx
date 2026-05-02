@@ -542,12 +542,12 @@ function DeveloperSection() {
       {
         icon: <FaLinkedinIn className="text-blue-700" />,
         label: "LinkedIn",
-        link: "https://linkedin.com/company/jacksonsoftdesign"
+        link: "https://linkedin.com/in/jackson-duwangh-e-177696374"
       },
       {
         icon: <FaPinterestP className="text-red-500" />,
         label: "Pinterest",
-        link: "https://pinterest.com/jacksonsoftdesign"
+        link: "https://pinterest.com/jacksonsoftdesigns"
       },
       {
         icon: <FaWhatsapp className="text-green-500" />,
