@@ -5,8 +5,11 @@ import jsdLogo from "../assets/jacksonsoftdesigns_logo.png";
 import udomCampus from "../assets/udom_campus.jpg";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FaPhoneAlt, FaWhatsapp, FaInstagram, FaTiktok, FaFacebookF,
-         FaLinkedinIn, FaPinterestP, FaMapMarkerAlt } from "react-icons/fa";
+import { FaPhoneAlt, FaWhatsapp, FaInstagram, FaTiktok, FaFacebookF, 
+         FaLinkedinIn, FaPinterestP, FaMapMarkerAlt,
+         FaUserGraduate, FaStore, FaCogs, FaCheckCircle, FaTimesCircle, FaBoxOpen,
+         FaShoppingCart, FaTruck, FaBell, FaRocket, FaGlobe, FaTools, FaMapMarkedAlt,
+         } from "react-icons/fa";
 
 // ── Brand Colors (matching brochure) ──────────────────────────────
 const BLUE = "#1a3a6b";
@@ -140,16 +143,21 @@ function AboutSection() {
           {/* Users */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { icon: "🎓", label: "Students", sub: "Browse & buy" },
-              { icon: "🏪", label: "Traders", sub: "Sell & grow" },
-              { icon: "⚙️", label: "Platform", sub: "Monitor & control" },
+                { icon: <FaUserGraduate />, label: "Students", sub: "Browse & buy" },
+                { icon: <FaStore />, label: "Traders", sub: "Sell & grow" },
+                { icon: <FaCogs />, label: "Platform", sub: "Platform operations" },
             ].map(({ icon, label, sub }) => (
               <div
                 key={label}
                 className="rounded-xl p-3 text-center border"
                 style={{ borderColor: `${BLUE}22`, background: `${BLUE}08` }}
               >
-                <div className="text-2xl mb-1">{icon}</div>
+                                <div
+                className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-2"
+                style={{ background: `${BLUE}15`, color: BLUE }}
+                >
+                {icon}
+                </div>
                 <p className="font-bold text-sm" style={{ color: BLUE }}>{label}</p>
                 <p className="text-xs text-gray-400">{sub}</p>
               </div>
@@ -176,7 +184,7 @@ function AboutSection() {
             "Scalable to other universities across Tanzania",
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-2 mb-2">
-              <span className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: ORANGE, color: BLUE }}>✓</span>
+              <span className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: ORANGE, color: BLUE }}><FaCheckCircle className="text-xs" /></span>
               <span className="text-white/85 text-sm">{item}</span>
             </div>
           ))}
@@ -228,12 +236,12 @@ function WhySection() {
           {/* Students */}
           <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/10">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ background: ORANGE }}>🎓</div>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ background: ORANGE }}>{<FaUserGraduate />}</div>
               <h3 className="text-white font-bold text-lg">Challenges for Students</h3>
             </div>
             {studentChallenges.map((c, i) => (
               <div key={i} className="flex items-start gap-2 mb-2">
-                <span className="text-red-400 mt-0.5 flex-shrink-0">✕</span>
+                <FaTimesCircle className="text-red-400 mt-0.5 flex-shrink-0" />
                 <span className="text-white/75 text-sm">{c}</span>
               </div>
             ))}
@@ -242,12 +250,17 @@ function WhySection() {
           {/* Traders */}
           <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/10">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ background: ORANGE }}>🏪</div>
+            <div
+                className="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                style={{ background: ORANGE }}
+                >
+                <FaStore />
+                </div>
               <h3 className="text-white font-bold text-lg">Challenges for Traders</h3>
             </div>
             {traderChallenges.map((c, i) => (
               <div key={i} className="flex items-start gap-2 mb-2">
-                <span className="text-red-400 mt-0.5 flex-shrink-0">✕</span>
+                <FaTimesCircle className="text-red-400 mt-0.5 flex-shrink-0" />
                 <span className="text-white/75 text-sm">{c}</span>
               </div>
             ))}
@@ -277,38 +290,39 @@ function WhySection() {
 function FeaturesSection() {
   const features = [
     {
-      icon: "✅",
+      icon: <FaCheckCircle />,
       title: "Trader Verification",
       desc: "Only approved, verified traders can sell on the platform. Admin reviews each registration to ensure authenticity and trust.",
       color: "#22c55e",
     },
     {
-      icon: "📦",
+        icon: <FaBoxOpen />,
       title: "Product Management",
       desc: "Traders list products with images, price, and description. Each listing is valid for 90 days with automatic reminders.",
       color: "#3b82f6",
     },
     {
-      icon: "🛒",
+       icon: <FaShoppingCart />,
       title: "Order System",
       desc: "Buyers place orders directly through the system. Traders receive instant notifications. 30% upfront payment reduces fake orders.",
       color: ORANGE,
     },
     {
-      icon: "🚚",
+       icon: <FaTruck />,
       title: "Delivery System",
       desc: "Optional delivery with distance-based cost calculation. Buyer pays 30% upfront to confirm commitment and protect traders.",
       color: "#8b5cf6",
     },
     {
-      icon: "🔔",
+       icon: <FaBell />,
       title: "Notification System",
       desc: "Real-time alerts via in-app, email, and SMS. Traders notified for new orders, 90-day reminders, and account updates.",
       color: "#ef4444",
     },
-    {
-      icon: "⚙️",
-      title: "Platform Management",
+    
+{
+  icon: <FaCogs />,
+  title: "Platform Management",
       desc: "Full governance on approving traders, monitoring products, handling complaints, and enforcing platform rules.",
       color: "#0891b2",
     },
@@ -331,14 +345,14 @@ function FeaturesSection() {
           {features.map(({ icon, title, desc, color }) => (
             <div
               key={title}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-1"
+              className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all group hover:-translate-y-1"
             >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4"
-                style={{ background: `${color}18` }}
-              >
-                {icon}
-              </div>
+                        <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-xl mb-4 transition group-hover:scale-110"
+            style={{ background: `${color}18`, color: color }}
+            >
+                            {icon}
+                </div>
               <h3 className="font-bold text-base mb-2" style={{ color: BLUE }}>{title}</h3>
               <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
             </div>
@@ -355,13 +369,18 @@ function FeaturesSection() {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: "🚀", label: "Entrepreneur Students" },
-              { icon: "📍", label: "Traders Near College" },
-              { icon: "🌍", label: "Cross Region Traders" },
-              { icon: "🛠️", label: "Service Providers" },
+                { icon: <FaRocket />, label: "Entrepreneur Students" },
+                { icon: <FaMapMarkerAlt />, label: "Traders Near College" },
+                { icon: <FaGlobe />, label: "Cross Region Traders" },
+                { icon: <FaTools />, label: "Service Providers" },
             ].map(({ icon, label }) => (
               <div key={label} className="text-center p-3 bg-white rounded-xl shadow-sm">
-                <div className="text-2xl mb-1">{icon}</div>
+                <div
+                    className="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-2"
+                    style={{ background: `${BLUE}15`, color: BLUE }}
+                    >
+                    {icon}
+                    </div>
                 <p className="text-xs font-semibold" style={{ color: BLUE }}>{label}</p>
               </div>
             ))}
@@ -642,7 +661,7 @@ function VisionSection() {
                     className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5"
                     style={{ background: ORANGE, color: "white" }}
                   >
-                    ✓
+                    <FaCheckCircle className="text-white text-xs" />
                   </span>
                   <span className="text-gray-600 text-sm">{item}</span>
                 </div>
