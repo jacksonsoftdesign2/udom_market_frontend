@@ -419,7 +419,6 @@ function DeveloperSection() {
                 { label: "Program", value: "BSc Software Engineering" },
                 { label: "Year", value: "2nd Year (2024 – 2028)" },
                 { label: "Skills", value: "Software, Graphics, Branding and Animations" },
-                { label: "Started", value: "November 2024" },
                 { label: "Contacts", value: "+255 748 399 067" },
                 
               ].map(({ label, value }) => (
@@ -621,7 +620,7 @@ function VisionSection() {
               Our Vision
             </h2>
             <p className="text-gray-600 leading-relaxed mb-6">
-              UDOM Market started at the University of Dodoma in November 2024 with a
+              UDOM Market started at the University of Dodoma in November 2025 with a
               simple but powerful goal — to digitize campus commerce and make it safer,
               faster, and more reliable for everyone.
             </p>
@@ -660,7 +659,7 @@ function VisionSection() {
                 style={{ background: `${BLUE}30` }}
               />
               {[
-                { year: "Nov 2024", event: "Project started — UDOM Market concept developed", active: true },
+                { year: "Nov 2025", event: "Project started — UDOM Market concept developed", active: true },
                 { year: "Apr 2026", event: "Prototype submitted — DRPC Innovation Challenge 2026", active: true },
                 { year: "2026", event: "Platform launch & trader onboarding begins", active: true },
                 { year: "2027", event: "Expansion to additional colleges planned", active: false },
@@ -705,7 +704,7 @@ function VisionSection() {
               Browse Products
             </button>
             <button
-              onClick={() => navigate("/register")}
+             onClick={() => navigate("/register-trader")}
               className="px-8 py-3 rounded-full font-bold text-sm uppercase tracking-widest border-2 border-white/30 text-white transition-all hover:bg-white/10"
             >
               Register as Trader
