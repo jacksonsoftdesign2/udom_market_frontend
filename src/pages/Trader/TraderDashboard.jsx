@@ -1,4 +1,5 @@
 import ChangePassword from "./ChangePassword";
+import TraderOrders from "./TraderOrders";
 import { API } from "../../api";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -223,10 +224,10 @@ useEffect(() => {
        {/* Content area */}
 <div className="flex-1 p-3 md:p-6">
   {activeSection === "products" && <Products />}
-  
+  {activeSection === "orders" && <TraderOrders />}
  
   
-  {activeSection !== "products"  && activeSection !== "editprofile" &&  activeSection !== "changepassword" &&(
+ {!["products", "orders", "editprofile", "changepassword"].includes(activeSection) && (
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 text-center text-gray-400">
       <div className="flex justify-center mb-2 text-gray-300">
   {(() => {
