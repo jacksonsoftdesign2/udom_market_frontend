@@ -471,7 +471,8 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
     </span>
   </div>
 )}
-      {product.trader_lat && product.trader_lng && (
+      {Number.isFinite(Number(product.trader_lat)) &&
+ Number.isFinite(Number(product.trader_lng)) && (
         
          <a href={
     product.trader_lat && product.trader_lng
