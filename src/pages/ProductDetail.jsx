@@ -459,28 +459,38 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
           <span className="truncate">{product.trader_phone}</span>
         </div>
       )}
-      {product.trader_email && (
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-          </svg>
-          <span className="truncate">{product.trader_email}</span>
-        </div>
-      )}
+   {(product.trader_region || product.trader_district || product.trader_street) && (
+  <div className="flex items-center gap-1.5 text-xs text-gray-500">
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21l3.75-3.75M15.75 3l-9 9m0 0l3.75 3.75M6.75 12L3 15.75" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+    </svg>
+    <span className="truncate">
+      {[product.trader_street, product.trader_district, product.trader_region].filter(Boolean).join(', ')}
+    </span>
+  </div>
+)}
       {product.trader_lat && product.trader_lng && (
         
-         <a href={`https://maps.google.com/?q=${product.trader_lat},${product.trader_lng}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
-          className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 col-span-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-          </svg>
-          View trader location on map
-        </a>
+         <a href={
+    product.trader_lat && product.trader_lng
+      ? `https://maps.google.com/?q=${product.trader_lat},${product.trader_lng}`
+      : `https://maps.google.com/?q=${encodeURIComponent(
+          [product.trader_street, product.trader_district, product.trader_region].filter(Boolean).join(', ')
+        )}`
+  }
+  target="_blank"
+  rel="noopener noreferrer"
+  onClick={e => e.stopPropagation()}
+  className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 col-span-2"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+  </svg>
+  View trader location on map
+</a>
       )}
     </div>
   </div>
