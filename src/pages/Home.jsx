@@ -574,9 +574,19 @@ function Home() {
           <div className="text-center py-16 text-red-400">
             <p className="text-3xl mb-2">⚠️</p>
             <p className="font-semibold">{error}</p>
-            <button onClick={() => setSearch("")} className="mt-3 text-sm text-blue-500 underline">
-              Try again
-            </button>
+          <button
+  type="button"
+  onClick={() => {
+    setSearch("");
+    setError("");
+    setSearchInput("");
+    setSelectedCategory(null);
+    setQuickFilter(null);
+  }}
+  className="mt-3 inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 active:scale-95 transition"
+>
+  Reload
+</button>
           </div>
         ) : (
           <ProductGrid
