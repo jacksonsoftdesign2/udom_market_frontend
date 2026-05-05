@@ -267,7 +267,9 @@ const openEdit = (product) => {
       price: String(product.price),
       stock: String(product.stock),
       specs: (product.specs || []).map((s) => ({ ...s })),
-      images: (product.images || []).filter(url => url && typeof url === 'string' && url.startsWith('http')),
+      images: (product.images || []).map(img =>
+      typeof img === 'object' ? (img.image_url || '') : img
+    ).filter(Boolean),
       newImageFiles: [], // ← always reset new files on open
     });
 };
@@ -890,7 +892,10 @@ const [editSuccessMsg, setEditSuccessMsg] = useState("");
                 <div className="relative h-44 bg-gray-100 group">
                   {(product.images || []).length > 0 ? (
                     <img
-                      src={product.images[currentImageIndex]}
+                      src={(() => {
+                      const r = product.images[currentImageIndex];
+                      return typeof r === 'object' ? (r.thumb_webp || r.image_url) : r;
+                    })()}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />

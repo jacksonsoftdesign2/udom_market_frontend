@@ -5,7 +5,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FiZoomIn } from "react-icons/fi";
-
+import { supportsAVIF, pickSrc } from "../utils/imageUtils";
 const API = import.meta.env.VITE_API_URL;
 
 // ── Thumbnail Strip ─────────────────────────────────────────────────
@@ -23,7 +23,11 @@ function ThumbStrip({ images, active, onSelect }) {
               : "border-transparent opacity-60 hover:opacity-90"
           }`}
         >
-          <img src={src} alt="" className="w-full h-full object-cover" />
+          <img
+  src={typeof src === 'object' ? pickSrc(src, 'thumb', null) : src}
+  alt=""
+  className="w-full h-full object-cover"
+/>
         </button>
       ))}
     </div>
@@ -39,7 +43,10 @@ function RelatedCard({ item, onClick }) {
     >
       <div className="relative h-36 overflow-hidden">
         <img
-          src={item.images?.[0] || item.imageUrl || null}
+          src={(() => {
+  const r = item.images?.[0];
+  return typeof r === 'object' ? pickSrc(r, 'thumb', null) : (r || item.imageUrl || null);
+})()}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
           onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
@@ -131,6 +138,9 @@ useEffect(() => {
       .catch(() => setRelated([]));
   }, [product]);
 
+const avifRef = useRef(null);
+useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
+  
   // ── swipe gestures for mobile image gallery ──
   const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
   const handleTouchEnd = (e) => {
@@ -237,9 +247,11 @@ useEffect(() => {
 >
       <img
         key={activeImg}
-        src={images[activeImg]}
-        alt=""
-        className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+src={typeof images[activeImg] === 'object'
+  ? pickSrc(images[activeImg], 'large', avifRef.current)
+  : images[activeImg]}
+alt=""
+className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
         onClick={e => e.stopPropagation()}
         onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
       />
@@ -282,7 +294,11 @@ useEffect(() => {
                 i === activeImg ? "border-blue-400 scale-105" : "border-white/20 opacity-50 hover:opacity-80"
               }`}
             >
-              <img src={src} alt="" className="w-full h-full object-cover" />
+              <img
+  src={typeof src === 'object' ? pickSrc(src, 'thumb', null) : src}
+  alt=""
+  className="w-full h-full object-cover"
+/>
             </button>
           ))}
         </div>
@@ -339,9 +355,11 @@ useEffect(() => {
                 {images.length > 0 ? (
                   <img
                     key={activeImg}
-                    src={images[activeImg]}
-                    alt={product.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+src={typeof images[activeImg] === 'object'
+  ? pickSrc(images[activeImg], 'medium', avifRef.current)
+  : images[activeImg]}
+alt={product.name}
+className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
                     onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
                   />
                 ) : (

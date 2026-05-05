@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { FiEye, FiShoppingCart, FiShoppingBag, FiUser, FiHome } from "react-icons/fi";
 
+import { FiEye, FiShoppingCart, FiShoppingBag, FiUser, FiHome } from "react-icons/fi";
+import { useState, useEffect, useRef } from "react";
+import { supportsAVIF, pickSrc } from "../utils/imageUtils";
 const daysRemaining = (date) =>
   date ? Math.max(0, 90 - Math.floor((Date.now() - new Date(date).getTime()) / 86400000)) : null;
 
@@ -16,7 +17,13 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
     return () => clearInterval(id);
   }, [item.images]);
 
-  const imgSrc = item.images?.[imgIdx] || item.imageUrl || null;
+  const avifRef = useRef(null);
+useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
+
+const imgRow = item.images?.[imgIdx];
+const imgSrc = typeof imgRow === 'object'
+  ? pickSrc(imgRow, 'thumb', avifRef.current)
+  : (imgRow || item.imageUrl || null);
   const remaining = daysRemaining(item.listing_date || item.listingDate);
   const isAvailable = item.status === "Available";
   const isLowDays = remaining !== null && remaining <= 10;
