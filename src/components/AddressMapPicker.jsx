@@ -326,7 +326,7 @@ export default function AddressMapPicker({ address, onChange, errors = {} }) {
       {/* Region */}
       <AutocompleteInput
         label="Region" value={localAddress.region} required error={errors.region}
-        placeholder="e.g. Dar es Salaam"
+        placeholder="e.g. Dodoma"
         suggestions={REGIONS}
         onChange={val => updateAddress({ ...localAddress, region: val, district: "", street: "", latitude: null, longitude: null })}
         onSelect={val => updateAddress({ ...localAddress, region: val, district: "", street: "", latitude: null, longitude: null })}
