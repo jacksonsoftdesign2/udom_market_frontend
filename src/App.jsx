@@ -7,6 +7,8 @@ import Login from "./pages/Login";
 import TraderDashboard from "./pages/Trader/TraderDashboard";  
 import About from "./pages/About";
 import Delivery from "./pages/Delivery";
+import ProtectedRoute from "./components/ProtectedRoute";
+import TraderOrders from "./pages/TraderOrders";
 function App() {
   return (
     
@@ -26,6 +28,10 @@ function App() {
          <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/about" element={<About />} />
         <Route path="/delivery" element={<Delivery />} />
+        <Route
+  path="/trader/orders"
+  element={
+    <ProtectedRoute> <TraderOrders /> </ProtectedRoute> } />
       </Routes>
     
   );

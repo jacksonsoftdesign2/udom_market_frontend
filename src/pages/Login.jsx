@@ -9,6 +9,7 @@ import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
 import { MdAdminPanelSettings, MdStorefront } from "react-icons/md";
 import { BsCheckCircleFill } from "react-icons/bs";
+import { requestNotificationPermission } from "../utils/notifications";
 import PaymentMockup from "../components/PaymentMockup";
 import adv from '../assets/advertisements/adv.jpeg';
 import adv1 from '../assets/advertisements/adv1.jpeg';
@@ -45,6 +46,15 @@ function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
     const location = useLocation();
+
+            const storedUser = localStorage.getItem("user");
+            const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+
+            const from = location.state?.from?.pathname || (
+            parsedUser?.role === "trader"
+                ? "/trader/orders"
+                : "/"
+            );
 
 	// ✅ NEW: Form state
 	const [userCode, setUserCode] = useState(
@@ -114,7 +124,11 @@ function Login() {
         // Save to localStorage
 localStorage.setItem("token", data.token);
 localStorage.setItem("user", JSON.stringify(data.user));
-localStorage.removeItem("user_code");
+
+// ── Request notification permission after login ──
+if (data.user.role === "trader") {
+  requestNotificationPermission(); // fire and forget, don't await
+}
 
 // ── Check if trader account is not yet activated ──
 if (data.user.role === "trader" && data.user.payment_status !== "paid") {
@@ -128,9 +142,13 @@ setSuccessData(data.user);
 setStage("success");
 setTimeout(() => setStage("redirecting"), 2000);
 setTimeout(() => {
-    if (data.user.role === "admin")       navigate("/admin/dashboard");
-    else if (data.user.role === "trader") navigate("/trader/dashboard");
-    else                                  navigate("/dashboard");
+    if (data.user.role === "trader") {
+        navigate(from, { replace: true }); // go back to where user came from
+    } else if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+    } else {
+        navigate("/dashboard");
+    }
 }, 3500);
 
     } catch (err) {
@@ -138,6 +156,8 @@ setTimeout(() => {
         setError("Network error. Please try again.");
     }
 };
+
+
 
 	return (
 		<>

@@ -8,6 +8,7 @@ import Products from "./Products";
 import EditProfile from "./EditProfile";
 import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList } from "react-icons/fi";
 import React from "react";
+import { listenForForegroundNotifications } from "../../utils/notifications";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function TraderDashboard() {
   const [activeSection, setActiveSection] = useState("products");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
+  const [toast, setToast] = useState(null);
 
 useEffect(() => {
   const stored = localStorage.getItem("user");
@@ -69,6 +71,19 @@ useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+
+  // ── Foreground notification listener ──
+useEffect(() => {
+  const unsubscribe = listenForForegroundNotifications((notification) => {
+    setToast(notification);
+    // Auto-dismiss after 5s
+    setTimeout(() => setToast(null), 5000);
+    // Update pending badge
+    setPendingCount(prev => prev + 1);
+  });
+  return () => unsubscribe?.();
+}, []);
 
 const [scrolled, setScrolled] = useState(false);
 
@@ -362,6 +377,46 @@ useEffect(() => {
     );
   })()}
 </nav>
+
+
+{/* ── Foreground notification toast ── */}
+{toast && (
+  <div className="fixed top-4 right-4 z-[200] max-w-sm w-full animate-slide-in">
+    <div className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span className="text-white text-xs font-bold">New Notification</span>
+        </div>
+        <button onClick={() => setToast(null)} className="text-white/70 hover:text-white">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div className="px-4 py-3">
+        <p className="font-bold text-gray-800 text-sm">{toast.title}</p>
+        <p className="text-gray-500 text-xs mt-0.5">{toast.body}</p>
+        <button
+          onClick={() => { setActiveSection("orders"); setToast(null); }}
+          className="mt-2 text-xs text-blue-600 font-semibold hover:underline"
+        >
+          View Orders →
+        </button>
+      </div>
+      {/* Auto-dismiss progress bar */}
+      <div className="h-1 bg-gray-100">
+        <div className="h-full bg-blue-500 rounded-full"
+          style={{ animation: 'shrink 5s linear forwards' }}/>
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );
