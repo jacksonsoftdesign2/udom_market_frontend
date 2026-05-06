@@ -70,11 +70,13 @@ useEffect(() => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+const [scrolled, setScrolled] = useState(false);
 
+const [pendingCount, setPendingCount] = useState(0);
   
 const navItems = [
   { key: "products",  label: "Products",         icon: <FiShoppingBag size={16} /> },
-  { key: "orders",    label: "Orders",            icon: <FiPackage size={16} /> },
+   { key: "orders",    label: "Orders",           icon: <FiPackage size={16} />, badge: pendingCount },
   { key: "payments",  label: "Payments",          icon: <FiCreditCard size={16} /> },
   { key: "analytics", label: "Analytics",         icon: <FiBarChart2 size={16} /> },
   { key: "category",  label: "Request Category",  icon: <FiList size={16} /> },
@@ -89,7 +91,7 @@ const sidebarOnlyItems = [
     localStorage.removeItem("user");
     navigate("/login");
   };
-const [scrolled, setScrolled] = useState(false);
+
 
 useEffect(() => {
   const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -97,7 +99,28 @@ useEffect(() => {
   return () => window.removeEventListener("scroll", handleScroll);
 }, []);
 
+// Fetch pending orders count for badge
+useEffect(() => {
+  const fetchPendingCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      const res = await fetch(`${API}/orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const pending = data.filter(o => o.status === "pending").length;
+        setPendingCount(pending);
+      }
+    } catch (e) {}
+  };
 
+  fetchPendingCount();
+  // Poll every 20s to keep badge fresh
+  const interval = setInterval(fetchPendingCount, 20000);
+  return () => clearInterval(interval);
+}, []);
 
   //notch path generator for mobile nav icons floating effect
  
@@ -134,20 +157,33 @@ useEffect(() => {
 
         {/* Nav items, sidebaronly items */}
         <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-          {[navItems, sidebarOnlyItems].flat().map(item => (
-            <button
-              key={item.key}
-              onClick={() => setActiveSection(item.key)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left font-medium transition-all text-sm ${
-                activeSection === item.key
-                  ? "bg-blue-400 text-white shadow"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          ))}
+{[navItems, sidebarOnlyItems].flat().map(item => (
+  <button
+    key={item.key}
+    onClick={() => setActiveSection(item.key)}
+    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left font-medium transition-all text-sm ${
+      activeSection === item.key
+        ? "bg-blue-400 text-white shadow"
+        : "text-gray-600 hover:bg-gray-100"
+    }`}
+  >
+    <span className="relative">
+      {item.icon}
+      {item.badge > 0 && (
+        <span className="absolute -top-1.5 -right-1.5 min-w-[15px] h-[15px] bg-green-500 text-white text-[8px] font-black rounded-full flex items-center justify-center px-0.5">
+          {item.badge > 99 ? "99+" : item.badge}
+        </span>
+      )}
+    </span>
+    <span className="flex-1">{item.label}</span>
+    {/* Text badge too for clarity */}
+    {item.badge > 0 && (
+      <span className="bg-green-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+        {item.badge}
+      </span>
+    )}
+  </button>
+))}
           {/* Logout */}
   <button
     onClick={handleLogout}
@@ -224,7 +260,9 @@ useEffect(() => {
        {/* Content area */}
 <div className="flex-1 p-3 md:p-6">
   {activeSection === "products" && <Products />}
-  {activeSection === "orders" && <TraderOrders />}
+  {activeSection === "orders" && (
+  <TraderOrders onPendingCountChange={setPendingCount} />
+)}
  
   
  {!["products", "orders", "editprofile", "changepassword"].includes(activeSection) && (
@@ -259,23 +297,29 @@ useEffect(() => {
     preserveAspectRatio="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <path d={buildNotchPath(activeSection)} fill="white" stroke="blue" strokeWidth="2" />
+    <path d={buildNotchPath(activeSection)} fill="white" stroke="#3b82f6" strokeWidth="1" />
   </svg>
 
   {/* Nav buttons */}
   <div className="absolute inset-0 flex items-center justify-around px-1 pb-1">
-    {navItems.map((item, i) => {
+    {navItems.map((item) => {
       const isActive = activeSection === item.key;
       return (
         <button
           key={item.key}
           onClick={() => setActiveSection(item.key)}
-          className="flex flex-col items-center gap-0.5"
+          className="flex flex-col items-center gap-0.5 relative"
           style={{ opacity: isActive ? 0 : 1, transition: 'opacity 0.2s' }}
         >
-          <span className="flex items-center justify-center">
-  {React.cloneElement(item.icon, { size: 16 })}
-</span>
+          <span className="relative flex items-center justify-center">
+            {React.cloneElement(item.icon, { size: 16 })}
+            {/* WhatsApp-style badge */}
+            {item.badge > 0 && !isActive && (
+              <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 bg-green-500 text-white text-[9px] font-black rounded-full flex items-center justify-center px-1 shadow">
+                {item.badge > 99 ? "99+" : item.badge}
+              </span>
+            )}
+          </span>
           <span className="text-blue-900" style={{ fontSize: 9 }}>
             {item.label.split(' ')[0]}
           </span>
@@ -284,33 +328,39 @@ useEffect(() => {
     })}
   </div>
 
-  {/* Active floating icon — moves with notch */}
- {(() => {
-  const idx = navItems.findIndex(n => n.key === activeSection);
-  if (idx === -1) return null; // ← this prevents the crash
-  const step = 100 / navItems.length;
-  const leftPct = step * idx + step / 2;
-  const item = navItems[idx];
-  return (
-    <div
-      className="absolute flex flex-col items-center gap-0.5 pointer-events-none"
-      style={{
-        left: `calc(${leftPct}% - 17px)`,
-        top: '2px',
-        transition: 'left 0.35s cubic-bezier(0.4,0,0.2,1)',
-      }}
-    >
-      <div className="w-9 h-9 rounded-full bg-blue-400 shadow shadow-yellow-600 flex items-center justify-center">
-        <span className="flex items-center justify-center text-white">
-  {React.cloneElement(item.icon, { size: 16 })}
-</span>
+  {/* Active floating icon */}
+  {(() => {
+    const idx = navItems.findIndex(n => n.key === activeSection);
+    if (idx === -1) return null;
+    const step = 100 / navItems.length;
+    const leftPct = step * idx + step / 2;
+    const item = navItems[idx];
+    return (
+      <div
+        className="absolute flex flex-col items-center gap-0.5 pointer-events-none"
+        style={{
+          left: `calc(${leftPct}% - 17px)`,
+          top: '2px',
+          transition: 'left 0.35s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >
+        <div className="relative w-9 h-9 rounded-full bg-blue-500 shadow-lg flex items-center justify-center">
+          <span className="flex items-center justify-center text-white">
+            {React.cloneElement(item.icon, { size: 18 })}
+          </span>
+          {/* Badge on active floating icon too */}
+          {item.badge > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-green-500 text-white text-[9px] font-black rounded-full flex items-center justify-center px-1 shadow-md">
+              {item.badge > 99 ? "99+" : item.badge}
+            </span>
+          )}
+        </div>
+        <span className="font-semibold text-blue-600" style={{ fontSize: 9 }}>
+          {item.label.split(' ')[0]}
+        </span>
       </div>
-      <span className="font-semibold text-yellow-600" style={{ fontSize: 9 }}>
-        {item.label.split(' ')[0]}
-      </span>
-    </div>
-  );
-})()}
+    );
+  })()}
 </nav>
 
     </div>

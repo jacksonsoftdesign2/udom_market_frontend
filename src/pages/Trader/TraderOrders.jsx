@@ -294,7 +294,7 @@ function OrderCard({ order, onStatusChange }) {
 // ═══════════════════════════════════════
 // MAIN PAGE
 // ═══════════════════════════════════════
-export default function TraderOrders() {
+export default function TraderOrders({ onPendingCountChange }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -320,7 +320,7 @@ export default function TraderOrders() {
 
       // Count pending orders
       const pending = data.filter(o => o.status === "pending");
-
+    
       // Count orders newer than last seen
       const unseen = data.filter(o => new Date(o.created_at) > new Date(lastSeenAt));
       setNewCount(unseen.length);
@@ -341,6 +341,11 @@ export default function TraderOrders() {
   useEffect(() => {
     fetchOrders(true);
   }, []);
+
+useEffect(() => {
+  const pending = orders.filter(o => o.status === "pending").length;
+  onPendingCountChange?.(pending);
+}, [orders]);
 
   // Poll every 20 seconds for new orders
   useEffect(() => {
