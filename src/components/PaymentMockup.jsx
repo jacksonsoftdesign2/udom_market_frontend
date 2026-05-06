@@ -27,7 +27,7 @@ export default function PaymentMockup({ user, onClose }) {
       <div className="w-full max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
 
         {/* ── Red alert header ── */}
-        <div className="bg-gradient-to-r from-red-500 to-orange-500 px-6 py-5 flex flex-col items-center gap-2">
+        <div className="bg-gradient-to-r from-red-500 to-red-500 px-6 py-5 flex flex-col items-center gap-2">
           <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
               stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -78,7 +78,7 @@ export default function PaymentMockup({ user, onClose }) {
               {/* Pay now */}
               <button
                 onClick={() => setStep("method")}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3.5 rounded-2xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition flex items-center justify-center gap-2 shadow-lg shadow-orange-200"
+                className="w-full bg-gradient-to-r from-orange-500 to-orange-500 text-white py-3.5 rounded-2xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition flex items-center justify-center gap-2 shadow-lg shadow-orange-200"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
