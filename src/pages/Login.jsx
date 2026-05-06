@@ -49,12 +49,7 @@ function Login() {
 
             const storedUser = localStorage.getItem("user");
             const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-
-            const from = location.state?.from?.pathname || (
-            parsedUser?.role === "trader"
-                ? "/trader/orders"
-                : "/"
-            );
+             const from = location.state?.from?.pathname || "/";
 
 	// ✅ NEW: Form state
 	const [userCode, setUserCode] = useState(
@@ -142,13 +137,9 @@ setSuccessData(data.user);
 setStage("success");
 setTimeout(() => setStage("redirecting"), 2000);
 setTimeout(() => {
-    if (data.user.role === "trader") {
-        navigate(from, { replace: true }); // go back to where user came from
-    } else if (data.user.role === "admin") {
-        navigate("/admin/dashboard");
-    } else {
-        navigate("/dashboard");
-    }
+    if (data.user.role === "admin")        navigate("/admin/dashboard");
+    else if (data.user.role === "trader")  navigate("/trader/dashboard");
+    else                                   navigate("/");
 }, 3500);
 
     } catch (err) {
