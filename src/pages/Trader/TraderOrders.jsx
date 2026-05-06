@@ -1,13 +1,6 @@
-// src/pages/TraderOrders.jsx
-// Features:
-//  ✅ Shows all orders for the logged-in trader
-//  ✅ On page load → popup if there are pending orders
-//  ✅ Real-time: polls every 20s for new orders, shows notification badge
-//  ✅ Each order shows customer location + Google Maps link (if lat/lng available)
-//  ✅ Approve order by: SMS (opens SMS app), Call (dials phone), Email (opens mail)
-//  ✅ Update order status (pending → confirmed → delivered / cancelled)
-//  ✅ Filter by status
 
+import { Clock, CheckCircle, Package, XCircle, User, Phone,
+          Mail, MapPin, Bell, Inbox } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const API = import.meta.env.VITE_API_URL;
@@ -21,10 +14,10 @@ const STATUS_COLORS = {
 };
 
 const STATUS_LABELS = {
-  pending:   "⏳ Pending",
-  confirmed: "✅ Confirmed",
-  delivered: "📦 Delivered",
-  cancelled: "❌ Cancelled",
+  pending:   "Pending",
+  confirmed: "Confirmed",
+  delivered: "Delivered",
+  cancelled: "~Cancelled",
 };
 
 // ── Relative time ──
@@ -57,7 +50,7 @@ function NewOrdersPopup({ count, onClose, onView }) {
         {/* Bell animation */}
         <div className="bg-gradient-to-br from-blue-500 to-blue-700 px-6 pt-8 pb-6 flex flex-col items-center gap-3">
           <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center animate-pulse">
-            <span className="text-4xl">🔔</span>
+            <span className="text-4xl"><Bell size={40} className="text-white" /></span>
           </div>
           <h2 className="text-white font-black text-2xl text-center">New Orders!</h2>
           <p className="text-blue-100 text-sm text-center">
@@ -115,10 +108,10 @@ function OrderCard({ order, onStatusChange }) {
 
   // Next allowed status transitions
   const nextActions = {
-    pending:   [{ label: "✅ Confirm Order", status: "confirmed", color: "bg-blue-500 hover:bg-blue-600 text-white" },
-                { label: "❌ Cancel",         status: "cancelled", color: "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" }],
-    confirmed: [{ label: "📦 Mark Delivered", status: "delivered", color: "bg-green-500 hover:bg-green-600 text-white" },
-                { label: "❌ Cancel",          status: "cancelled", color: "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" }],
+    pending:   [{ label: " Confirm Order", status: "confirmed", color: "bg-blue-500 hover:bg-blue-600 text-white" },
+                { label: "Cancel",         status: "cancelled", color: "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" }],
+    confirmed: [{ label: "Mark Delivered", status: "delivered", color: "bg-green-500 hover:bg-green-600 text-white" },
+                { label: "Cancel",          status: "cancelled", color: "bg-red-50 hover:bg-red-100 text-red-600 border border-red-200" }],
     delivered: [],
     cancelled: [],
   };
@@ -161,16 +154,16 @@ function OrderCard({ order, onStatusChange }) {
           <div className="bg-gray-50 rounded-xl p-3 space-y-1.5">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Customer</p>
             <div className="flex items-center gap-2">
-              <span className="text-sm">👤</span>
+              <span className="text-sm"><User size={14} /></span>
               <span className="text-sm text-gray-700 font-semibold">{order.customer_name}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm">📞</span>
+              <span className="text-sm"><Phone size={14} /></span>
               <span className="text-sm text-gray-700">{order.customer_phone}</span>
             </div>
             {order.customer_email && (
               <div className="flex items-center gap-2">
-                <span className="text-sm">✉️</span>
+                <span className="text-sm"><Mail size={14} /></span>
                 <span className="text-sm text-gray-700">{order.customer_email}</span>
               </div>
             )}
@@ -179,15 +172,14 @@ function OrderCard({ order, onStatusChange }) {
           {/* Delivery location */}
           {(order.customer_location || order.customer_latitude) && (
             <div className="bg-blue-50 rounded-xl p-3 space-y-2">
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">📍 Delivery Location</p>
+             <p className="flex items-center gap-1 text-xs font-bold text-blue-600 uppercase tracking-wide">
+                  <MapPin size={13} />
+                  Delivery Location
+                </p>
               {order.customer_location && (
                 <p className="text-sm text-gray-700">{order.customer_location}</p>
               )}
-              {order.customer_latitude && order.customer_longitude && (
-                <p className="text-xs text-gray-500 font-mono">
-                  {Number(order.customer_latitude).toFixed(5)}, {Number(order.customer_longitude).toFixed(5)}
-                </p>
-              )}
+
               {mapLink && (
                 <a
                   href={mapLink}
@@ -207,8 +199,8 @@ function OrderCard({ order, onStatusChange }) {
           {/* Order info */}
           <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
             <div className="bg-gray-50 rounded-xl px-3 py-2">
-              <p className="text-gray-400 mb-0.5">Order ID</p>
-              <p className="font-bold text-gray-700">#{order.id}</p>
+              <p className="text-gray-400 mb-0.5">Order status</p>
+              <p className="font-bold text-gray-700">{order.status}</p>
             </div>
             <div className="bg-gray-50 rounded-xl px-3 py-2">
               <p className="text-gray-400 mb-0.5">Placed</p>
@@ -490,7 +482,7 @@ return (
       {/* Orders list */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center py-16 text-center gap-3">
-          <span className="text-5xl">📭</span>
+          <Inbox size={48} className="text-gray-300" />
           <p className="font-bold text-gray-400">No {filter === "all" ? "" : filter} orders yet</p>
           <p className="text-sm text-gray-300">Orders will appear here when customers place them</p>
         </div>
@@ -502,7 +494,7 @@ return (
         </div>
       )}
 
-      <p className="text-center text-xs text-gray-300 py-2">Auto-refreshes every 20 seconds</p>
+     
     </div>
   </>
 );
