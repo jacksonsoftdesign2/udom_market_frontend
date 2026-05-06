@@ -42,7 +42,7 @@ export default function PaymentMockup({ user, onClose }) {
             </p>
           </div>
         ) : (
-          <div className="bg-red-500 px-4 py-3 flex items-center gap-3">
+          <div className="bg-orange-500 px-4 py-3 flex items-center gap-3">
             <button
               onClick={() => setStep(step === "contact" ? "method" : "main")}
               className="text-white/80 hover:text-white transition flex-shrink-0"
