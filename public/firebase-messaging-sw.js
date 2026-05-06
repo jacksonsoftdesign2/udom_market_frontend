@@ -19,6 +19,8 @@ messaging.onBackgroundMessage((payload) => {
     body,
     icon: "/upmarket_logo.png",
     badge: "/upmarket_logo.png",
+    vibrate: [200, 100, 200, 100, 200], // ← vibration pattern
+    sound: "/notification.mp3", 
     data: {
       url: payload.data?.url || "/trader/orders"
     }

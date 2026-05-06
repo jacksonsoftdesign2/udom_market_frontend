@@ -41,12 +41,34 @@ export const saveFcmToken = async (token) => {
   }
 };
 
+
+// ── Play sound ──
+const playNotificationSound = () => {
+  try {
+    const audio = new Audio("/notification.mp3");
+    audio.volume = 0.8;
+    audio.play().catch(() => {}); // catch autoplay block silently
+  } catch (e) {}
+};
+
+// ── Vibrate ──
+const vibrateDevice = () => {
+  if ("vibrate" in navigator) {
+    navigator.vibrate([200, 100, 200, 100, 200]);
+  }
+};
+
 // ── Listen for foreground notifications ──
 export const listenForForegroundNotifications = (onNotification) => {
   return onMessage(messaging, (payload) => {
     const title = payload.notification?.title || "New Order";
     const body  = payload.notification?.body  || "You have a new order";
     const url   = payload.data?.url || "/trader/orders";
+
+    // ── Sound + vibration on foreground ──
+    playNotificationSound();
+    vibrateDevice();
+
     onNotification({ title, body, url });
   });
 };
