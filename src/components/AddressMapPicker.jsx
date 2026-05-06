@@ -77,18 +77,20 @@ function MapController({ center, zoom }) {
   }, [center, zoom, map]);
   return null;
 }
-
-function DraggableMarker({ position, onDrag }) {
+function DraggableMarker({ position, onDrag, onDragEnd }) {
   const markerRef = useRef(null);
   return (
     <Marker draggable
-      eventHandlers={{ dragend() { const m = markerRef.current; if (m) { const { lat, lng } = m.getLatLng(); onDrag(lat, lng); } } }}
+      eventHandlers={{
+        drag()    { const m = markerRef.current; if (m) { const {lat,lng} = m.getLatLng(); onDrag(lat,lng); } },
+        dragend() { const m = markerRef.current; if (m) { const {lat,lng} = m.getLatLng(); onDragEnd(lat,lng); } }
+      }}
       position={position} ref={markerRef}
     />
   );
 }
 
-function LazyMap({ center, zoom, markerPos, onDrag }) {
+function LazyMap({ center, zoom, markerPos, onDrag, onDragEnd }) {
   const [ready, setReady] = useState(leafletLoaded);
   useEffect(() => { if (!leafletLoaded) loadLeaflet().then(() => setReady(true)); }, []);
   if (!ready) return (
@@ -106,7 +108,7 @@ function LazyMap({ center, zoom, markerPos, onDrag }) {
     <MapContainer center={center} zoom={zoom} style={{ height: "100%", width: "100%" }} zoomControl>
       <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <MapController center={center} zoom={zoom} />
-      <DraggableMarker position={markerPos} onDrag={onDrag} />
+      <DraggableMarker position={markerPos} onDrag={onDrag} onDragEnd={onDragEnd} />
     </MapContainer>
   );
 }
@@ -191,15 +193,6 @@ const updateAddress = (newAddr) => {
   const [streetLoading, setStreetLoading] = useState(false);
   const streetDebounce = useRef(null);
 
-  // ── Region change → zoom ──
-  useEffect(() => {
-    if (localAddress.region && REGION_COORDS[localAddress.region]) {
-      const coords = REGION_COORDS[localAddress.region];
-      setMapCenter(coords);
-      setMapZoom(REGION_ZOOM);
-      setMarkerPos(coords);
-    }
-  }, [localAddress.region]);
 
   // ── Street autocomplete ──
   const handleStreetChange = (val) => {
@@ -235,6 +228,16 @@ const updateAddress = (newAddr) => {
       }).catch(() => updateAddress({ ...localAddress, street: val }));
     setStreetSuggestions([]);
   };
+
+// ── Marker drag continuous — coords only, no API call ──
+const handleMarkerMove = (lat, lng) => {
+  setMarkerPos([lat, lng]);
+  const updated = { ...localAddress, latitude: lat, longitude: lng };
+  setLocalAddress(updated);
+  onChange({ ...address, ...updated });
+};
+
+
 
   // ══════════════════════════════════════════════════
   // GPS — click once → fills region, district, street
@@ -330,8 +333,20 @@ const updateAddress = (newAddr) => {
         label="Region" value={localAddress.region} required error={errors.region}
         placeholder="e.g. Dodoma"
         suggestions={REGIONS}
-        onChange={val => updateAddress({ ...localAddress, region: val, district: "", street: "", latitude: null, longitude: null })}
-        onSelect={val => updateAddress({ ...localAddress, region: val, district: "", street: "", latitude: null, longitude: null })}
+        onChange={val => {
+          const coords = REGION_COORDS[val];
+          const lat = coords ? coords[0] : null;
+          const lng = coords ? coords[1] : null;
+          if (coords) { setMapCenter(coords); setMapZoom(REGION_ZOOM); setMarkerPos(coords); setShowMap(true); }
+          updateAddress({ ...localAddress, region: val, district: "", street: "", latitude: lat, longitude: lng });
+        }}
+        onSelect={val => {
+          const coords = REGION_COORDS[val];
+          const lat = coords ? coords[0] : null;
+          const lng = coords ? coords[1] : null;
+          if (coords) { setMapCenter(coords); setMapZoom(REGION_ZOOM); setMarkerPos(coords); setShowMap(true); }
+          updateAddress({ ...localAddress, region: val, district: "", street: "", latitude: lat, longitude: lng });
+        }}
       />
 
       {/* District */}
@@ -340,8 +355,22 @@ const updateAddress = (newAddr) => {
         placeholder={localAddress.region ? `Districts of ${localAddress.region}` : "Select region first"}
         suggestions={districts}
         disabled={!localAddress.region}
-        onChange={val => updateAddress({ ...localAddress, district: val, street: "" })}
-        onSelect={val => updateAddress({ ...localAddress, district: val, street: "" })}
+              onChange={val => updateAddress({ ...localAddress, district: val, street: "" })}
+              onSelect={val => {
+                updateAddress({ ...localAddress, district: val, street: "" });
+                // Geocode the district to get coords
+                const q = `${val}, ${localAddress.region}, Tanzania`;
+                fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`)
+                  .then(r => r.json())
+                  .then(data => {
+                    if (data[0]) {
+                      const lat = parseFloat(data[0].lat);
+                      const lng = parseFloat(data[0].lon);
+                      setMapCenter([lat, lng]); setMapZoom(DISTRICT_ZOOM); setMarkerPos([lat, lng]); setShowMap(true);
+                      updateAddress({ ...localAddress, district: val, street: "", latitude: lat, longitude: lng });
+                    }
+                  }).catch(() => {});
+              }}
       />
 
       {/* Street — NEVER disabled, so GPS fill always shows */}
@@ -415,7 +444,11 @@ const updateAddress = (newAddr) => {
       {/* Map */}
       {showMap && (
         <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm" style={{ height: "260px" }}>
-          <LazyMap center={mapCenter} zoom={mapZoom} markerPos={markerPos} onDrag={handleMarkerDrag} />
+         <LazyMap 
+  center={mapCenter} zoom={mapZoom} markerPos={markerPos} 
+  onDrag={handleMarkerMove}      // ← continuous, coords only
+  onDragEnd={handleMarkerDrag}   // ← on release, full reverse geocode
+/>
         </div>
       )}
 
