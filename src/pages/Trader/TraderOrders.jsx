@@ -391,7 +391,7 @@ useEffect(() => {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
+     <div className="flex items-center justify-center py-20">
       <div className="flex flex-col items-center gap-3">
         <svg className="animate-spin w-8 h-8 text-blue-400" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -403,7 +403,7 @@ useEffect(() => {
   );
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+   <div className="flex items-center justify-center py-20 p-4">
       <div className="text-center">
         <p className="text-red-500 font-semibold">{error}</p>
         <button onClick={() => fetchOrders(true)} className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-xl text-sm">Retry</button>
@@ -411,112 +411,99 @@ useEffect(() => {
     </div>
   );
 
-  return (
-    <>
-      {/* Login popup */}
-      {showPopup && (
-        <NewOrdersPopup
-          count={stats.pending}
-          onClose={handleClosePopup}
-          onView={handleViewOrders}
-        />
-      )}
+ // Replace the entire return with this:
+return (
+  <>
+    {showPopup && (
+      <NewOrdersPopup
+        count={stats.pending}
+        onClose={handleClosePopup}
+        onView={handleViewOrders}
+      />
+    )}
 
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-100 px-4 py-4 sticky top-0 z-20">
-          <div className="max-w-2xl mx-auto flex items-center justify-between">
-            <div>
-              <h1 className="font-black text-gray-800 text-xl">Orders</h1>
-              <p className="text-xs text-gray-400">{stats.all} total · {stats.pending} pending</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {newCount > 0 && (
-                <button
-                  onClick={handleMarkSeen}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200 hover:bg-yellow-200 transition"
-                >
-                  🔔 {newCount} new
-                </button>
-              )}
-              <button
-                onClick={() => fetchOrders(false)}
-                className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
-                title="Refresh"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                  <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+    <div className="space-y-4">
+
+      {/* Stats row + refresh */}
+      <div className="flex items-center gap-2">
+        <div className="grid grid-cols-4 gap-2 flex-1">
+          {[
+            { key: "pending",   label: "Pending",   color: "text-yellow-600", bg: "bg-yellow-50" },
+            { key: "confirmed", label: "Confirmed", color: "text-blue-600",   bg: "bg-blue-50"   },
+            { key: "delivered", label: "Delivered", color: "text-green-600",  bg: "bg-green-50"  },
+            { key: "cancelled", label: "Cancelled", color: "text-red-500",    bg: "bg-red-50"    },
+          ].map(s => (
+            <button
+              key={s.key}
+              onClick={() => setFilter(s.key)}
+              className={`${s.bg} rounded-2xl p-3 text-center transition hover:scale-105 ${filter === s.key ? "ring-2 ring-offset-1 ring-blue-400" : ""}`}
+            >
+              <p className={`text-xl font-black ${s.color}`}>{stats[s.key]}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+            </button>
+          ))}
         </div>
 
-        <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
-          {/* Stats row */}
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              { key: "pending", label: "Pending", color: "text-yellow-600", bg: "bg-yellow-50" },
-              { key: "confirmed", label: "Confirmed", color: "text-blue-600", bg: "bg-blue-50" },
-              { key: "delivered", label: "Delivered", color: "text-green-600", bg: "bg-green-50" },
-              { key: "cancelled", label: "Cancelled", color: "text-red-500", bg: "bg-red-50" },
-            ].map(s => (
-              <button
-                key={s.key}
-                onClick={() => setFilter(s.key)}
-                className={`${s.bg} rounded-2xl p-3 text-center transition hover:scale-105 ${filter === s.key ? "ring-2 ring-offset-1 ring-blue-400" : ""}`}
-              >
-                <p className={`text-xl font-black ${s.color}`}>{stats[s.key]}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
-              </button>
-            ))}
-          </div>
-
-          {/* Filter tabs */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {["all", "pending", "confirmed", "delivered", "cancelled"].map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition
-                  ${filter === f ? "bg-blue-500 text-white" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
-              >
-                {f.charAt(0).toUpperCase() + f.slice(1)}
-                {f !== "all" && stats[f] > 0 && (
-                  <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs ${filter === f ? "bg-white/20" : "bg-gray-100"}`}>
-                    {stats[f]}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Orders list */}
-          {filtered.length === 0 ? (
-            <div className="flex flex-col items-center py-16 text-center gap-3">
-              <span className="text-5xl">📭</span>
-              <p className="font-bold text-gray-400">No {filter === "all" ? "" : filter} orders yet</p>
-              <p className="text-sm text-gray-300">Orders will appear here when customers place them</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filtered.map(order => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  onStatusChange={handleStatusChange}
-                />
-              ))}
-            </div>
+        {/* Refresh + new badge — right side */}
+        <div className="flex flex-col gap-1.5 items-center">
+          {newCount > 0 && (
+            <button
+              onClick={handleMarkSeen}
+              className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200 hover:bg-yellow-100 transition w-fit"
+            >
+              {/* Bell icon with pulse dot */}
+              <span className="relative flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-ping" />
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full" />
+              </span>
+              {newCount} new order{newCount > 1 ? "s" : ""}
+            </button>
           )}
-
-          {/* Auto-refresh note */}
-          <p className="text-center text-xs text-gray-300 py-2">
-            Auto-refreshes every 20 seconds
-          </p>
+   
         </div>
       </div>
-    </>
-  );
+
+      {/* Filter tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        {["all", "pending", "confirmed", "delivered", "cancelled"].map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition
+              ${filter === f ? "bg-blue-500 text-white" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f !== "all" && stats[f] > 0 && (
+              <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs ${filter === f ? "bg-white/20" : "bg-gray-100"}`}>
+                {stats[f]}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Orders list */}
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center py-16 text-center gap-3">
+          <span className="text-5xl">📭</span>
+          <p className="font-bold text-gray-400">No {filter === "all" ? "" : filter} orders yet</p>
+          <p className="text-sm text-gray-300">Orders will appear here when customers place them</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map(order => (
+            <OrderCard key={order.id} order={order} onStatusChange={handleStatusChange} />
+          ))}
+        </div>
+      )}
+
+      <p className="text-center text-xs text-gray-300 py-2">Auto-refreshes every 20 seconds</p>
+    </div>
+  </>
+);
 }

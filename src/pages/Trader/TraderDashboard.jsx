@@ -136,7 +136,7 @@ useEffect(() => {
 };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="h-screen bg-gray-100 flex overflow-hidden">
 
       {/* SIDEBAR — desktop only */}
       <aside className="hidden md:flex flex-col w-64 bg-white shadow-lg h-screen sticky top-0 overflow-auto">
@@ -196,9 +196,9 @@ useEffect(() => {
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col pb-16 md:pb-0">
+      <main className="flex-1 flex flex-col pb-16 md:pb-0 min-h-0 overflow-hidden">
         {/* Top bar */}
-        <div className={`bg-white shadow-sm px-4 md:px-6 flex items-center justify-between sticky top-0 z-10 transition-all duration-300 ${scrolled ? "py-1 md:py-2 shadow-md" : "py-2 md:py-4"}`}>
+        <div className={`bg-white shadow-sm px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 overflow-visible transition-all duration-300 ${scrolled ? "py-1 md:py-2 shadow-md" : "py-2 md:py-4"}`}>
           <h1 className="text-lg md:text-xl font-bold text-gray-800 capitalize">{activeSection.replace("_", " ")}</h1>
           <div className="flex items-center gap-3 relative" ref={profileMenuRef}>
             <p className="text-xs md:text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300">{user?.user_code || "N/A"}</p>
@@ -224,7 +224,7 @@ useEffect(() => {
             
             {/* Profile Dropdown Menu */}
             {showProfileMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[100]">
                 <button
                   onClick={() => {
                     setActiveSection("editprofile");
@@ -258,7 +258,7 @@ useEffect(() => {
         </div>
 
        {/* Content area */}
-<div className="flex-1 p-3 md:p-6">
+<div className="flex-1 p-3 md:p-6 overflow-y-auto">
   {activeSection === "products" && <Products />}
   {activeSection === "orders" && (
   <TraderOrders onPendingCountChange={setPendingCount} />
