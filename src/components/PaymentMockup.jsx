@@ -112,11 +112,11 @@ export default function PaymentMockup({ user, onClose }) {
 
           {/* ── Payment methods step ── */}
           {step === "method" && (
-            <div className="space-y-3">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide text-center">
+           <div className="space-y-2">
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wide text-center">
                 Select Payment Method
               </p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-1.5">
                 {PAYMENT_METHODS.map((m, i) => (
                   <button
                     key={i}
@@ -124,13 +124,13 @@ export default function PaymentMockup({ user, onClose }) {
                     className="border border-gray-200 rounded-xl p-2.5 hover:border-orange-400 hover:shadow-md transition bg-white flex flex-col items-center gap-1"
                   >
                     <img src={m.src} alt={m.name} className="w-full h-10 object-contain" />
-                    <span className="text-[9px] text-gray-400 font-medium">{m.name}</span>
+                    <span className="text-[6px] text-gray-400 font-medium">{m.name}</span>
                   </button>
                 ))}
               </div>
 
               {/* Info note */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-3 py-2.5 flex gap-2">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-2.5 py-2 flex gap-1.5">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                   stroke="#ca8a04" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
                   className="flex-shrink-0 mt-0.5">
@@ -138,7 +138,7 @@ export default function PaymentMockup({ user, onClose }) {
                   <line x1="12" y1="8" x2="12" y2="12"/>
                   <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <p className="text-xs text-yellow-700">
+                <p className="text-[11px] text-yellow-700">
                   Online payment is coming soon. Please contact management to complete payment manually.
                 </p>
               </div>
