@@ -9,6 +9,7 @@ import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
 import { MdAdminPanelSettings, MdStorefront } from "react-icons/md";
 import { BsCheckCircleFill } from "react-icons/bs";
+import PaymentMockup from "../components/PaymentMockup";
 import adv from '../assets/advertisements/adv.jpeg';
 import adv1 from '../assets/advertisements/adv1.jpeg';
 import adv2 from '../assets/advertisements/adv2.jpeg';
@@ -54,7 +55,8 @@ function Login() {
 	const [stage, setStage] = useState("idle"); // idle | searching | success | redirecting
     const [successData, setSuccessData] = useState(null);
     const [showForgot, setShowForgot] = useState(false);
-
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentUserData, setPaymentUserData] = useState(null);
 	const images = [
 		{ src: adv, subtitle: "Welcome to UDOM Market" },
 		{ src: adv1, subtitle: "Best deals on campus" },
@@ -110,23 +112,26 @@ function Login() {
         }
 
         // Save to localStorage
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.removeItem("user_code");
-        setSuccessData(data.user);
-        setStage("success"); // Stage 2 — success card
+localStorage.setItem("token", data.token);
+localStorage.setItem("user", JSON.stringify(data.user));
+localStorage.removeItem("user_code");
 
-        // Stage 3 — redirecting
-        setTimeout(() => {
-            setStage("redirecting");
-        }, 2000);
+// ── Check if trader account is not yet activated ──
+if (data.user.role === "trader" && data.user.payment_status !== "paid") {
+    setStage("idle");
+    setPaymentUserData(data.user);
+    setShowPaymentModal(true);
+    return;
+}
 
-        // Navigate
-        setTimeout(() => {
-            if (data.user.role === "admin")       navigate("/admin/dashboard");
-            else if (data.user.role === "trader") navigate("/trader/dashboard");
-            else                                  navigate("/dashboard");
-        }, 3500);
+setSuccessData(data.user);
+setStage("success");
+setTimeout(() => setStage("redirecting"), 2000);
+setTimeout(() => {
+    if (data.user.role === "admin")       navigate("/admin/dashboard");
+    else if (data.user.role === "trader") navigate("/trader/dashboard");
+    else                                  navigate("/dashboard");
+}, 3500);
 
     } catch (err) {
         setStage("idle");
@@ -416,6 +421,15 @@ className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3
 </div>
 </div>
   {showForgot && <ForgotPasswordModal onClose={() => setShowForgot(false)} />}
+
+
+{showPaymentModal && (
+    <PaymentMockup
+        user={paymentUserData}
+        onClose={() => setShowPaymentModal(false)}
+    />
+)}
+
 </>
 );
 }
