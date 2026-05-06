@@ -8,7 +8,7 @@ import TraderDashboard from "./pages/Trader/TraderDashboard";
 import About from "./pages/About";
 import Delivery from "./pages/Delivery";
 import ProtectedRoute from "./components/ProtectedRoute";
-import TraderOrders from "./pages/TraderOrders";
+import TraderOrders from "./pages/Trader/TraderOrders";
 function App() {
   return (
     
