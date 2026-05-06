@@ -169,6 +169,8 @@ export default function AddressMapPicker({ address, onChange, errors = {} }) {
     longitude: address.longitude || null,
   });
 
+
+
   // Keep local in sync when parent changes (e.g. user clears form)
   useEffect(() => {
     setLocalAddress({
@@ -180,10 +182,10 @@ export default function AddressMapPicker({ address, onChange, errors = {} }) {
     });
   }, [address.region, address.district, address.street, address.latitude, address.longitude]);
 
-  const updateAddress = (newAddr) => {
-    setLocalAddress(newAddr);
-    onChange(newAddr);
-  };
+const updateAddress = (newAddr) => {
+  setLocalAddress(newAddr);
+  onChange({ ...address, ...newAddr }); // preserves type, is_primary, any future fields
+};
 
   const [streetSuggestions, setStreetSuggestions] = useState([]);
   const [streetLoading, setStreetLoading] = useState(false);
@@ -274,13 +276,13 @@ export default function AddressMapPicker({ address, onChange, errors = {} }) {
             };
 
             setLocalAddress(filled);  // instant UI update
-            onChange(filled);          // push to parent
+            onChange({ ...address, ...filled });          // push to parent
             setGpsLoading(false);
           })
           .catch(() => {
             const fallback = { ...localAddress, latitude: lat, longitude: lng };
             setLocalAddress(fallback);
-            onChange(fallback);
+            onChange({ ...address, ...fallback });
             setGpsLoading(false);
           });
       },
@@ -309,12 +311,12 @@ export default function AddressMapPicker({ address, onChange, errors = {} }) {
           longitude: lng,
         };
         setLocalAddress(dragged);
-        onChange(dragged);
+        onChange({ ...address, ...dragged });
       })
       .catch(() => {
         const updated = { ...localAddress, latitude: lat, longitude: lng };
         setLocalAddress(updated);
-        onChange(updated);
+        onChange({ ...address, ...updated });
       });
   };
 

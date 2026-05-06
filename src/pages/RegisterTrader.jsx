@@ -152,6 +152,16 @@ useEffect(() => {
       profile_image: null
     });
 
+      setAddress({         
+    type: "shop",
+    region: "",
+    district: "",
+    street: "",
+    latitude: null,
+    longitude: null,
+    is_primary: true,
+  });
+
     setReferees([{ name: "", phone: "", relation: "" }]);
   };
 
@@ -336,6 +346,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
     e.preventDefault();
 
     // Final validation
+     if (!validateStep(4)) return;
     if (!validateStep(6)) {
       return;
     }
