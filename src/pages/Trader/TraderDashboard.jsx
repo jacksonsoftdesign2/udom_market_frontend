@@ -385,7 +385,7 @@ useEffect(() => {
 
 {/* ── Foreground notification toast ── */}
 {toast && (
-  <div className="fixed top-4 right-4 z-[200] max-w-sm w-full animate-slide-in">
+  <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] w-[92%] max-w-sm animate-slide-in">
     <div className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden">
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
