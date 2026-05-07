@@ -78,7 +78,7 @@ useEffect(() => {
   const unsubscribe = listenForForegroundNotifications((notification) => {
     setToast(notification);
     // Auto-dismiss after 5s
-    setTimeout(() => setToast(null), 5000);
+    setTimeout(() => setToast(null), 8000);
     // Update pending badge
     setPendingCount(prev => prev + 1);
   });
@@ -416,7 +416,7 @@ useEffect(() => {
       {/* Auto-dismiss progress bar */}
       <div className="h-1 bg-gray-100">
         <div className="h-full bg-blue-500 rounded-full"
-          style={{ animation: 'shrink 5s linear forwards' }}/>
+          style={{ animation: 'shrink 8s linear forwards' }}/>
       </div>
     </div>
   </div>
