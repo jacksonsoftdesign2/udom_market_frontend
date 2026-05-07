@@ -84,14 +84,33 @@ const vibrateDevice = () => {
 
 // ── Listen for foreground notifications ──
 export const listenForForegroundNotifications = (onNotification) => {
-  return onMessage(messaging, (payload) => {
+  // Firebase onMessage — fires when SW doesn't intercept
+  const unsubscribeFirebase = onMessage(messaging, (payload) => {
     const title = payload.notification?.title || "New Order";
     const body  = payload.notification?.body  || "You have a new order";
     const url   = payload.data?.url || "/trader/dashboard?section=orders";
-
     playNotificationSound();
     vibrateDevice();
-
     onNotification({ title, body, url });
   });
+
+  // SW postMessage — fires when SW intercepts while app is open
+  const handleSwMessage = (event) => {
+    if (event.data?.type === "NEW_ORDER") {
+      playNotificationSound();
+      vibrateDevice();
+      onNotification({
+        title: event.data.title,
+        body: event.data.body,
+        url: "/trader/dashboard?section=orders"
+      });
+    }
+  };
+
+  navigator.serviceWorker.addEventListener("message", handleSwMessage);
+
+  return () => {
+    unsubscribeFirebase();
+    navigator.serviceWorker.removeEventListener("message", handleSwMessage);
+  };
 };

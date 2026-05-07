@@ -17,6 +17,13 @@ messaging.onBackgroundMessage((payload) => {
   const title = payload.notification?.title || "New Order";
   const body  = payload.notification?.body  || "You have a new order";
 
+   // ── Tell open app windows to show toast ──
+  self.clients.matchAll({ type: "window" }).then(clients => {
+    clients.forEach(client => {
+      client.postMessage({ type: "NEW_ORDER", title, body });
+    });
+  });
+
   self.registration.showNotification(title, {
     body,
     icon: "/upmarket_logo.png",
