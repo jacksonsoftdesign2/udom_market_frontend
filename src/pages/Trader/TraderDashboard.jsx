@@ -101,7 +101,7 @@ const sidebarOnlyItems = [
   { key: "editprofile",    label: "Edit Profile",    icon: <FiEdit size={16} /> },
   { key: "changepassword", label: "Change Password", icon: <FiLock size={16} /> },
 ];
-  const handleLogout = () => {
+  const handleLogout = async() => {
     await removeFcmToken();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
