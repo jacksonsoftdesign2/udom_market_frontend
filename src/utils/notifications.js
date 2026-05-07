@@ -12,23 +12,21 @@ export const requestNotificationPermission = async () => {
     const token = await getToken(messaging, { vapidKey: VAPID_KEY });
     if (!token) return null;
 
-    // Save token to backend
     await saveFcmToken(token);
     return token;
-
   } catch (error) {
     console.error("FCM error:", error);
     return null;
   }
 };
 
-// ── Save FCM token to backend ──
+// ── Save token to backend ──
 export const saveFcmToken = async (token) => {
   try {
     const authToken = localStorage.getItem("token");
     if (!authToken) return;
 
-    await fetch(`${API}/notifications/save-token`, {
+    const res = await fetch(`${API}/notifications/save-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,18 +34,44 @@ export const saveFcmToken = async (token) => {
       },
       body: JSON.stringify({ fcm_token: token })
     });
+
+    const data = await res.json();
+    console.log("Token save response:", data);
   } catch (err) {
     console.error("Failed to save FCM token:", err);
   }
 };
 
+// ── Remove token on logout ──
+export const removeFcmToken = async () => {
+  try {
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+    if (!token) return;
+
+    const authToken = localStorage.getItem("token");
+    if (!authToken) return;
+
+    await fetch(`${API}/notifications/remove-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`
+      },
+      body: JSON.stringify({ fcm_token: token })
+    });
+
+    console.log("[FCM] Token deactivated on logout");
+  } catch (err) {
+    console.error("Failed to remove FCM token:", err);
+  }
+};
 
 // ── Play sound ──
 const playNotificationSound = () => {
   try {
     const audio = new Audio("/notification.mp3");
     audio.volume = 0.8;
-    audio.play().catch(() => {}); // catch autoplay block silently
+    audio.play().catch(() => {});
   } catch (e) {}
 };
 
@@ -63,9 +87,8 @@ export const listenForForegroundNotifications = (onNotification) => {
   return onMessage(messaging, (payload) => {
     const title = payload.notification?.title || "New Order";
     const body  = payload.notification?.body  || "You have a new order";
-    const url   = payload.data?.url || "/trader/orders";
+    const url   = payload.data?.url || "/trader/dashboard?section=orders";
 
-    // ── Sound + vibration on foreground ──
     playNotificationSound();
     vibrateDevice();
 

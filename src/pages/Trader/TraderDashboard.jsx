@@ -8,7 +8,7 @@ import Products from "./Products";
 import EditProfile from "./EditProfile";
 import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList } from "react-icons/fi";
 import React from "react";
-import { listenForForegroundNotifications } from "../../utils/notifications";
+import { listenForForegroundNotifications, removeFcmToken } from "../../utils/notifications";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -102,6 +102,7 @@ const sidebarOnlyItems = [
   { key: "changepassword", label: "Change Password", icon: <FiLock size={16} /> },
 ];
   const handleLogout = () => {
+    await removeFcmToken();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
