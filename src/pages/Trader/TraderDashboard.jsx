@@ -8,7 +8,7 @@ import Products from "./Products";
 import EditProfile from "./EditProfile";
 import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList } from "react-icons/fi";
 import React from "react";
-import { listenForForegroundNotifications, removeFcmToken } from "../../utils/notifications";
+import { listenForForegroundNotifications, removeFcmToken, requestNotificationPermission } from "../../utils/notifications";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -17,7 +17,9 @@ function TraderDashboard() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
   const [toast, setToast] = useState(null);
-
+  const [showNotifCard, setShowNotifCard] = useState(false);
+  const [notifDenied, setNotifDenied] = useState(false);
+  const [newOrderCount, setNewOrderCount] = useState(0);
 useEffect(() => {
   const stored = localStorage.getItem("user");
   if (!stored) { navigate("/login"); return; }
@@ -85,6 +87,28 @@ useEffect(() => {
   return () => unsubscribe?.();
 }, []);
 
+
+// ── Notification permission check ──
+useEffect(() => {
+  const checkPermission = async () => {
+    const permission = Notification.permission;
+
+    if (permission === "granted") {
+      // Already allowed — silently save token
+      requestNotificationPermission();
+    } else if (permission === "denied") {
+      setNotifDenied(true);
+    } else {
+      // Not yet asked — show custom card after 3s
+      setTimeout(() => setShowNotifCard(true), 3000);
+    }
+  };
+
+  // Only run if user is loaded and is a trader
+  if (user?.role === "trader") checkPermission();
+}, [user]);
+
+
 const [scrolled, setScrolled] = useState(false);
 
 const [pendingCount, setPendingCount] = useState(0);
@@ -107,6 +131,16 @@ const sidebarOnlyItems = [
     localStorage.removeItem("user");
     navigate("/login");
   };
+
+  const handleEnableNotifications = async () => {
+  setShowNotifCard(false);
+  const token = await requestNotificationPermission();
+  if (!token) {
+    // They clicked Block
+    setNotifDenied(true);
+  }
+};
+
 
 
 useEffect(() => {
@@ -222,6 +256,23 @@ useEffect(() => {
         </div>
           <div className="flex items-center gap-3 relative" ref={profileMenuRef}>
             <p className="text-xs md:text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300">{user?.user_code || "N/A"}</p>
+
+          {/* ── Bell badge — shows only on orders section ── */}
+  {newOrderCount > 0 && activeSection === "orders" && (
+    <span className="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 text-xs font-bold px-2.5 py-1.5 rounded-full">
+      <span className="relative flex items-center justify-center">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-ping" />
+        <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full" />
+      </span>
+      {newOrderCount} new
+    </span>
+  )}
+
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="w-10 h-10 rounded-full border-2 border-gray-300 object-cover hover:border-blue-500 transition overflow-hidden flex-shrink-0"
@@ -281,7 +332,10 @@ useEffect(() => {
 <div className="flex-1 px-3 pt-3 pb-6 md:p-6 overflow-y-auto">
   {activeSection === "products" && <Products />}
   {activeSection === "orders" && (
-  <TraderOrders onPendingCountChange={setPendingCount} />
+  <TraderOrders 
+  onPendingCountChange={setPendingCount}
+  onNewCountChange={setNewOrderCount}
+/>
 )}
  
   
@@ -419,6 +473,92 @@ useEffect(() => {
         <div className="h-full bg-blue-500 rounded-full"
           style={{ animation: 'shrink 8s linear forwards' }}/>
       </div>
+    </div>
+  </div>
+)}
+
+{/* ── Notification permission card ── */}
+{showNotifCard && (
+  <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[200] w-[92%] max-w-sm animate-slide-in">
+    <div className="bg-white rounded-2xl shadow-2xl border border-blue-100 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <div className="flex-1">
+          <p className="text-white font-bold text-sm">Stay on top of orders</p>
+          <p className="text-blue-100 text-xs">Get instant alerts for new orders</p>
+        </div>
+        <button
+          onClick={() => setShowNotifCard(false)}
+          className="text-white/60 hover:text-white flex-shrink-0"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div className="px-4 py-3">
+        <p className="text-xs text-gray-500 mb-3">
+          Allow <span className="font-semibold text-gray-700">UDOM Market</span> to send you 
+          notifications so you never miss an order — even when the app is closed.
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowNotifCard(false)}
+            className="flex-1 bg-gray-100 text-gray-500 py-2 rounded-xl text-xs font-semibold hover:bg-gray-200 transition"
+          >
+            Not Now
+          </button>
+          <button
+            onClick={handleEnableNotifications}
+            className="flex-1 bg-blue-500 text-white py-2 rounded-xl text-xs font-bold hover:bg-blue-600 transition flex items-center justify-center gap-1.5"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Enable Notifications
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* ── Notifications blocked banner ── */}
+{notifDenied && (
+  <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-[200] w-[92%] max-w-sm animate-slide-in">
+    <div className="bg-white rounded-2xl shadow-xl border border-orange-200 px-4 py-3 flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+          stroke="#f97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold text-gray-800">Notifications are blocked</p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          Enable in browser settings → Site Settings → Notifications
+        </p>
+      </div>
+      <button
+        onClick={() => setNotifDenied(false)}
+        className="text-gray-300 hover:text-gray-500 flex-shrink-0"
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
   </div>
 )}

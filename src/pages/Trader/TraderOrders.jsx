@@ -286,8 +286,7 @@ function OrderCard({ order, onStatusChange }) {
 // ═══════════════════════════════════════
 // MAIN PAGE
 // ═══════════════════════════════════════
-export default function TraderOrders({ onPendingCountChange }) {
-  const [orders, setOrders] = useState([]);
+export default function TraderOrders({ onPendingCountChange, onNewCountChange }) {  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
@@ -345,6 +344,10 @@ useEffect(() => {
     return () => clearInterval(interval);
   }, [fetchOrders]);
 
+  useEffect(() => {
+  onNewCountChange?.(newCount);
+}, [newCount]);
+
   const handleClosePopup = () => {
     setShowPopup(false);
   };
@@ -364,6 +367,7 @@ useEffect(() => {
     setLastSeenAt(now);
     localStorage.setItem("orders_last_seen", now);
     setNewCount(0);
+    onNewCountChange?.(0);
   };
 
   const handleStatusChange = (orderId, newStatus) => {
@@ -417,8 +421,7 @@ return (
     <div className="space-y-4">
 
       {/* Stats row + refresh */}
-      <div className="flex items-center gap-2">
-        <div className="grid grid-cols-4 gap-2 flex-1">
+<div className="grid grid-cols-4 gap-2">
           {[
             { key: "pending",   label: "Pending",   color: "text-yellow-600", bg: "bg-yellow-50" },
             { key: "confirmed", label: "Confirmed", color: "text-blue-600",   bg: "bg-blue-50"   },
@@ -436,29 +439,8 @@ return (
           ))}
         </div>
 
-        {/* Refresh + new badge — right side */}
-        <div className="flex flex-col gap-1.5 items-center">
-          {newCount > 0 && (
-            <button
-              onClick={handleMarkSeen}
-              className="flex items-center gap-2 px-3 py-1.5 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200 hover:bg-yellow-100 transition w-fit"
-            >
-              {/* Bell icon with pulse dot */}
-              <span className="relative flex items-center justify-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-ping" />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full" />
-              </span>
-              {newCount} new order{newCount > 1 ? "s" : ""}
-            </button>
-          )}
-   
-        </div>
-      </div>
+
+  
 
       {/* Filter tabs */}
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
