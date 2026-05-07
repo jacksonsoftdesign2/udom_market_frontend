@@ -51,6 +51,10 @@ self.addEventListener("notificationclick", (event) => {
         }
       }
       return clients.openWindow(url);
+
     })
   );
 });
+
+// Let app handle messages when open
+self.addEventListener('fetch', () => {});
