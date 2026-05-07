@@ -1,7 +1,7 @@
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
-// v4
+// v5
 firebase.initializeApp({
   apiKey: "AIzaSyBU72fIkAyAe8_RdiGmGgZo3AmvLrmKnak",
   authDomain: "udom-market-notifications.firebaseapp.com",
@@ -14,27 +14,28 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-const title = payload.data?.title || "New Order";
-const body  = payload.data?.body  || "You have a new order";
+  const title = payload.data?.title || "New Order";
+  const body  = payload.data?.body  || "You have a new order";
 
-   // ── Tell open app windows to show toast ──
-  self.clients.matchAll({ type: "window" }).then(clients => {
-    clients.forEach(client => {
-      client.postMessage({ type: "NEW_ORDER", title, body });
-    });
-  });
-
-   // ── Show system notification for closed/background app ──
-
-  self.registration.showNotification(title, {
-    body,
-    icon: "/upmarket_logo.png",
-    badge: "/upmarket_logo.png",
-    vibrate: [200, 100, 200, 100, 200],
-    sound: "/notification.mp3",
-    silent: false,
-    data: {
-      url: payload.data?.url || "/trader/dashboard?section=orders"
+  self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(clients => {
+    if (clients.length > 0) {
+      // App is open — send to app to show toast
+      clients.forEach(client => {
+        client.postMessage({ type: "NEW_ORDER", title, body });
+      });
+    } else {
+      // App is closed — show system notification
+      self.registration.showNotification(title, {
+        body,
+        icon: "/upmarket_logo.png",
+        badge: "/upmarket_logo.png",
+        vibrate: [200, 100, 200, 100, 200],
+        sound: "/notification.mp3",
+        silent: false,
+        data: {
+          url: payload.data?.url || "/trader/dashboard?section=orders"
+        }
+      });
     }
   });
 });
@@ -51,7 +52,6 @@ self.addEventListener("notificationclick", (event) => {
         }
       }
       return clients.openWindow(url);
-
     })
   );
 });
