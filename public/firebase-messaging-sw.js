@@ -23,6 +23,7 @@ messaging.onBackgroundMessage((payload) => {
     badge: "/upmarket_logo.png",
     vibrate: [200, 100, 200, 100, 200],
     sound: "/notification.mp3",
+    silent: false,
     data: {
       url: payload.data?.url || "/trader/dashboard?section=orders"
     }
