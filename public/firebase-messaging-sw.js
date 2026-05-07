@@ -1,7 +1,7 @@
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
-// v3
+// v4
 firebase.initializeApp({
   apiKey: "AIzaSyBU72fIkAyAe8_RdiGmGgZo3AmvLrmKnak",
   authDomain: "udom-market-notifications.firebaseapp.com",
@@ -14,8 +14,8 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  const title = payload.notification?.title || "New Order";
-  const body  = payload.notification?.body  || "You have a new order";
+const title = payload.data?.title || "New Order";
+const body  = payload.data?.body  || "You have a new order";
 
    // ── Tell open app windows to show toast ──
   self.clients.matchAll({ type: "window" }).then(clients => {
@@ -23,6 +23,8 @@ messaging.onBackgroundMessage((payload) => {
       client.postMessage({ type: "NEW_ORDER", title, body });
     });
   });
+
+   // ── Show system notification for closed/background app ──
 
   self.registration.showNotification(title, {
     body,
