@@ -141,8 +141,16 @@ function InstantResults({ results, onSelectCategory, onSelectTrader, onClose }) 
                 className="w-full flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-blue-50 transition text-left"
               >
                 {p.images?.[0] ? (
-                  <img src={p.images[0]} alt={p.name}
-                    className="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-gray-100" />
+                  <img
+                    src={
+                      typeof p.images[0] === 'object'
+                        ? p.images[0].thumb_webp || p.images[0].image_url
+                        : p.images[0]
+                    }
+                    alt={p.name}
+                    className="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-gray-100"
+                    onError={e => { e.target.style.display = 'none'; }}
+                  />
                 ) : (
                   <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 text-base">📦</div>
                 )}
