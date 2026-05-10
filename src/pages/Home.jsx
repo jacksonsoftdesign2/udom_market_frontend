@@ -240,13 +240,7 @@ function SearchWithInstant({
             autoComplete="off"
             enterKeyHint="search"
           />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => { onInputChange(""); setShowInstant(false); }}
-              className="text-gray-400 hover:text-gray-600 ml-1 text-base leading-none flex-shrink-0"
-            >×</button>
-          )}
+
         </div>
         <button
           type="submit"
@@ -351,9 +345,13 @@ function Home() {
       if (search) params.append("search", search);
       if (selectedCategory) params.append("category_id", selectedCategory);
 
-      fetch(`${API}/products/public?${params}`)
-        .then(r => r.json())
-        .then(data => setProducts(Array.isArray(data) ? data : data.products || []))
+fetch(`${API}/products/public?${params}`)
+  .then(r => r.json())
+  .then(data => {
+    const prods = Array.isArray(data) ? data : data.products || [];
+    console.log('IMAGE SAMPLE:', JSON.stringify(prods[0]?.images));
+    setProducts(prods);
+  })
         .catch(() => setError("Failed to load products"))
         .finally(() => setLoading(false));
     };
