@@ -10,13 +10,51 @@ import Header from "../components/Header";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
-import { FiStar, FiTrendingUp, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
+import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
+       FiTrendingUp, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
 
 // ── Ad Banner Slides ────────────────────────────────────────────────
 const AD_SLIDES = [
-  { bg: "from-orange-500 to-red-500", tag: "🔥 FLASH SALE", title: "Up to 80% OFF", sub: "Free delivery on all orders today", emoji: "🛍️" },
-  { bg: "from-blue-600 to-cyan-500", tag: "✨ NEW ARRIVALS", title: "Fresh Products Daily", sub: "Explore what traders just listed", emoji: "📦" },
-  { bg: "from-emerald-500 to-teal-600", tag: "🏪 LOCAL TRADERS", title: "Support UDOM Market", sub: "Buy directly from campus traders", emoji: "🤝" },
+  {
+    bg: "from-blue-800 to-blue-950",
+    tag: "UDOM MARKET",
+    tagIcon: <FiShoppingBag size={11}/>,
+    title: "Tanzania's Campus Marketplace",
+    sub: "Buy & sell directly with verified UDOM traders — fast, safe, and local.",
+    footer: "UDOM Campus, Dodoma",
+    footerIcon: <FiMapPin size={12}/>,
+    cta: "Shop Now",
+  },
+  {
+    bg: "from-emerald-700 to-emerald-950",
+    tag: "FLASH DEALS",
+    tagIcon: <FiZap size={11}/>,
+    title: "Up to 80% Off Today Only",
+    sub: "Fresh products listed daily — food, clothes, services & more from campus traders.",
+    footer: "Limited time offers",
+    footerIcon: <FiClock size={12}/>,
+    cta: "View Deals",
+  },
+  {
+    bg: "from-amber-700 to-amber-950",
+    tag: "FAST DELIVERY",
+    tagIcon: <FiTruck size={11}/>,
+    title: "Order & Receive on Campus",
+    sub: "Place your order in seconds. Traders deliver right to your doorstep on campus.",
+    footer: "+255 XXX XXX XXX",
+    footerIcon: <FiPhone size={12}/>,
+    cta: "Order Now",
+  },
+  {
+    bg: "from-pink-700 to-pink-950",
+    tag: "JOIN US",
+    tagIcon: <FiUsers size={11}/>,
+    title: "Become a Verified Trader",
+    sub: "Register your business, list your products, and reach hundreds of UDOM students daily.",
+    footer: "support@udommarket.com",
+    footerIcon: <FiMail size={12}/>,
+    cta: "Register",
+  },
 ];
 
 // ── Ad Banner ───────────────────────────────────────────────────────
@@ -28,21 +66,36 @@ function AdBanner({ bannerImg }) {
   }, []);
   const s = AD_SLIDES[slide];
   return (
-    <div className="relative rounded-2xl overflow-hidden shadow-xl h-[160px] md:h-[220px] mb-5 select-none">
+    <div className="relative rounded-2xl overflow-hidden shadow-xl h-[170px] md:h-[220px] mb-5 select-none">
       <img src={bannerImg} alt="banner" className="absolute inset-0 w-full h-full object-cover object-center" />
-      <div className={`absolute inset-0 bg-gradient-to-r ${s.bg} opacity-85 transition-all duration-700`} />
-      <div className="relative z-10 h-full flex items-center px-6 gap-4">
-        <div className="flex-1">
-          <span className="text-xs font-bold bg-white/25 text-white px-3 py-1 rounded-full">{s.tag}</span>
-          <h2 className="text-white font-extrabold text-2xl md:text-3xl mt-2 leading-tight">{s.title}</h2>
-          <p className="text-white/80 text-sm mt-1">{s.sub}</p>
+      <div className={`absolute inset-0 bg-gradient-to-r ${s.bg} opacity-90 transition-all duration-700`} />
+      <div className="relative z-10 h-full flex flex-col justify-between px-5 py-4">
+
+        {/* Top tag */}
+        <div>
+          <span className="inline-flex items-center gap-1.5 bg-white/15 text-white text-[11px] font-semibold px-3 py-1 rounded-full mb-2">
+            {s.tagIcon} {s.tag}
+          </span>
+          <h2 className="text-white font-bold text-xl md:text-2xl leading-tight">{s.title}</h2>
+          <p className="text-white/75 text-xs mt-1">{s.sub}</p>
         </div>
-        <div className="text-6xl md:text-7xl opacity-90 flex-shrink-0">{s.emoji}</div>
+
+        {/* Bottom footer */}
+        <div className="flex items-center justify-between border-t border-white/20 pt-3">
+          <span className="flex items-center gap-1.5 text-white/80 text-xs">
+            {s.footerIcon} {s.footer}
+          </span>
+          <button className="bg-white/20 hover:bg-white/30 transition text-white text-xs font-semibold px-4 py-1.5 rounded-full border border-white/30">
+            {s.cta} →
+          </button>
+        </div>
       </div>
+
+      {/* Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
         {AD_SLIDES.map((_, i) => (
           <button key={i} onClick={() => setSlide(i)}
-            className={`h-2 rounded-full transition-all ${i === slide ? "bg-white w-5" : "bg-white/50 w-2"}`} />
+            className={`h-1.5 rounded-full transition-all ${i === slide ? "bg-white w-5" : "bg-white/40 w-1.5"}`} />
         ))}
       </div>
     </div>
@@ -69,12 +122,11 @@ function CategoryBar({ categories, selected, onSelect }) {
 
 // ── Quick link labels ───────────────────────────────────────────────
 const QUICK_LABELS = {
-  new_arrival: <><FiStar className="inline mb-0.5 mr-1"/> New Arrivals</>,
-  popular:     <><FiTrendingUp className="inline mb-0.5 mr-1"/> Popular</>,
-  nearby:      <><FiMapPin className="inline mb-0.5 mr-1"/> Nearby</>,
-  deals:       <><FiTag className="inline mb-0.5 mr-1"/> Deals</>,
+  new_arrival: <><FiStar className="inline mb-0.5 mr-1 text-violet-500"/> New Arrivals</>,
+  popular:     <><FiTrendingUp className="inline mb-0.5 mr-1 text-orange-500"/> Popular</>,
+  nearby:      <><FiMapPin className="inline mb-0.5 mr-1 text-blue-500"/> Nearby</>,
+  deals:       <><FiTag className="inline mb-0.5 mr-1 text-amber-500"/> Deals</>,
 };
-
 // ── Instant search algorithm ────────────────────────────────────────
 function buildInstantResults(query, products, categories) {
   const q = query.toLowerCase().trim();
