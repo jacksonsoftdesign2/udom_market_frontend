@@ -8,7 +8,7 @@ import AddressMapPicker from "../components/AddressMapPicker";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
 import PaymentMockup from "../components/PaymentMockup";
-
+import Breadcrumb from "../components/Breadcrumb";
 // normalizer function for phone number
 function normalizePhone(raw) {
   let p = raw.replace(/[\s\-]/g, "");
@@ -404,6 +404,11 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
   return (
     <>
       <Header />
+
+      {/* Breadcrumb */}
+<div className="pt-20 px-4 md:px-8 max-w-6xl mx-auto">
+  <Breadcrumb />
+</div>
 
       {/* SUCCESS MODAL */}
 
