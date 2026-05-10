@@ -469,55 +469,51 @@ const handleQuickSelect = (key) => {
     }
     setQuickFilter(key);
     setPage(1);
+if (key === "nearby") {
+  setNearbyLoading(true);
+  setNearbyError("");
+  setNearbyProducts([]);
 
-    if (key === "nearby") {
-      setNearbyLoading(true);
-      setNearbyError("");
-      setNearbyProducts([]);
+  if (!navigator.geolocation) {
+    setNearbyError("Your browser doesn't support location.");
+    setNearbyLoading(false);
+    return;
+  }
 
-      if (!navigator.geolocation) {
-        setNearbyError("Your browser doesn't support location.");
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      try {
+        const { latitude, longitude } = pos.coords;
+
+        // ✅ Call products/nearby directly — returns products with distance
+        const res = await fetch(
+          `${API}/products/nearby?lat=${latitude}&lng=${longitude}&radius=5`
+        );
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          setNearbyError("No products found within 5km of your location.");
+          setNearbyProducts([]);
+        } else {
+          setNearbyProducts(data);
+        }
+      } catch {
+        setNearbyError("Failed to fetch nearby products.");
+      } finally {
         setNearbyLoading(false);
-        return;
       }
-
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            const { latitude, longitude } = pos.coords;
-            const res = await fetch(
-              `${API}/users/nearby?lat=${latitude}&lng=${longitude}&radius=5`
-            );
-            const data = await res.json();
-            if (!Array.isArray(data) || data.length === 0) {
-              setNearbyError("No traders found within 5km of your location.");
-              setNearbyProducts([]);
-            } else {
-              // Get products from nearby traders
-              const traderIds = data.map(t => t.id);
-              const nearby = products.filter(p => traderIds.includes(p.trader_id));
-              if (nearby.length === 0) {
-                setNearbyError("Nearby traders found but they have no active products.");
-              }
-              setNearbyProducts(nearby);
-            }
-          } catch {
-            setNearbyError("Failed to fetch nearby traders.");
-          } finally {
-            setNearbyLoading(false);
-          }
-        },
-        (err) => {
-          setNearbyLoading(false);
-          if (err.code === 1) {
-            setNearbyError("Location access denied. Please allow location in your browser.");
-          } else {
-            setNearbyError("Could not get your location. Please try again.");
-          }
-        },
-        { timeout: 10000, maximumAge: 60000 }
-      );
-    }
+    },
+    (err) => {
+      setNearbyLoading(false);
+      if (err.code === 1) {
+        setNearbyError("Location access denied. Please allow location in your browser.");
+      } else {
+        setNearbyError("Could not get your location. Please try again.");
+      }
+    },
+    { timeout: 10000, maximumAge: 60000 }
+  );
+}
   };
 
   // ── derive displayed products ──
