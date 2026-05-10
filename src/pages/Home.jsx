@@ -58,7 +58,7 @@ const AD_SLIDES = [
 ];
 
 // ── Ad Banner ───────────────────────────────────────────────────────
-function AdBanner({ bannerImg }) {
+function AdBanner({ bannerImg, onCtaClick }) {
   const [slide, setSlide] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setSlide(s => (s + 1) % AD_SLIDES.length), 4000);
@@ -85,9 +85,12 @@ function AdBanner({ bannerImg }) {
           <span className="flex items-center gap-1.5 text-white/80 text-xs">
             {s.footerIcon} {s.footer}
           </span>
-          <button className="bg-white/20 hover:bg-white/30 transition text-white text-xs font-semibold px-4 py-1.5 rounded-full border border-white/30">
-            {s.cta} →
-          </button>
+        <button
+          onClick={() => onCtaClick(slide)}
+          className="bg-white/20 hover:bg-white/30 transition text-white text-xs font-semibold px-4 py-1.5 rounded-full border border-white/30"
+        >
+          {s.cta} →
+        </button>
         </div>
       </div>
 
@@ -335,6 +338,7 @@ function Home() {
   const [searchSticky, setSearchSticky] = useState(false);
   const [buyItem, setBuyItem] = useState(null);
   const [contactItem, setContactItem] = useState(null);
+  const [showContactOptions, setShowContactOptions] = useState(false);
   const searchRef = useRef(null);
 
   // ── instant search ──
@@ -617,7 +621,24 @@ if (key === "nearby") {
         </div>
 
         {/* ── AD BANNER ── */}
-        <AdBanner bannerImg={banner} />
+        <AdBanner
+  bannerImg={banner}
+  onCtaClick={(slideIndex) => {
+    if (slideIndex === 0) {
+    
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    } else if (slideIndex === 1) {
+    
+      handleQuickSelect("deals");
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+} else if (slideIndex === 2) {
+  setShowContactOptions(true);
+} else if (slideIndex === 3) {
+
+      navigate('/register-trader');
+    }
+  }}
+/>
 
         {/* ── QUICK LINKS ── */}
         <QuickLinks
@@ -716,7 +737,65 @@ if (key === "nearby") {
           onContact={() => { setOrderItem(null); setContactItem(orderItem); }}
         />
       )}
-      {contactItem && <ContactModal product={contactItem} onClose={() => setContactItem(null)} />}
+     {contactItem && <ContactModal product={contactItem} onClose={() => setContactItem(null)} />}
+
+{/* ── Contact Options Modal ── */}
+{showContactOptions && (
+  <div
+    className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm"
+    onClick={() => setShowContactOptions(false)}
+  >
+    <div
+      className="bg-white rounded-t-3xl md:rounded-3xl w-full md:max-w-sm p-6 pb-10 md:pb-6"
+      onClick={e => e.stopPropagation()}
+    >
+      <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5 md:hidden" />
+      <h3 className="text-center font-bold text-gray-800 text-base mb-1">Contact Us</h3>
+      <p className="text-center text-xs text-gray-400 mb-6">Choose how you want to reach us</p>
+
+      <div className="flex justify-around items-center">
+
+        {/* Call */}
+        <a href="tel:+255748399067" className="flex flex-col items-center gap-2 group">
+          <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition shadow-sm">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-600">Call</span>
+        </a>
+
+        {/* WhatsApp */}
+        <a href="https://wa.me/255748399067" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-2 group">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition shadow-sm">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#25D366">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-600">WhatsApp</span>
+        </a>
+
+        {/* SMS */}
+        <a href="sms:+255748399067" className="flex flex-col items-center gap-2 group">
+          <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition shadow-sm">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-gray-600">SMS</span>
+        </a>
+
+      </div>
+
+      <button
+        onClick={() => setShowContactOptions(false)}
+        className="mt-6 w-full py-2.5 rounded-xl bg-gray-100 text-gray-500 text-sm font-semibold hover:bg-gray-200 transition"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
 
       <Footer />
     </div>
