@@ -491,7 +491,7 @@ if (key === "nearby") {
 
         // ✅ Call products/nearby directly — returns products with distance
         const res = await fetch(
-          `${API}/products/nearby?lat=${latitude}&lng=${longitude}&radius=5`
+          `${API}/products/nearby?lat=${latitude}&lng=${longitude}&radius=50`
         );
         const data = await res.json();
 

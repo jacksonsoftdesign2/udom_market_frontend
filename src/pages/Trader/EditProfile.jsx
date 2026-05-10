@@ -1,5 +1,6 @@
 import { API } from "../../api";
 import { useState, useRef, useEffect } from "react";
+import AddressMapPicker from "../../components/AddressMapPicker";
 
 // ── tiny modal wrapper ──────────────────────────────────────────────
 function Modal({ title, onClose, children }) {
@@ -69,6 +70,18 @@ function EditProfile({ user, setUser }) {
   // single-field modal
   const [modal, setModal] = useState(null);
   const [modalValue, setModalValue] = useState("");
+  // location
+  const [locationData, setLocationData] = useState({
+  latitude: user?.latitude || null,
+  longitude: user?.longitude || null,
+  region: "",
+  district: "",
+  street: "",
+  type: "shop",
+  is_primary: true,
+});
+const [showLocationModal, setShowLocationModal] = useState(false);
+const [savingLocation, setSavingLocation] = useState(false);
 
   // address modal
   const [addrModal, setAddrModal] = useState(null);
@@ -185,7 +198,61 @@ setImagePreview(prev => {
   }, 5000);
   return () => clearInterval(interval);
 }, []);
+  
 
+
+const saveLocation = async () => {
+  if (!locationData.latitude || !locationData.longitude) {
+    showToast("error", "Please pin your location on the map first");
+    return;
+  }
+  setSavingLocation(true);
+  try {
+    const token = localStorage.getItem("token");
+
+    // Update user lat/lng via addresses
+    const updatedAddresses = profile.addresses.map((a, i) =>
+      i === 0 ? { ...a, latitude: locationData.latitude, longitude: locationData.longitude } : a
+    );
+
+    // If no addresses exist, create one
+    const addressesToSave = updatedAddresses.length > 0
+      ? updatedAddresses
+      : [{ ...locationData }];
+
+    const res = await fetch(`${API}/users/update-addresses`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ addresses: addressesToSave }),
+    });
+
+    if (!res.ok) { showToast("error", "Failed to save location"); return; }
+
+    // Also update users table lat/lng directly
+    await fetch(`${API}/users/profile`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        first_name: user?.first_name,
+        last_name: user?.last_name,
+        phone: profile.phone,
+        business_name: profile.business_name,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+      }),
+    });
+
+    const updatedUser = { ...user, latitude: locationData.latitude, longitude: locationData.longitude };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    setShowLocationModal(false);
+    showToast("success", "Shop location saved!");
+  } catch {
+    showToast("error", "Network error");
+  } finally {
+    setSavingLocation(false);
+  }
+};
   const showToast = (type, msg) => {
     setToast({ type, msg });
     setTimeout(() => setToast(null), 3500);
@@ -422,6 +489,84 @@ setImagePreview(prev => {
       
         </div>
       </div>
+
+
+{/* ── SHOP LOCATION ── */}
+<div className="bg-white rounded-2xl shadow p-5">
+  <div className="flex items-center justify-between mb-3">
+    <h3 className="font-bold text-gray-700 text-sm flex items-center gap-2">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      Shop Location
+    </h3>
+    <button
+      onClick={() => setShowLocationModal(true)}
+      className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 transition"
+    >
+      {user?.latitude ? "Update Location" : "Set Location"}
+    </button>
+  </div>
+
+  {user?.latitude ? (
+    <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <div>
+        <p className="text-xs font-bold text-green-700">Location is set ✓</p>
+        <p className="text-xs text-green-500 mt-0.5">
+          {parseFloat(user.latitude).toFixed(5)}, {parseFloat(user.longitude).toFixed(5)}
+        </p>
+        <p className="text-xs text-green-600 mt-0.5">Customers can find you in nearby searches</p>
+      </div>
+    </div>
+  ) : (
+    <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      </div>
+      <p className="text-xs text-amber-700">Location not set — customers can't find you in nearby searches.</p>
+    </div>
+  )}
+</div>
+
+{/* ── LOCATION MODAL ── */}
+{showLocationModal && (
+  <Modal title="Set Shop Location" onClose={() => setShowLocationModal(false)}>
+    <div className="max-h-[70vh] overflow-y-auto pr-1">
+      <p className="text-xs text-gray-400 mb-3">
+        Use GPS or drag the map pin to set your exact shop location.
+      </p>
+      <AddressMapPicker
+        address={locationData}
+        onChange={setLocationData}
+      />
+    </div>
+    <div className="flex gap-2 pt-2">
+      <button
+        onClick={saveLocation}
+        disabled={savingLocation || !locationData.latitude}
+        className="flex-1 bg-blue-500 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-blue-600 transition disabled:opacity-60"
+      >
+        {savingLocation ? "Saving..." : "Save Location"}
+      </button>
+      <button
+        onClick={() => setShowLocationModal(false)}
+        className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200 transition"
+      >
+        Cancel
+      </button>
+    </div>
+  </Modal>
+)}
+
 
      {/* ── ADDRESSES ── */}
 <div className="bg-white rounded-2xl shadow p-5">

@@ -329,8 +329,22 @@ useEffect(() => {
           </div>
         </div>
 
-       {/* Content area */}
+{/* Content area */}
 <div className="flex-1 px-3 pt-3 pb-6 md:p-6 overflow-y-auto">
+
+  {/* Location missing warning */}
+  {!user?.latitude && (
+    <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-xl text-sm mb-4 flex items-center gap-3">
+      <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </svg>
+</div>
+      <p className="flex-1">Your shop location is not set. Set it in <button onClick={() => setActiveSection("editprofile")} className="font-bold underline hover:text-amber-900 transition">Edit Profile</button> so customers can find you nearby.</p>
+    </div>
+  )}
+
   {activeSection === "products" && <Products />}
   {activeSection === "orders" && (
   <TraderOrders 
