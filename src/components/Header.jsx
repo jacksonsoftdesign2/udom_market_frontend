@@ -125,8 +125,8 @@ useEffect(() => {
     vCurrent += (visitors24h - vCurrent) * 0.15;
     oCurrent += (onlineUsers - oCurrent) * 0.15;
     if (Math.abs(vCurrent - visitors24h) < 1 && Math.abs(oCurrent - onlineUsers) < 1) {
-      setDisplayVisitors(onlineUsers);
-      setDisplayOnline(visitors24h);
+      setDisplayVisitors(visitors24h);
+      setDisplayOnline(onlineUsers);
       clearInterval(interval);
     } else {
       setDisplayVisitors(Math.floor(vCurrent));
