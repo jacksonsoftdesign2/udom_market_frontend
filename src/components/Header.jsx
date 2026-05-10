@@ -5,8 +5,8 @@ import tzFlag from "../assets/tz.png";
 import gbFlag from "../assets/gb.png";
 import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
-import { FaUser, FaInfoCircle, FaTruckMoving, FaHome } from "react-icons/fa";
-
+import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight } from "react-icons/fa";
+import Breadcrumb from "./Breadcrumb";
 export default function Header({ cartCount, stickySearch }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -337,6 +337,8 @@ useEffect(() => {
           </div>
         </div>
       </div>
+
+       <Breadcrumb />
 
       {/* 🔽 DROPDOWN MENU - MOBILE OPTIMIZED */}
       {menuOpen && (

@@ -5,7 +5,7 @@ import jsdLogo from "../assets/jacksonsoftdesigns_logo.png";
 import udomCampus from "../assets/udom_campus.jpg";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Breadcrumb from "../components/Breadcrumb";
+
 import { FaPhoneAlt, FaWhatsapp, FaInstagram, FaTiktok, FaFacebookF, 
          FaLinkedinIn, FaPinterestP, FaMapMarkerAlt,
          FaUserGraduate, FaStore, FaCogs, FaCheckCircle, FaTimesCircle, FaBoxOpen,
@@ -741,9 +741,7 @@ export default function About() {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="pt-20 px-4 md:px-8 max-w-6xl mx-auto">
-        <Breadcrumb />
-      </div>
+
       <main className="pt-2">
         <HeroSection />
         <AboutSection />

@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
 import Header from "../components/Header";
-import Breadcrumb from "../components/Breadcrumb";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import { FiEye, FiEyeOff, FiAlertCircle } from "react-icons/fi";
 import { MdAdminPanelSettings, MdStorefront } from "react-icons/md";
@@ -332,10 +331,7 @@ setTimeout(() => {
 )}
 
 			<div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-center p-4 pt-24">
-                  {/* Breadcrumb */}
-  <div className="w-full max-w-6xl mb-3 px-1">
-    <Breadcrumb />
-  </div>
+
 
 			<div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl h-full flex-1">
 				{/* Branding Card - Hidden on Small Screens */}
