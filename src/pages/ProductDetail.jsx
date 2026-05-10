@@ -1,6 +1,6 @@
 import OrderModal from "../components/OrderModal";
 import ContactModal from "../components/ContactModal";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -92,7 +92,11 @@ useEffect(() => {
 }, [product, searchParams]);
 
   // ── fetch product ──
-  useEffect(() => {
+useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+}, [id]);
+
+useEffect(() => {
     setLoading(true);
     setError("");
     setActiveImg(0);
