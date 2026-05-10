@@ -9,6 +9,7 @@ import EditProfile from "./EditProfile";
 import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList } from "react-icons/fi";
 import React from "react";
 import { listenForForegroundNotifications, removeFcmToken, requestNotificationPermission } from "../../utils/notifications";
+import Analytics from "./Analytics";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -339,15 +340,17 @@ useEffect(() => {
 )}
  
   
- {!["products", "orders", "editprofile", "changepassword"].includes(activeSection) && (
+
+
+{!["products", "orders", "editprofile", "changepassword", "analytics"].includes(activeSection) && (
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 text-center text-gray-400">
       <div className="flex justify-center mb-2 text-gray-300">
-  {(() => {
-    const found = navItems.find(n => n.key === activeSection);
-    if (!found) return null;
-    return React.cloneElement(found.icon, { size: 48 });
-  })()}
-</div>
+        {(() => {
+          const found = navItems.find(n => n.key === activeSection);
+          if (!found) return null;
+          return React.cloneElement(found.icon, { size: 48 });
+        })()}
+      </div>
       <p className="text-base md:text-lg font-semibold">{navItems.find(n => n.key === activeSection)?.label}</p>
       <p className="text-xs md:text-sm mt-1">This section is coming soon.</p>
     </div>
@@ -358,7 +361,7 @@ useEffect(() => {
 {activeSection === "changepassword" && (
   <ChangePassword />
 )}
-
+{activeSection === "analytics" && <Analytics />}
 </div>
       </main>
 
