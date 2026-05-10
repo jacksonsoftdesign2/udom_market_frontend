@@ -11,7 +11,7 @@ import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
-       FiTrendingUp, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
+       FiUsers, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
 
 // ── Ad Banner Slides ────────────────────────────────────────────────
 const AD_SLIDES = [
