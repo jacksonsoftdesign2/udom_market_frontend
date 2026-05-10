@@ -250,7 +250,7 @@ function InstantResults({ results, onSelectCategory, onSelectTrader, onClose }) 
                 onClick={() => onSelectTrader(tr)}
                 className="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full text-xs font-semibold hover:bg-purple-100 transition"
               >
-                🏪 {tr.name}
+                <FiShoppingBag size={11} className="inline mb-0.5 mr-1" /> {tr.name}
               </button>
             ))}
           </div>
