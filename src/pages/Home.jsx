@@ -10,7 +10,7 @@ import Header from "../components/Header";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
-import { FiStar, FiTrendingUp, FiMapPin, FiTag } from "react-icons/fi";
+import { FiStar, FiTrendingUp, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
 
 // ── Ad Banner Slides ────────────────────────────────────────────────
 const AD_SLIDES = [
@@ -505,7 +505,7 @@ const handleQuickSelect = (key) => {
     if (quickFilter && QUICK_LABELS[quickFilter]) return QUICK_LABELS[quickFilter];
     if (selectedCategory) return categories.find(c => c.id === selectedCategory)?.name;
     if (search) return `Results for "${search}"`;
-    return "🛍️ All Products";
+   return <><FiShoppingBag className="inline mb-0.5 mr-1"/> All Products</>;
   };
 
   // ── shared props for SearchWithInstant ──
