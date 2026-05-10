@@ -10,6 +10,7 @@ import Header from "../components/Header";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
+import { FiStar, FiTrendingUp, FiMapPin, FiTag } from "react-icons/fi";
 
 // ── Ad Banner Slides ────────────────────────────────────────────────
 const AD_SLIDES = [
@@ -68,10 +69,10 @@ function CategoryBar({ categories, selected, onSelect }) {
 
 // ── Quick link labels ───────────────────────────────────────────────
 const QUICK_LABELS = {
-  new_arrival: "✨ New Arrivals",
-  popular:     "🔥 Popular",
-  nearby:      "📍 Nearby",
-  deals:       "💸 Deals & Offers",
+  new_arrival: <><FiStar className="inline mb-0.5 mr-1"/> New Arrivals</>,
+  popular:     <><FiTrendingUp className="inline mb-0.5 mr-1"/> Popular</>,
+  nearby:      <><FiMapPin className="inline mb-0.5 mr-1"/> Nearby</>,
+  deals:       <><FiTag className="inline mb-0.5 mr-1"/> Deals</>,
 };
 
 // ── Instant search algorithm ────────────────────────────────────────
