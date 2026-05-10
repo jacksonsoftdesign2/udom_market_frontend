@@ -105,10 +105,10 @@ function AdBanner({ bannerImg }) {
 // ── Category Bar ────────────────────────────────────────────────────
 function CategoryBar({ categories, selected, onSelect }) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 mb-5" style={{ scrollbarWidth: "none" }}>
+    <div className="flex gap-2 pb-1 mb-5 overflow-x-auto md:flex-wrap md:overflow-visible" style={{ scrollbarWidth: "none" }}>
       {[{ id: null, name: "All" }, ...categories].map((cat) => (
         <button key={cat.id ?? "all"} onClick={() => onSelect(cat.id)}
-          className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
+          className={`flex-shrink-0 md:flex-1 md:min-w-[60px] px-4 py-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
             selected === cat.id
               ? "bg-blue-500 text-white border-blue-500 shadow"
               : "bg-white/60 text-gray-700 border-gray-200 hover:bg-blue-50"
