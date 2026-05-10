@@ -30,10 +30,23 @@ const imgSrc = typeof imgRow === 'object'
   const isLowStock = item.stock <= 5;
 
   return (
-    <div
-      className="rounded-xl overflow-hidden bg-white/50 backdrop-blur border border-white/60 shadow hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col cursor-pointer"
-      onClick={onClick}
-    >
+  <div
+    className="rounded-xl overflow-hidden bg-white/50 backdrop-blur border border-white/60 shadow hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col cursor-pointer"
+    onClick={onClick}
+    onMouseEnter={() => {
+      if (!item.images?.length) return;
+      requestIdleCallback(() => {
+        item.images.forEach((img, i) => {
+          if (!img) return;
+          // First image → medium (what user sees on product page)
+          // Rest → thumb (for thumbnail strip)
+          const size = i === 0 ? 'medium' : 'thumb';
+          const src = typeof img === 'object' ? pickSrc(img, size, avifRef.current) : img;
+          if (src) new Image().src = src;
+        });
+      });
+    }}
+  >
       {/* IMAGE */}
      <div className="relative overflow-hidden h-32 bg-gray-100">
   {imgSrc ? (
