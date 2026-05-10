@@ -789,7 +789,7 @@ if (key === "nearby") {
 
       <button
         onClick={() => setShowContactOptions(false)}
-        className="mt-6 w-full py-2.5 rounded-xl bg-gray-100 text-gray-500 text-sm font-semibold hover:bg-gray-200 transition"
+        className="mt-6 w-full py-2.5 rounded-xl bg-green-400 text-white text-sm font-semibold hover:bg-gray-200 transition"
       >
         Cancel
       </button>
