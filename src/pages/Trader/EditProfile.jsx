@@ -1,7 +1,7 @@
 import { API } from "../../api";
 import { useState, useRef, useEffect } from "react";
 import AddressMapPicker from "../../components/AddressMapPicker";
-
+import { FiCamera, FiUser, FiMail, FiCreditCard, FiList, FiPhone, FiShoppingBag, FiMapPin, FiUsers, FiLock, FiEdit, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 // ── tiny modal wrapper ──────────────────────────────────────────────
 function Modal({ title, onClose, children }) {
   return (
@@ -422,7 +422,9 @@ const saveLocation = async () => {
         <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${
           toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
         }`}>
-          {toast.type === "success" ? "✅" : "❌"} {toast.msg}
+       {toast.type === "success" 
+  ? <FiCheckCircle className="inline mr-1" size={14} /> 
+  : <FiAlertCircle className="inline mr-1" size={14} />} {toast.msg}
         </div>
       )}
 
@@ -437,7 +439,7 @@ const saveLocation = async () => {
             />
             <button onClick={() => fileInputRef.current.click()}
               className="absolute bottom-0 right-0 w-7 h-7 bg-blue-400 text-white rounded-full flex items-center justify-center shadow hover:bg-blue-600 transition text-xs">
-              📷
+              <FiCamera size={12} />
             </button>
           </div>
           <input ref={fileInputRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" className="hidden" onChange={handleImageChange} />
@@ -464,25 +466,25 @@ const saveLocation = async () => {
 
       {/* ── READ-ONLY INFO ── */}
       <div className="bg-white rounded-2xl shadow p-5">
-        <h3 className="font-bold text-gray-700 text-sm mb-4">🔒 Account Information</h3>
+        <h3 className="font-bold text-gray-700 text-sm mb-4"><FiLock size={12} /> Account Information</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <ReadOnlyField label="First Name" value={user?.first_name} icon="👤" />
-          <ReadOnlyField label="Middle Name" value={user?.middle_name} icon="👤" />
-          <ReadOnlyField label="Last Name" value={user?.last_name} icon="👤" />
-          <ReadOnlyField label="Email" value={user?.email} icon="📧" />
-          <ReadOnlyField label="Registration No." value={user?.user_code} icon="🪪" />
-          <ReadOnlyField label="Category" value={user?.category_name || user?.category} icon="📋" />
-          
+          <ReadOnlyField label="First Name" value={user?.first_name} icon={<FiUser size={12} />} />
+          <ReadOnlyField label="Middle Name" value={user?.middle_name} icon={<FiUser size={12} />} />
+          <ReadOnlyField label="Last Name" value={user?.last_name} icon={<FiUser size={12} />} />
+          <ReadOnlyField label="Email" value={user?.email} icon={<FiMail size={12} />} />
+          <ReadOnlyField label="Registration No." value={user?.user_code} icon={<FiCreditCard size={12} />} />
+          <ReadOnlyField label="Category" value={user?.category_name || user?.category} icon={<FiList size={12} />} />
+                    
         </div>
       </div>
 
       {/* ── EDITABLE FIELDS ── */}
       <div className="bg-white rounded-2xl shadow p-5">
-        <h3 className="font-bold text-gray-700 text-sm mb-4">✏️ Editable Details</h3>
+        <h3 className="font-bold text-gray-700 text-sm mb-4"><FiEdit size={12} /> Editable Details</h3>
         <div className="space-y-3">
-          <EditableField label="Phone Number" value={profile.phone} icon="📞"
+          <EditableField label="Phone Number" value={profile.phone} icon={<FiPhone size={12} />}
             onChangClick={() => openModal("phone", "Phone Number", "tel")} />
-          <EditableField label="Business / Shop Name" value={profile.business_name} icon="🏪"
+          <EditableField label="Business / Shop Name" value={profile.business_name} icon={<FiShoppingBag size={12} />}
             onChangClick={() => openModal("business_name", "Business Name", "text")} />
 
           
@@ -495,10 +497,7 @@ const saveLocation = async () => {
 <div className="bg-white rounded-2xl shadow p-5">
   <div className="flex items-center justify-between mb-3">
     <h3 className="font-bold text-gray-700 text-sm flex items-center gap-2">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-        <circle cx="12" cy="10" r="3"/>
-      </svg>
+      <FiMapPin size={12} />
       Shop Location
     </h3>
     <button
@@ -571,7 +570,7 @@ const saveLocation = async () => {
      {/* ── ADDRESSES ── */}
 <div className="bg-white rounded-2xl shadow p-5">
   <div className="flex items-center justify-between mb-4">
-    <h3 className="font-bold text-gray-700 text-sm">📍 Addresses</h3>
+    <h3 className="font-bold text-gray-700 text-sm"><FiMapPin size={12} /> Addresses</h3>
     {profile.addresses.length < 3 ? (
       <button onClick={() => openAddrModal("add")}
         className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 transition">
@@ -627,7 +626,7 @@ const saveLocation = async () => {
 {/* ── REFEREES ── */}
 <div className="bg-white rounded-2xl shadow p-5">
   <div className="flex items-center justify-between mb-4">
-    <h3 className="font-bold text-gray-700 text-sm">👥 Referees</h3>
+    <h3 className="font-bold text-gray-700 text-sm"><FiUsers size={12} /> Referees</h3>
     {profile.referees.length < 3 ? (
       <button onClick={() => openRefModal("add")}
         className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg font-semibold hover:bg-blue-100 transition">
