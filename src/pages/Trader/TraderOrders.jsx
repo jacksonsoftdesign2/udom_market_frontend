@@ -141,7 +141,7 @@ function OrderCard({ order, onStatusChange }) {
         </div>
         <div className="flex flex-col items-end gap-1 ml-3 shrink-0">
           <p className="font-black text-blue-700 text-sm">Tsh {Number(order.total_price).toLocaleString()}</p>
-          <p className="text-xs text-gray-400">qty: {order.quantity}</p>
+          <p className="text-xs text-gray-400">Quantity: {order.quantity}</p>
         </div>
         <span className="ml-2 text-gray-400 text-xs mt-1">{expanded ? "▲" : "▼"}</span>
       </div>
