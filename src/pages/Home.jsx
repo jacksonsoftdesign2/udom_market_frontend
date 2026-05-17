@@ -693,24 +693,30 @@ if (key === "nearby") {
               {nearbyLoading ? "Getting your location" : "This may take a moment on first load"}
             </p>
           </div>
-        ) : error ? (
-          <div className="text-center py-16 text-red-400">
-            <p className="text-3xl mb-2">⚠️</p>
-            <p className="font-semibold">{error}</p>
-          <button
-  type="button"
-  onClick={() => {
-    setSearch("");
-    setError("");
-    setSearchInput("");
-    setSelectedCategory(null);
-    setQuickFilter(null);
-  }}
-  className="mt-3 inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 active:scale-95 transition"
->
-  Reload
-</button>
-          </div>
+) : error ? (
+  <div className="text-center py-16 text-red-400">
+    <div className="flex flex-col items-center mb-3">
+      <div className="relative w-20 h-20">
+        {/* Pulsing ring */}
+        <div className="absolute inset-0 rounded-full border-4 border-red-200 animate-ping opacity-30" />
+        <div className="absolute inset-0 rounded-full border-4 border-red-100" />
+
+        {/* Cart with X icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            {/* Cart */}
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            {/* X mark */}
+            <line x1="9" y1="11" x2="15" y2="17"/>
+            <line x1="15" y1="11" x2="9" y2="17"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <p className="font-semibold text-gray-600">{error}</p>
+    ...
+  </div>
         ) : (
           <ProductGrid
             items={displayed}
