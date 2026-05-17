@@ -289,9 +289,17 @@ setTimeout(() => {
             {/* User row */}
             <div className="sc-f2" style={{ padding: '20px 24px', borderBottom: '1px solid #F3F4F6' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#374151', flexShrink: 0 }}>
-                        {successData.first_name?.[0]}{successData.last_name?.[0]}
-                    </div>
+                    {successData.profile_image ? (
+                        <img
+                            src={successData.profile_image}
+                            alt="profile"
+                            style={{ width: 46, height: 46, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                        />
+                    ) : (
+                        <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#374151', flexShrink: 0 }}>
+                            {successData.first_name?.[0]}{successData.last_name?.[0]}
+                        </div>
+                    )}
                     <div>
                         <p style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>
                             {successData.first_name} {successData.last_name}
