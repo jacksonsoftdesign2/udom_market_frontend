@@ -186,7 +186,7 @@ export default function PaymentMockup({ user, onClose }) {
                   Contact Management
                 </p>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Send your <span className="font-bold text-gray-800">User ID ({user?.user_code})</span> and
+                  Send your <span className="font-bold text-gray-800">ID ({user?.user_code})</span> and
                   proof of payment to activate your account.
                 </p>
                 <p className="text-sm font-black text-gray-800 font-mono">{CONTACT}</p>
@@ -236,7 +236,7 @@ export default function PaymentMockup({ user, onClose }) {
 
               <button
                 onClick={() => setStep("main")}
-                className="w-full bg-gray-100 text-gray-500 py-2.5 rounded-2xl font-medium text-sm hover:bg-gray-200 transition"
+                className="w-full bg-green-500 text-white py-2.5 rounded-2xl font-medium text-sm hover:bg-green-600 transition"
               >
                 Back
               </button>
