@@ -145,12 +145,12 @@ if (data.user.role === "trader" && data.user.payment_status !== "paid") {
 
 setSuccessData(data.user);
 setStage("success");
-setTimeout(() => setStage("redirecting"), 2000);
+
 setTimeout(() => {
     if (data.user.role === "admin")        navigate("/admin/dashboard");
     else if (data.user.role === "trader")  navigate("/trader/dashboard");
     else                                   navigate("/");
-}, 3500);
+}, 4000);
 
     } catch (err) {
         setStage("idle");
@@ -319,80 +319,16 @@ setTimeout(() => {
             {/* Progress */}
             <div className="sc-f3" style={{ padding: '16px 24px 20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <p style={{ fontSize: 12, color: '#6B7280', margin: 0, fontWeight: 500 }}>Redirecting to dashboard</p>
+                    <p style={{ fontSize: 12, color: '#6B7280', margin: 0, fontWeight: 500 }}>Redirecting to ... ...</p>
                     <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0 }}>
                         {successData.role === 'admin' ? 'Admin Dashboard' : 'Trader Dashboard'}
                     </p>
                 </div>
                 <div style={{ height: 3, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', background: '#16A34A', borderRadius: 2, animation: 'progress 1.5s linear forwards' }} />
+                    <div style={{ height: '100%', background: '#16A34A', borderRadius: 2, animation: 'progress 3.5s linear forwards' }} />
                 </div>
             </div>
 
-        </div>
-    </div>
-)}
-{/* ======================== */}
-{/* STAGE 3 — REDIRECTING    */}
-{/* ======================== */}
-{stage === "redirecting" && successData && (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md">
-        <style>{`
-            @keyframes spin-continuous {
-                0%   { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-            @keyframes pulse-ring {
-                0%   { transform: scale(0.9); opacity: 0.4; }
-                50%  { transform: scale(1.2); opacity: 0.8; }
-                100% { transform: scale(0.9); opacity: 0.4; }
-            }
-            @keyframes fadeInUp {
-                0%   { opacity: 0; transform: translateY(10px); }
-                100% { opacity: 1; transform: translateY(0); }
-            }
-            .spin-logo  { animation: spin-continuous 1s linear infinite; }
-            .pulse-ring { animation: pulse-ring 1.5s ease-in-out infinite; }
-            .fade-in    { animation: fadeInUp 0.5s ease-out forwards; }
-        `}</style>
-
-        {/* Spinning logo again */}
-        <div className="relative flex items-center justify-center mb-8">
-            <div className="absolute w-40 h-40 rounded-full bg-green-300/30 pulse-ring"></div>
-            <div className="absolute w-32 h-32 rounded-full bg-green-400/20 pulse-ring" style={{ animationDelay: '0.3s' }}></div>
-            <img
-                src={logo}
-                alt="UDOM Market"
-                className="w-24 h-24 object-contain spin-logo z-10"
-            />
-        </div>
-
-        {/* Redirecting text */}
-        <div className="fade-in text-center">
-            <p className="text-gray-700 font-semibold text-lg mb-1">
-                Taking you to your dashboard
-            </p>
-            <p className="text-yellow-600 font-bold text-base">
-               <span className="flex items-center justify-center gap-2">
-  {successData.role === "admin"
-    ? <><MdAdminPanelSettings size={20} /> Admin Dashboard</>
-    : <><MdStorefront size={20} /> Trader Dashboard</>}
-</span>
-            </p>
-        </div>
-
-        {/* Progress bar */}
-        <div className="mt-6 w-48 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-            <div
-                className="h-full bg-gradient-to-r from-yellow-400 to-green-500 rounded-full"
-                style={{ animation: 'progressBar 1.5s linear forwards' }}
-            ></div>
-            <style>{`
-                @keyframes progressBar {
-                    0%   { width: 0%; }
-                    100% { width: 100%; }
-                }
-            `}</style>
         </div>
     </div>
 )}
