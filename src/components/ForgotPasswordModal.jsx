@@ -4,7 +4,8 @@ import { BsWhatsapp } from "react-icons/bs";
 
 function ForgotPasswordModal({ onClose }) {
   const PHONE = "+255748399067";
-  const WHATSAPP_LINK = `https://wa.me/255748399067?text=${encodeURIComponent("Hello, I need help resetting my UDOM Market password.")}`;
+  const MESSAGE = "Hello, I need help resetting my UDOM Market account password.";
+  const WHATSAPP_LINK = `https://wa.me/255748399067?text=${encodeURIComponent(MESSAGE)}`;
 
   return (
     <div
@@ -72,7 +73,7 @@ function ForgotPasswordModal({ onClose }) {
 
         {/* SMS */}
         <a
-          href={`sms:${PHONE}`}
+          href={`sms:${PHONE}?body=${encodeURIComponent(MESSAGE)}`}
           className="flex items-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition mb-3"
         >
           <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -87,7 +88,7 @@ function ForgotPasswordModal({ onClose }) {
 
         {/* Email */}
         <a
-          href="mailto:jacksonduwanghe@gmail.com"
+        href={`mailto:jacksonduwanghe@gmail.com?subject=${encodeURIComponent("Password Reset Request")}&body=${encodeURIComponent(MESSAGE)}`}
           className="flex items-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition"
         >
           <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
