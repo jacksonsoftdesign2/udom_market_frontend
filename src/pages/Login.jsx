@@ -46,14 +46,16 @@ function Login() {
 	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
     const location = useLocation();
+    const [rememberMe, setRememberMe] = useState(localStorage.getItem("rememberMe") === "true");
 
             const storedUser = localStorage.getItem("user");
             const parsedUser = storedUser ? JSON.parse(storedUser) : null;
              const from = location.state?.from?.pathname || "/";
 
 	// ✅ NEW: Form state
-	const [userCode, setUserCode] = useState(
-    location.state?.user_code || localStorage.getItem("user_code") || "");
+    const [userCode, setUserCode] = useState(
+       location.state?.user_code || localStorage.getItem("user_code") || 
+       (localStorage.getItem("rememberMe") === "true" ? localStorage.getItem("savedUserCode") || "" : "") || "");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -99,6 +101,7 @@ function Login() {
     e.preventDefault();
     setError("");
     setStage("searching"); // Stage 1 — logo spinning, searching...
+    const codeToSave = userCode;
     setUserCode("");
 	setPassword("");
     try {
@@ -119,6 +122,13 @@ function Login() {
         // Save to localStorage
 localStorage.setItem("token", data.token);
 localStorage.setItem("user", JSON.stringify(data.user));
+if (rememberMe) {
+  localStorage.setItem("rememberMe", "true");
+  localStorage.setItem("savedUserCode", codeToSave);
+} else {
+  localStorage.removeItem("rememberMe");
+  localStorage.removeItem("savedUserCode");
+}
 
 // ── Request notification permission after login ──
 if (data.user.role === "trader") {
@@ -426,9 +436,52 @@ className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-
 {loading ? "Logging in..." : "login"}
 </button>
 
-<div className="flex justify-between text-sm mt-2">
-<button type="button" className="text-blue-600 underline" onClick={() => setShowForgot(true)}>{t["forgot_password"] || "Forgot password?"}</button>
-<button type="button" className="text-blue-600 underline" onClick={() => navigate("/register-trader")}>{["Register"] || "Register"}</button>
+<div className="flex flex-col gap-3 mt-2">
+
+  {/* Remember me */}
+  <label className="flex items-center gap-2 cursor-pointer w-fit">
+    <input
+      type="checkbox"
+      checked={rememberMe}
+      onChange={e => setRememberMe(e.target.checked)}
+      className="w-4 h-4 rounded border-gray-300 text-blue-600 accent-blue-600"
+    />
+    <span className="text-sm text-gray-500">Remember me</span>
+  </label>
+
+  <div className="h-px bg-gray-100" />
+
+  {/* Two buttons */}
+  <div className="flex gap-2">
+    <button
+      type="button"
+      onClick={() => setShowForgot(true)}
+      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Forgot password?
+    </button>
+    <button
+      type="button"
+      onClick={() => navigate("/register-trader")}
+      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-green-200 bg-green-50 text-green-700 text-xs font-semibold hover:bg-green-100 transition"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+      </svg>
+      Create account
+    </button>
+  </div>
+
+  <p className="text-center text-xs text-gray-400">
+    Don't have an account?{" "}
+    <button type="button" onClick={() => navigate("/register-trader")} className="text-green-600 font-semibold hover:underline">
+      Register as a trader
+    </button>
+  </p>
+
 </div>
 </form>
 </div>
