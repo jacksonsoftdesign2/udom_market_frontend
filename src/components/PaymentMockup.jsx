@@ -22,9 +22,14 @@ export default function PaymentMockup({ user, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div className="w-full max-w-sm rounded-3xl bg-white shadow-2xl overflow-hidden">
+    <div className={`fixed inset-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm px-4 ${step === "contact" ? "items-end md:items-center" : "items-center"}`}>
+      <div className={`w-full max-w-sm bg-white shadow-2xl overflow-hidden ${step === "contact" ? "rounded-t-3xl md:rounded-3xl" : "rounded-3xl"}`}>
 
+        {step === "contact" && (
+          <div className="flex justify-center pt-3 pb-1 md:hidden">
+            <div className="w-10 h-1 bg-gray-200 rounded-full" />
+          </div>
+        )}
         {/* ── Header ── */}
         {step === "main" ? (
           <div className="bg-orange-500 px-6 py-5 flex flex-col items-center gap-2">

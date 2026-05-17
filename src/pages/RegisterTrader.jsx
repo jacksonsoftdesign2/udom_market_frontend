@@ -591,7 +591,10 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
 
 
 {showPaymentModal && (
-  <PaymentMockup onClose={() => setShowPaymentModal(false)} />
+  <PaymentMockup
+    user={registrationData}
+    onClose={() => setShowPaymentModal(false)}
+  />
 )}
 
 
