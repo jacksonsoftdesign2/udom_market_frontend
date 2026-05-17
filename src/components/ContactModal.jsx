@@ -58,6 +58,22 @@ export default function ContactModal({ product, onClose }) {
             </a>
           )}
 
+          {/* SMS */}
+{phone && (
+  <a href={`sms:${phone}`}
+    className="flex items-center gap-3 w-full px-4 py-3 rounded-2xl bg-sky-50 hover:bg-sky-100 transition border border-sky-100">
+    <span className="w-9 h-9 rounded-full bg-sky-500 flex items-center justify-center flex-shrink-0">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+    </span>
+    <div>
+      <p className="font-semibold text-sky-800 text-sm">SMS</p>
+      <p className="text-xs text-sky-500">{phone}</p>
+    </div>
+  </a>
+)}
+
           {/* WhatsApp */}
           {whatsapp && (
             <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noopener noreferrer"
