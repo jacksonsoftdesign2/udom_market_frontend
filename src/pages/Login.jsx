@@ -421,7 +421,7 @@ setTimeout(() => {
 <button
 type="submit"
 disabled={loading}
-className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 transition-all disabled:opacity-60"
+className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all disabled:opacity-60"
 >
 {loading ? "Logging in..." : "login"}
 </button>
