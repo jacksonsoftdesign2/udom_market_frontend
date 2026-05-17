@@ -237,55 +237,93 @@ setTimeout(() => {
 {/* STAGE 2 — SUCCESS CARD   */}
 {/* ======================== */}
 {stage === "success" && successData && (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-md"
+        style={{ fontFamily: "'Inter', sans-serif" }}>
         <style>{`
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
             @keyframes pop-in {
-                0%   { transform: scale(0.5); opacity: 0; }
-                70%  { transform: scale(1.1); opacity: 1; }
-                100% { transform: scale(1);   opacity: 1; }
+                0%   { transform: scale(0.6); opacity: 0; }
+                75%  { transform: scale(1.04); opacity: 1; }
+                100% { transform: scale(1); opacity: 1; }
             }
-            @keyframes fadeInUp {
-                0%   { opacity: 0; transform: translateY(20px); }
+            @keyframes fade-up {
+                0%   { opacity: 0; transform: translateY(10px); }
                 100% { opacity: 1; transform: translateY(0); }
             }
-            .pop-in     { animation: pop-in 0.5s ease-out forwards; }
-            .fade-in-1  { animation: fadeInUp 0.5s ease-out 0.4s forwards; opacity: 0; }
-            .fade-in-2  { animation: fadeInUp 0.5s ease-out 0.8s forwards; opacity: 0; }
+            @keyframes draw-check {
+                0%   { stroke-dashoffset: 80; }
+                100% { stroke-dashoffset: 0; }
+            }
+            @keyframes progress {
+                0%   { width: 0%; }
+                100% { width: 100%; }
+            }
+            .sc-pop { animation: pop-in  0.5s cubic-bezier(.34,1.56,.64,1) forwards; }
+            .sc-f1  { animation: fade-up 0.4s ease-out 0.5s  forwards; opacity: 0; }
+            .sc-f2  { animation: fade-up 0.4s ease-out 0.75s forwards; opacity: 0; }
+            .sc-f3  { animation: fade-up 0.4s ease-out 1s    forwards; opacity: 0; }
         `}</style>
 
-        {/* Success card */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-green-100 px-12 py-10 flex flex-col items-center text-center max-w-sm w-full mx-4">
+        <div style={{ background: '#fff', borderRadius: 8, width: 340, border: '1px solid #E5E7EB', overflow: 'hidden', margin: '0 16px' }}>
 
-            {/* Big checkmark */}
-           <div className="pop-in mb-4 text-green-500">
-  <BsCheckCircleFill size={72} />
-</div>
-
-            {/* Welcome message */}
-            <div className="fade-in-1">
-                <h2 className="text-2xl font-bold text-gray-800 mb-1">
-                    Login Successful!
-                </h2>
-                <p className="text-gray-500 text-base">
-                    Welcome back,
-                </p>
-                <p className="text-yellow-600 font-bold text-xl mt-1">
-                    {successData.first_name} {successData.last_name}
-                </p>
-                <span className="inline-block mt-2 px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full uppercase tracking-wide">
-                    {successData.role}
-                </span>
+            {/* Green header */}
+            <div style={{ background: '#16A34A', padding: '28px 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div className="sc-pop" style={{ marginBottom: 12 }}>
+                    <svg width="56" height="56" viewBox="0 0 56 56">
+                        <circle cx="28" cy="28" r="26" fill="rgba(255,255,255,0.15)" />
+                        <circle cx="28" cy="28" r="20" fill="#fff" />
+                        <polyline
+                            points="17,28 24,35 39,20"
+                            fill="none" stroke="#16A34A"
+                            strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"
+                            style={{ strokeDasharray: 80, animation: 'draw-check 0.4s ease-out 0.3s both' }}
+                        />
+                    </svg>
+                </div>
+                <div className="sc-f1" style={{ textAlign: 'center' }}>
+                    <p style={{ fontSize: 17, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>Login Successful</p>
+                    <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', margin: '4px 0 0', fontWeight: 400 }}>Authenticated · UDOM Market</p>
+                </div>
             </div>
 
-            {/* User code */}
-            <div className="fade-in-2 mt-4 text-gray-400 text-sm">
-                Logged in as <span className="font-mono font-semibold text-gray-600">{successData.user_code}</span>
+            {/* User row */}
+            <div className="sc-f2" style={{ padding: '20px 24px', borderBottom: '1px solid #F3F4F6' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#374151', flexShrink: 0 }}>
+                        {successData.first_name?.[0]}{successData.last_name?.[0]}
+                    </div>
+                    <div>
+                        <p style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: 0, letterSpacing: '-0.01em' }}>
+                            {successData.first_name} {successData.last_name}
+                        </p>
+                        <p style={{ fontSize: 12, color: '#6B7280', margin: '2px 0 0', fontWeight: 400 }}>
+                            {successData.user_code}
+                        </p>
+                    </div>
+                    <div style={{ marginLeft: 'auto' }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: '#16A34A', background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '3px 10px', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            {successData.role}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Progress */}
+            <div className="sc-f3" style={{ padding: '16px 24px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <p style={{ fontSize: 12, color: '#6B7280', margin: 0, fontWeight: 500 }}>Redirecting to dashboard</p>
+                    <p style={{ fontSize: 11, color: '#9CA3AF', margin: 0 }}>
+                        {successData.role === 'admin' ? 'Admin Dashboard' : 'Trader Dashboard'}
+                    </p>
+                </div>
+                <div style={{ height: 3, background: '#F3F4F6', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', background: '#16A34A', borderRadius: 2, animation: 'progress 1.5s linear forwards' }} />
+                </div>
             </div>
 
         </div>
     </div>
 )}
-
 {/* ======================== */}
 {/* STAGE 3 — REDIRECTING    */}
 {/* ======================== */}
@@ -352,9 +390,7 @@ setTimeout(() => {
 )}
 
 			<div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col items-center justify-center p-4 pt-24">
-
-
-			<div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl h-full flex-1">
+           <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl h-full flex-1">
 				{/* Branding Card - Hidden on Small Screens */}
 				<div className="hidden md:flex w-full md:w-1/2 backdrop-blur-lg rounded-2xl shadow-2xl border-4 border-white/20 overflow-hidden items-center justify-center min-h-[300px] md:min-h-[500px] relative">
 					{/* LOGO POSITIONED AT TOP */}
