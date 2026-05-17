@@ -177,45 +177,56 @@ setTimeout(() => {
 {stage === "searching" && (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-md">
         <style>{`
-            @keyframes spin-continuous {
+            @keyframes spin-ring {
                 0%   { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-            @keyframes pulse-ring {
-                0%   { transform: scale(0.9); opacity: 0.4; }
-                50%  { transform: scale(1.2); opacity: 0.8; }
-                100% { transform: scale(0.9); opacity: 0.4; }
+            @keyframes spin-ring-rev {
+                0%   { transform: rotate(0deg); }
+                100% { transform: rotate(-360deg); }
+            }
+            @keyframes pulse-logo {
+                0%, 100% { opacity: 0.85; transform: scale(0.97); }
+                50%       { opacity: 1;    transform: scale(1.03); }
             }
             @keyframes dot-bounce {
-                0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-                40%           { transform: translateY(-8px); opacity: 1; }
+                0%, 80%, 100% { transform: translateY(0);   opacity: 0.4; }
+                40%           { transform: translateY(-8px); opacity: 1;   }
             }
-            .spin-logo   { animation: spin-continuous 1s linear infinite; }
-            .pulse-ring  { animation: pulse-ring 1.5s ease-in-out infinite; }
+            .spin-outer  { animation: spin-ring     1.4s linear infinite; }
+            .spin-inner  { animation: spin-ring-rev 1s   linear infinite; }
+            .pulse-logo  { animation: pulse-logo    2s   ease-in-out infinite; }
             .dot1 { animation: dot-bounce 1.2s ease-in-out infinite 0s; }
             .dot2 { animation: dot-bounce 1.2s ease-in-out infinite 0.2s; }
             .dot3 { animation: dot-bounce 1.2s ease-in-out infinite 0.4s; }
         `}</style>
 
-        {/* Pulsing ring + spinning logo */}
-        <div className="relative flex items-center justify-center mb-8">
-            <div className="absolute w-40 h-40 rounded-full bg-yellow-300/30 pulse-ring"></div>
-            <div className="absolute w-32 h-32 rounded-full bg-yellow-400/20 pulse-ring" style={{ animationDelay: '0.3s' }}></div>
-            <img
-                src={logo}
-                alt="UDOM Market"
-                className="w-24 h-24 object-contain spin-logo z-10"
-            />
+        <div className="relative flex items-center justify-center mb-8" style={{ width: 160, height: 160 }}>
+            {/* Outer ring — amber/yellow */}
+            <svg className="spin-outer absolute inset-0" width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="72" fill="none"
+                    stroke="#F59E0B" strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray="180 272" />
+            </svg>
+            {/* Inner ring — orange, spins opposite */}
+            <svg className="spin-inner absolute inset-0" width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="58" fill="none"
+                    stroke="#3B82F6" strokeWidth="4" strokeLinecap="round"
+                    strokeDasharray="110 254" />
+            </svg>
+            {/* Logo in center */}
+            <div className="pulse-logo z-10 rounded-full bg-white flex items-center justify-center shadow-md"
+                style={{ width: 88, height: 88 }}>
+                <img src={logo} alt="UDOM Market" className="w-16 h-16 object-contain" />
+            </div>
         </div>
 
-        {/* Searching text */}
         <p className="text-gray-700 font-semibold text-lg mb-3">Verifying your account</p>
 
-        {/* Bouncing dots */}
         <div className="flex gap-2">
-            <div className="dot1 w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="dot2 w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="dot3 w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="dot1 w-2.5 h-2.5 rounded-full" style={{ background: '#3B82F6' }}></div>  {/* blue */}
+            <div className="dot2 w-2.5 h-2.5 rounded-full" style={{ background: '#22C55E' }}></div>  {/* green */}
+            <div className="dot3 w-2.5 h-2.5 rounded-full" style={{ background: '#F59E0B' }}></div>  {/* gold */}
         </div>
 
         <p className="text-gray-400 text-sm mt-4">This depends on your network speed...</p>
