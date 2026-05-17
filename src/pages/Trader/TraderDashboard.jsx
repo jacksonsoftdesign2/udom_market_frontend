@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import Products from "./Products";
 import EditProfile from "./EditProfile";
-import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList } from "react-icons/fi";
+import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBarChart2, FiList, FiHome } from "react-icons/fi";
 import React from "react";
 import { listenForForegroundNotifications, removeFcmToken, requestNotificationPermission } from "../../utils/notifications";
 import Analytics from "./Analytics";
@@ -250,11 +250,18 @@ useEffect(() => {
       <main className="flex-1 flex flex-col pb-20 md:pb-0 min-h-0 overflow-hidden">
         {/* Top bar */}
         <div className={`bg-white shadow-sm px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 overflow-visible transition-all duration-300 ${scrolled ? "py-1 md:py-2 shadow-md" : "py-2 md:py-4"}`}>
-        <div>
-          <h1 className="text-lg md:text-xl font-bold text-gray-800 capitalize">
-            {activeSection.replace("_", " ")}
-          </h1>
-        </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg md:text-xl font-bold text-gray-800 capitalize">
+              {activeSection.replace("_", " ")}
+            </h1>
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition"
+            >
+              <FiHome size={13} />
+              <span className="hidden sm:inline">Marketplace</span>
+            </button>
+          </div>
           <div className="flex items-center gap-3 relative" ref={profileMenuRef}>
             <p className="text-xs md:text-sm text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-300">{user?.user_code || "N/A"}</p>
 
