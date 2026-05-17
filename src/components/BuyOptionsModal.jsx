@@ -1,11 +1,11 @@
 export default function BuyOptionsModal({ product, onClose, onOrder, onContact }) {
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end justify-center"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-t-3xl shadow-2xl w-full max-w-sm pb-8"
+        className="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-sm pb-8"
         onClick={e => e.stopPropagation()}
       >
         {/* Drag handle */}
@@ -57,7 +57,7 @@ export default function BuyOptionsModal({ product, onClose, onOrder, onContact }
           {/* Cancel */}
           <button
             onClick={onClose}
-            className="w-full py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold text-sm transition mt-1"
+            className="w-full py-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-semibold text-sm transition mt-1"
           >
             Cancel
           </button>

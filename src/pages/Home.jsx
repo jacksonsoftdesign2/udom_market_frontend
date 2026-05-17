@@ -694,28 +694,65 @@ if (key === "nearby") {
             </p>
           </div>
 ) : error ? (
-  <div className="text-center py-16 text-red-400">
-    <div className="flex flex-col items-center mb-3">
-      <div className="relative w-20 h-20">
-        {/* Pulsing ring */}
-        <div className="absolute inset-0 rounded-full border-4 border-red-200 animate-ping opacity-30" />
-        <div className="absolute inset-0 rounded-full border-4 border-red-100" />
-
-        {/* Cart with X icon */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            {/* Cart */}
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-            <line x1="3" y1="6" x2="21" y2="6"/>
-            {/* X mark */}
-            <line x1="9" y1="11" x2="15" y2="17"/>
-            <line x1="15" y1="11" x2="9" y2="17"/>
-          </svg>
-        </div>
-      </div>
+  <div className="text-center py-16">
+    <div className="flex flex-col items-center mb-2">
+      <svg width="200" height="200" viewBox="0 0 680 340" style={{ overflow: 'visible' }}>
+        <style>{`
+          @keyframes ping1{0%{r:88;opacity:.3}100%{r:118;opacity:0}}
+          @keyframes ping2{0%{r:88;opacity:.18}100%{r:106;opacity:0}}
+          @keyframes bounce{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
+          @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+          .r1{animation:ping1 2.4s ease-out infinite}
+          .r2{animation:ping2 2.4s ease-out .6s infinite}
+          .cart-grp{animation:bounce 2.2s ease-in-out infinite}
+          .wl{transform-origin:292px 246px;animation:spin 1.1s linear infinite}
+          .wr{transform-origin:388px 246px;animation:spin 1.1s linear infinite}
+        `}</style>
+        <circle className="r1" cx="340" cy="168" r="88" fill="none" stroke="#fb923c" strokeWidth="1.5"/>
+        <circle className="r2" cx="340" cy="168" r="88" fill="none" stroke="#fdba74" strokeWidth="1"/>
+        <circle cx="340" cy="168" r="88" fill="#fff7ed" stroke="#fed7aa" strokeWidth="2.5"/>
+        <g className="cart-grp">
+          <line x1="248" y1="108" x2="248" y2="136" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+          <line x1="248" y1="136" x2="284" y2="136" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+          <line x1="284" y1="136" x2="420" y2="136" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+          <line x1="284" y1="136" x2="296" y2="212" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+          <line x1="420" y1="136" x2="408" y2="212" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+          <line x1="296" y1="212" x2="408" y2="212" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+          <circle cx="352" cy="174" r="34" fill="#fff7ed" stroke="#ea580c" strokeWidth="7"/>
+          <line x1="328" y1="150" x2="376" y2="198" stroke="#ea580c" strokeWidth="7" strokeLinecap="round"/>
+        </g>
+        <g className="wl">
+          <circle cx="292" cy="246" r="20" fill="none" stroke="#ea580c" strokeWidth="6.5"/>
+          <line x1="292" y1="226" x2="292" y2="266" stroke="#ea580c" strokeWidth="5" strokeLinecap="round"/>
+          <line x1="272" y1="246" x2="312" y2="246" stroke="#ea580c" strokeWidth="5" strokeLinecap="round"/>
+          <line x1="278" y1="232" x2="306" y2="260" stroke="#ea580c" strokeWidth="4" strokeLinecap="round"/>
+          <line x1="306" y1="232" x2="278" y2="260" stroke="#ea580c" strokeWidth="4" strokeLinecap="round"/>
+          <circle cx="292" cy="246" r="5" fill="#ea580c"/>
+        </g>
+        <g className="wr">
+          <circle cx="388" cy="246" r="20" fill="none" stroke="#ea580c" strokeWidth="6.5"/>
+          <line x1="388" y1="226" x2="388" y2="266" stroke="#ea580c" strokeWidth="5" strokeLinecap="round"/>
+          <line x1="368" y1="246" x2="408" y2="246" stroke="#ea580c" strokeWidth="5" strokeLinecap="round"/>
+          <line x1="374" y1="232" x2="402" y2="260" stroke="#ea580c" strokeWidth="4" strokeLinecap="round"/>
+          <line x1="402" y1="232" x2="374" y2="260" stroke="#ea580c" strokeWidth="4" strokeLinecap="round"/>
+          <circle cx="388" cy="246" r="5" fill="#ea580c"/>
+        </g>
+      </svg>
     </div>
-    <p className="font-semibold text-gray-600">{error}</p>
-    ...
+    <p className="font-semibold text-orange-500 mt-1">{error}</p>
+    <button
+      type="button"
+      onClick={() => {
+        setSearch("");
+        setError("");
+        setSearchInput("");
+        setSelectedCategory(null);
+        setQuickFilter(null);
+      }}
+      className="mt-3 inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 active:scale-95 transition"
+    >
+      Reload
+    </button>
   </div>
         ) : (
           <ProductGrid
