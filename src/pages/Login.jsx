@@ -229,7 +229,7 @@ setTimeout(() => {
             <div className="dot3 w-2.5 h-2.5 rounded-full" style={{ background: '#F59E0B' }}></div>  {/* gold */}
         </div>
 
-        <p className="text-gray-400 text-sm mt-4">This depends on your network speed...</p>
+    
     </div>
 )}
 
