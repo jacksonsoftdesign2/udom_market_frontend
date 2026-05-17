@@ -205,7 +205,7 @@ setTimeout(() => {
             {/* Outer ring — amber/yellow */}
             <svg className="spin-outer absolute inset-0" width="160" height="160" viewBox="0 0 160 160">
                 <circle cx="80" cy="80" r="72" fill="none"
-                    stroke="#F59E0B" strokeWidth="6" strokeLinecap="round"
+                    stroke="#F97316" strokeWidth="6" strokeLinecap="round"
                     strokeDasharray="180 272" />
             </svg>
             {/* Inner ring — orange, spins opposite */}
