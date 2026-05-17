@@ -1,4 +1,4 @@
-import { FiPhone, FiX } from "react-icons/fi";
+import { FiPhone, FiX, FiMessageSquare, FiMail } from "react-icons/fi";
 import { IoKeyOutline } from "react-icons/io5";
 import { BsWhatsapp } from "react-icons/bs";
 
@@ -58,7 +58,7 @@ function ForgotPasswordModal({ onClose }) {
           href={WHATSAPP_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl hover:border-green-300 hover:bg-green-50 transition"
+          className="flex items-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl hover:border-green-300 hover:bg-green-50 transition mb-3"
         >
           <div className="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
             <BsWhatsapp size={17} className="text-green-500" />
@@ -68,6 +68,36 @@ function ForgotPasswordModal({ onClose }) {
             <p className="text-sm font-bold text-gray-800">{PHONE}</p>
           </div>
           <span className="text-xs text-green-500 font-semibold">Message →</span>
+        </a>
+
+        {/* SMS */}
+        <a
+          href={`sms:${PHONE}`}
+          className="flex items-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition mb-3"
+        >
+          <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <FiMessageSquare size={17} className="text-blue-400" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">SMS</p>
+            <p className="text-sm font-bold text-gray-800">{PHONE}</p>
+          </div>
+          <span className="text-xs text-blue-400 font-semibold">Text →</span>
+        </a>
+
+        {/* Email */}
+        <a
+          href="mailto:jacksonduwanghe@gmail.com"
+          className="flex items-center gap-3 px-4 py-3.5 border border-gray-200 rounded-xl hover:border-purple-300 hover:bg-purple-50 transition"
+        >
+          <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+            <FiMail size={17} className="text-purple-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Email</p>
+            <p className="text-sm font-bold text-gray-800">jacksonduwanghe@gmail.com</p>
+          </div>
+          <span className="text-xs text-purple-500 font-semibold">Send →</span>
         </a>
       </div>
 
