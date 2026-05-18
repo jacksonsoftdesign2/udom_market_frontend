@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/upmarket_logo.png";
+import slide1Img from "../../assets/Slide1.png";
+import slide2Img from "../../assets/Slide2.png";
+import slide3Img from "../../assets/Slide3.png";
+import slide4Img from "../../assets/Slide4.png";
 
 // Google Font loader — Dancing Script for italic script parts
 function useDancingScript() {
@@ -17,97 +22,86 @@ function useDancingScript() {
 function Slide1({ onCta }) {
   useDancingScript();
   return (
-    <div className="relative w-full h-full" style={{ background: "#1e8040", fontFamily: "Arial, sans-serif" }}>
+    <div className="relative w-full h-full" style={{ background: "#1a7a3c", fontFamily: "Arial, sans-serif" }}>
 
-      {/* SVG background */}
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 680 160" preserveAspectRatio="none">
-        {/* white crumpled paper — center + right */}
-        <polygon points="144,0 680,0 680,160 104,160" fill="#f2f1ec" />
-        <polygon points="144,0 680,0 680,160 110,160" fill="#e9e9e4" opacity="0.45" />
-        {/* paper crease lines */}
-        <line x1="198" y1="0" x2="162" y2="160" stroke="#d4d4cf" strokeWidth="1.1" opacity="0.55" />
-        <line x1="284" y1="0" x2="248" y2="160" stroke="#d4d4cf" strokeWidth="1"   opacity="0.36" />
-        <line x1="370" y1="0" x2="334" y2="160" stroke="#d4d4cf" strokeWidth="0.9" opacity="0.22" />
-        {/* green right triangle */}
-        <polygon points="522,0 680,0 680,160 560,160" fill="#1e8040" opacity="0.96" />
-        {/* dot grid on green triangle — tapering rows */}
-        {[[550,566,582,598,614,630],[550,566,582,598,614],[550,566,582,598],[550,566,582]].map((cols, ri) =>
-          cols.map(x => (
-            <circle key={`${x}-${ri}`} cx={x} cy={14 + ri * 16} r="2.2" fill="#fff" opacity="0.42" />
-          ))
-        )}
-        {/* dark green bottom bar */}
-        <rect x="0" y="134" width="680" height="26" fill="#0e5c26" />
+        <polygon points="148,0 680,0 680,160 108,160" fill="#f2f1ec"/>
+        <polygon points="148,0 680,0 680,160 114,160" fill="#e5e5e0" opacity="0.4"/>
+        <line x1="200" y1="0" x2="164" y2="160" stroke="#ccc" strokeWidth="1" opacity="0.5"/>
+        <line x1="290" y1="0" x2="254" y2="160" stroke="#ccc" strokeWidth="0.8" opacity="0.3"/>
+        <line x1="380" y1="0" x2="344" y2="160" stroke="#ccc" strokeWidth="0.7" opacity="0.2"/>
+        <polygon points="530,0 680,0 680,160 568,160" fill="#1a7a3c" opacity="0.95"/>
+        {[560,576,592,608,624].map(x => [30,46,62,78].map(y =>
+          x <= 560 + (4 - [30,46,62,78].indexOf(y)) * 16
+            ? <circle key={`${x}${y}`} cx={x} cy={y} r="3" fill="#fff" opacity="0.35"/>
+            : null
+        ))}
+        <rect x="0" y="134" width="680" height="26" fill="#0e5c26"/>
       </svg>
 
-      {/* ── Logo — centered on left green strip ── */}
+      {/* LEFT: Logo */}
       <div className="absolute z-10" style={{
         left: 0, top: 0, width: 140, bottom: 26,
         display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center", gap: 7,
+        alignItems: "center", justifyContent: "center", gap: 8,
       }}>
-        <div style={{
-          width: 50, height: 50, background: "#26a84e",
-          borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.32)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 3px 12px rgba(0,0,0,0.2)",
-        }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <polygon points="12,2 20,20 12,15 4,20" fill="#fff" />
-          </svg>
-        </div>
+        <img
+          src={logo}
+          alt="UDOM Market"
+          style={{ width: 56, height: 56, objectFit: "contain" }}
+        />
         <div style={{ textAlign: "center" }}>
-          <div style={{ color: "#fff", fontSize: 11, fontWeight: 900, letterSpacing: "1.5px", lineHeight: 1.2, fontFamily: "'Montserrat', sans-serif" }}>UDOM</div>
-          <div style={{ color: "#4ade80", fontSize: 8, fontWeight: 700, letterSpacing: "2px", lineHeight: 1.3, fontFamily: "'Montserrat', sans-serif" }}>MARKET</div>
+          <div style={{ color: "#fff", fontSize: 11, fontWeight: 900, letterSpacing: "1.5px", fontFamily: "'Montserrat', sans-serif" }}>UDOM</div>
+          <div style={{ color: "#4ade80", fontSize: 8, fontWeight: 700, letterSpacing: "2px", fontFamily: "'Montserrat', sans-serif" }}>MARKET</div>
         </div>
       </div>
 
-      {/* ── Headline — spans full white paper + bleeds into green triangle ── */}
-      <div className="absolute z-10" style={{ left: 152, top: 10, right: 10 }}>
-        {/* "We are" — small black italic script */}
-        <div style={{ fontSize: 12, fontWeight: 600, color: "#333", fontStyle: "italic", fontFamily: "'Dancing Script', cursive", lineHeight: 1.35 }}>
-          We are
-        </div>
-        {/* "Creative Digital" — red cursive italic */}
-        <div style={{ fontSize: 20, fontWeight: 700, color: "#cc1a1a", fontStyle: "italic", fontFamily: "'Dancing Script', cursive", lineHeight: 1.1 }}>
-          Creative Digital
-        </div>
-        {/* "Marketing" — huge black extrabold */}
-        <div style={{ fontSize: 44, fontWeight: 900, color: "#111", fontFamily: "'Montserrat', Arial, sans-serif", lineHeight: 0.92, letterSpacing: "-2px", marginTop: 2 }}>
-          Marketing
-        </div>
-        {/* "Agency" — large dark-green bold */}
-        <div style={{ fontSize: 30, fontWeight: 900, color: "#1e8040", fontFamily: "'Montserrat', Arial, sans-serif", lineHeight: 1.05, letterSpacing: "-1px" }}>
-          Agency
-        </div>
+      {/* CENTER: Headline */}
+      <div className="absolute z-10" style={{ left: 158, top: 10 }}>
+        <div style={{ fontSize: 13, fontStyle: "italic", color: "#333", fontFamily: "'Dancing Script', cursive", lineHeight: 1.3 }}>We are</div>
+        <div style={{ fontSize: 22, fontStyle: "italic", color: "#cc1a1a", fontFamily: "'Dancing Script', cursive", lineHeight: 1.1 }}>Creative Digital</div>
+        <div style={{ fontSize: 44, fontWeight: 900, color: "#111", fontFamily: "'Montserrat', Arial, sans-serif", lineHeight: 0.9, letterSpacing: "-2px", marginTop: 2 }}>Campus</div>
+        <div style={{ fontSize: 30, fontWeight: 900, color: "#1a7a3c", fontFamily: "'Montserrat', Arial, sans-serif", lineHeight: 1, letterSpacing: "-1px" }}>Marketplace</div>
       </div>
 
-      {/* ── Bottom bar ── */}
+      {/* RIGHT: Slide1 image */}
+      <div className="absolute z-10" style={{
+        right: 0, top: 0, bottom: 26, width: 140,
+        display: "flex", alignItems: "flex-end", justifyContent: "center",
+        overflow: "hidden",
+      }}>
+        <img
+          src={slide1Img}
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center" }}
+        />
+      </div>
+
+      {/* BOTTOM BAR */}
       <div className="absolute z-10" style={{
         bottom: 0, left: 0, right: 0, height: 26,
         display: "flex", alignItems: "center",
         justifyContent: "space-between", padding: "0 14px",
       }}>
-        {/* Left: Register Now btn + arrow box */}
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           <button
             onClick={onCta}
-            style={{ background: "#fff", color: "#0e5c26", fontSize: 7.5, fontWeight: 900, padding: "3.5px 12px", borderRadius: 3, letterSpacing: ".7px", border: "none", cursor: "pointer", textTransform: "uppercase" }}
+            style={{ background: "#fff", color: "#0e5c26", fontSize: 7.5, fontWeight: 900, padding: "3.5px 12px", borderRadius: 3, border: "none", cursor: "pointer", textTransform: "uppercase", letterSpacing: ".7px" }}
           >
             Register Now
           </button>
           <div style={{ width: 16, height: 16, background: "#26a84e", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="8" height="8" viewBox="0 0 8 8" fill="white"><polygon points="2,1 7,4 2,7" /></svg>
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="white"><polygon points="2,1 7,4 2,7"/></svg>
           </div>
         </div>
-        {/* Right: phone only — clearly visible */}
         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round">
-            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z" />
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
           </svg>
           <span style={{ color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: ".4px" }}>+255 748 399 067</span>
         </div>
       </div>
+
     </div>
   );
 }
