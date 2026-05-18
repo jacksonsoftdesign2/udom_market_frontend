@@ -1,81 +1,112 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+// Google Font loader — Dancing Script for italic script parts
+function useDancingScript() {
+  useEffect(() => {
+    const href = "https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:wght@900&display=swap";
+    if (!document.querySelector(`link[href="${href}"]`)) {
+      const l = document.createElement("link");
+      l.rel = "stylesheet"; l.href = href;
+      document.head.appendChild(l);
+    }
+  }, []);
+}
 
 // ── Slide 1 — Green paper fold ──────────────────────────────────────
 function Slide1({ onCta }) {
+  useDancingScript();
   return (
-    <div className="relative w-full h-full" style={{ background: "#1a7a3a", fontFamily: "Arial, sans-serif" }}>
-      {/* SVG background shapes */}
+    <div className="relative w-full h-full" style={{ background: "#1e8040", fontFamily: "Arial, sans-serif" }}>
+
+      {/* SVG background */}
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 680 160" preserveAspectRatio="none">
-        {/* white paper fold */}
-        <polygon points="152,0 680,0 680,160 112,160" fill="#f0efea" />
-        <polygon points="152,0 680,0 680,160 118,160" fill="#e6e6e2" opacity="0.55" />
-        {/* crease lines */}
-        <line x1="208" y1="0" x2="172" y2="160" stroke="#d4d4d0" strokeWidth="1" opacity="0.55" />
-        <line x1="288" y1="0" x2="252" y2="160" stroke="#d4d4d0" strokeWidth="1" opacity="0.4" />
-        <line x1="368" y1="0" x2="332" y2="160" stroke="#d4d4d0" strokeWidth="1" opacity="0.28" />
+        {/* white crumpled paper — center + right */}
+        <polygon points="144,0 680,0 680,160 104,160" fill="#f2f1ec" />
+        <polygon points="144,0 680,0 680,160 110,160" fill="#e9e9e4" opacity="0.45" />
+        {/* paper crease lines */}
+        <line x1="198" y1="0" x2="162" y2="160" stroke="#d4d4cf" strokeWidth="1.1" opacity="0.55" />
+        <line x1="284" y1="0" x2="248" y2="160" stroke="#d4d4cf" strokeWidth="1"   opacity="0.36" />
+        <line x1="370" y1="0" x2="334" y2="160" stroke="#d4d4cf" strokeWidth="0.9" opacity="0.22" />
         {/* green right triangle */}
-        <polygon points="528,0 680,0 680,160 568,160" fill="#1a7a3a" opacity="0.92" />
-        {/* dot grid on green right */}
-        {[556,572,588,604,620,636].map(x =>
-          [16,32,48].map(y => (
-            <circle key={`${x}-${y}`} cx={x} cy={y} r="2" fill="#fff" opacity="0.42" />
+        <polygon points="522,0 680,0 680,160 560,160" fill="#1e8040" opacity="0.96" />
+        {/* dot grid on green triangle — tapering rows */}
+        {[[550,566,582,598,614,630],[550,566,582,598,614],[550,566,582,598],[550,566,582]].map((cols, ri) =>
+          cols.map(x => (
+            <circle key={`${x}-${ri}`} cx={x} cy={14 + ri * 16} r="2.2" fill="#fff" opacity="0.42" />
           ))
         )}
-        {/* bottom bar */}
-        <rect x="0" y="136" width="680" height="24" fill="#0d5c26" />
-        {/* logo circle bg */}
-        <circle cx="20" cy="20" r="14" fill="#229944" />
+        {/* dark green bottom bar */}
+        <rect x="0" y="134" width="680" height="26" fill="#0e5c26" />
       </svg>
 
-      {/* Logo circle */}
-      <div className="absolute z-10" style={{ left: 8, top: 7, width: 28, height: 28, background: "#229944", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ color: "#fff", fontSize: 6, fontWeight: 900, textAlign: "center", lineHeight: 1.15 }}>UDOM<br />MKT</span>
-      </div>
-
-      {/* Left: Our Services */}
-      <div className="absolute z-10" style={{ left: 8, top: 44, width: 128 }}>
-        <div style={{ color: "#fff", fontSize: 8, fontWeight: 800, marginBottom: 4, letterSpacing: ".3px" }}>Our Services</div>
-        <div style={{ color: "#c8f0d4", fontSize: 7, lineHeight: 1.95 }}>
-          › Strategy and Planning<br />
-          › Corporate Finance<br />
-          › Market Research<br />
-          › Business Analysis
+      {/* ── Logo — centered on left green strip ── */}
+      <div className="absolute z-10" style={{
+        left: 0, top: 0, width: 140, bottom: 26,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center", gap: 7,
+      }}>
+        <div style={{
+          width: 50, height: 50, background: "#26a84e",
+          borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.32)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 3px 12px rgba(0,0,0,0.2)",
+        }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <polygon points="12,2 20,20 12,15 4,20" fill="#fff" />
+          </svg>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ color: "#fff", fontSize: 11, fontWeight: 900, letterSpacing: "1.5px", lineHeight: 1.2, fontFamily: "'Montserrat', sans-serif" }}>UDOM</div>
+          <div style={{ color: "#4ade80", fontSize: 8, fontWeight: 700, letterSpacing: "2px", lineHeight: 1.3, fontFamily: "'Montserrat', sans-serif" }}>MARKET</div>
         </div>
       </div>
 
-      {/* Center: headline */}
-      <div className="absolute z-10" style={{ left: 148, top: 10, maxWidth: 272 }}>
-        <div style={{ fontSize: 12, fontWeight: 400, color: "#333", fontStyle: "italic", fontFamily: "Georgia, serif", lineHeight: 1.3 }}>We are</div>
-        <div style={{ fontSize: 19, fontWeight: 700, color: "#cc1a1a", fontStyle: "italic", fontFamily: "Georgia, serif", lineHeight: 1.1, letterSpacing: "-.2px" }}>Creative Digital</div>
-        <div style={{ fontSize: 38, fontWeight: 900, color: "#111", fontFamily: "Arial, sans-serif", lineHeight: 1, letterSpacing: "-1.5px", marginTop: 1 }}>Marketing</div>
-        <div style={{ fontSize: 26, fontWeight: 900, color: "#1a7a3a", fontFamily: "Arial, sans-serif", lineHeight: 1, letterSpacing: "-.5px" }}>Agency</div>
+      {/* ── Headline — spans full white paper + bleeds into green triangle ── */}
+      <div className="absolute z-10" style={{ left: 152, top: 10, right: 10 }}>
+        {/* "We are" — small black italic script */}
+        <div style={{ fontSize: 12, fontWeight: 600, color: "#333", fontStyle: "italic", fontFamily: "'Dancing Script', cursive", lineHeight: 1.35 }}>
+          We are
+        </div>
+        {/* "Creative Digital" — red cursive italic */}
+        <div style={{ fontSize: 20, fontWeight: 700, color: "#cc1a1a", fontStyle: "italic", fontFamily: "'Dancing Script', cursive", lineHeight: 1.1 }}>
+          Creative Digital
+        </div>
+        {/* "Marketing" — huge black extrabold */}
+        <div style={{ fontSize: 44, fontWeight: 900, color: "#111", fontFamily: "'Montserrat', Arial, sans-serif", lineHeight: 0.92, letterSpacing: "-2px", marginTop: 2 }}>
+          Marketing
+        </div>
+        {/* "Agency" — large dark-green bold */}
+        <div style={{ fontSize: 30, fontWeight: 900, color: "#1e8040", fontFamily: "'Montserrat', Arial, sans-serif", lineHeight: 1.05, letterSpacing: "-1px" }}>
+          Agency
+        </div>
       </div>
 
-      {/* Right on green: quote + phone */}
-      <div className="absolute z-10" style={{ right: 10, top: 10, textAlign: "right", maxWidth: 98 }}>
-        <div style={{ color: "#fff", fontSize: 7.5, fontStyle: "italic", fontFamily: "Georgia, serif", lineHeight: 1.6 }}>"Help you to grow<br />your Business"</div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" style={{ marginTop: 3 }}>
-          <line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" />
-        </svg>
-        <div style={{ color: "#fff", fontSize: 7, opacity: .65, marginTop: 4 }}>Call us Now</div>
-        <div style={{ color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: ".3px" }}>+255 748 399 067</div>
-        <div style={{ color: "#cde8d4", fontSize: 6.5 }}>www.udommarket.co.tz</div>
-      </div>
-
-      {/* Bottom bar */}
-      <div className="absolute z-10" style={{ bottom: 0, left: 0, right: 0, height: 24, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      {/* ── Bottom bar ── */}
+      <div className="absolute z-10" style={{
+        bottom: 0, left: 0, right: 0, height: 26,
+        display: "flex", alignItems: "center",
+        justifyContent: "space-between", padding: "0 14px",
+      }}>
+        {/* Left: Register Now btn + arrow box */}
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
           <button
             onClick={onCta}
-            style={{ background: "#fff", color: "#0d5c26", fontSize: 7, fontWeight: 900, padding: "3px 10px", borderRadius: 2, letterSpacing: ".6px", border: "none", cursor: "pointer" }}
+            style={{ background: "#fff", color: "#0e5c26", fontSize: 7.5, fontWeight: 900, padding: "3.5px 12px", borderRadius: 3, letterSpacing: ".7px", border: "none", cursor: "pointer", textTransform: "uppercase" }}
           >
-            REGISTER NOW
+            Register Now
           </button>
-          <div style={{ width: 14, height: 14, background: "#229944", borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="7" height="7" viewBox="0 0 7 7" fill="white"><polygon points="1.5,1 6,3.5 1.5,6" /></svg>
+          <div style={{ width: 16, height: 16, background: "#26a84e", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="white"><polygon points="2,1 7,4 2,7" /></svg>
           </div>
         </div>
-        <span style={{ color: "#9de8b4", fontSize: 6.5 }}>+255 748 399 067 · jacksonduwanghe@gmail.com · www.udommarket.co.tz</span>
+        {/* Right: phone only — clearly visible */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.07 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z" />
+          </svg>
+          <span style={{ color: "#fff", fontSize: 9, fontWeight: 700, letterSpacing: ".4px" }}>+255 748 399 067</span>
+        </div>
       </div>
     </div>
   );
