@@ -10,100 +10,13 @@ import Header from "../components/Header";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
+import AdBanner from "../components/AdBanner";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
        FiUsers, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
 
 // ── Ad Banner Slides ────────────────────────────────────────────────
-const AD_SLIDES = [
-  {
-    bg: "from-blue-800 to-blue-950",
-    tag: "UDOM MARKET",
-    tagIcon: <FiShoppingBag size={11}/>,
-    title: "Campus Marketplace",
-    sub: "Buy directly with verified traders  fast, safe, and local.",
-    footer: "UDOM Campus, Dodoma",
-    footerIcon: <FiMapPin size={12}/>,
-    cta: "Shop Now",
-  },
-  {
-    bg: "from-emerald-700 to-emerald-950",
-    tag: "FLASH DEALS",
-    tagIcon: <FiZap size={11}/>,
-    title: "Up to 80% Off Quality Products",
-    sub: "Fresh products listed daily  food, clothes, services & more from verified traders.",
-    footer: "Limited time offers",
-    footerIcon: <FiClock size={12}/>,
-    cta: "View Deals",
-  },
-  {
-    bg: "from-amber-700 to-amber-950",
-    tag: "24 hrs Customer Services",
-    tagIcon: <FiTruck size={11}/>,
-    title: "Contact Market Management",
-    sub: "Our customer Service Desk works 24hrs for any issue call us .",
-    footer: "+255 748 399 067",
-    footerIcon: <FiPhone size={12}/>,
-    cta: "Contact Us",
-  },
-  {
-    bg: "from-pink-700 to-pink-950",
-    tag: "JOIN US",
-    tagIcon: <FiUsers size={11}/>,
-    title: "Become a Verified Trader",
-    sub: "Register your business, list your products, and reach hundreds of UDOM students daily.",
-    footer: "jacksonduwanghe@gmail.com",
-    footerIcon: <FiMail size={12}/>,
-    cta: "Register",
-  },
-];
 
 // ── Ad Banner ───────────────────────────────────────────────────────
-function AdBanner({ bannerImg, onCtaClick }) {
-  const [slide, setSlide] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setSlide(s => (s + 1) % AD_SLIDES.length), 4000);
-    return () => clearInterval(id);
-  }, []);
-  const s = AD_SLIDES[slide];
-  return (
-    <div className="relative rounded-2xl overflow-hidden shadow-xl h-[170px] md:h-[220px] mb-5 select-none">
-      <img src={bannerImg} alt="banner" className="absolute inset-0 w-full h-full object-cover object-center" />
-      <div className={`absolute inset-0 bg-gradient-to-r ${s.bg} opacity-90 transition-all duration-700`} />
-      <div className="relative z-10 h-full flex flex-col justify-between px-5 py-4">
-
-        {/* Top tag */}
-        <div>
-          <span className="inline-flex items-center gap-1.5 bg-white/15 text-white text-[11px] font-semibold px-3 py-1 rounded-full mb-2">
-            {s.tagIcon} {s.tag}
-          </span>
-          <h2 className="text-white font-bold text-xl md:text-2xl leading-tight">{s.title}</h2>
-          <p className="text-white/75 text-xs mt-1">{s.sub}</p>
-        </div>
-
-        {/* Bottom footer */}
-        <div className="flex items-center justify-between border-t border-white/20 pt-3">
-          <span className="flex items-center gap-1.5 text-white/80 text-xs">
-            {s.footerIcon} {s.footer}
-          </span>
-        <button
-          onClick={() => onCtaClick(slide)}
-          className="bg-white/20 hover:bg-white/30 transition text-white text-xs font-semibold px-4 py-1.5 rounded-full border border-white/30"
-        >
-          {s.cta} →
-        </button>
-        </div>
-      </div>
-
-      {/* Dots */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-        {AD_SLIDES.map((_, i) => (
-          <button key={i} onClick={() => setSlide(i)}
-            className={`h-1.5 rounded-full transition-all ${i === slide ? "bg-white w-5" : "bg-white/40 w-1.5"}`} />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // ── Category Bar ────────────────────────────────────────────────────
 function CategoryBar({ categories, selected, onSelect }) {
@@ -625,15 +538,13 @@ if (key === "nearby") {
   bannerImg={banner}
   onCtaClick={(slideIndex) => {
     if (slideIndex === 0) {
-    
       window.scrollTo({ top: 400, behavior: 'smooth' });
     } else if (slideIndex === 1) {
-    
       handleQuickSelect("deals");
-      window.scrollTo({ top: 400, behavior: 'smooth' });
-} else if (slideIndex === 2) {
-  setShowContactOptions(true);
-} else if (slideIndex === 3) {
+            window.scrollTo({ top: 400, behavior: 'smooth' });
+    } else if (slideIndex === 2) {
+      setShowContactOptions(true);
+    } else if (slideIndex === 3) {
 
       navigate('/register-trader');
     }
