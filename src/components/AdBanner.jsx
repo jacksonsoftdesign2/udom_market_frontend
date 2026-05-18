@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
-import slide1Img from "../../assets/Slide1.png";
-import slide2Img from "../../assets/Slide2.png";
-import slide3Img from "../../assets/Slide3.png";
-import slide4Img from "../../assets/Slide4.png";
+import slide1Img from "../../assets/Slide1.jpeg";
+import slide2Img from "../../assets/Slide2.jpeg";
+import slide3Img from "../../assets/Slide3.jpeg";
+import slide4Img from "../../assets/Slide4.jpeg";
 
 // Google Font loader — Dancing Script for italic script parts
 function useDancingScript() {
