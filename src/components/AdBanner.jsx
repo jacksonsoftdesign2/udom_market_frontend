@@ -5,10 +5,10 @@ import slide3Img from "../assets/Slide3.jpeg";
 import slide4Img from "../assets/Slide4.jpeg";
 
 const SLIDES = [
-  { img: slide1Img, cta: "Register Now", ctaColor: "#dc2626", position: "bottom-left" },
-  { img: slide2Img, cta: "Contact Us",   ctaColor: "#16a34a", position: "bottom-right" },
-  { img: slide3Img, cta: "Shop Now",     ctaColor: "#1a3a8f", position: "bottom-left" },
-  { img: slide4Img, cta: "Contact",      ctaColor: "#1a3a8f", position: "bottom-right" },
+  { img: slide1Img, cta: "Jisajili Sasa", ctaColor: "#1a1f6e" },
+  { img: slide2Img, cta: "Wasiliana Nasi", ctaColor: "#1a1f6e" },
+  { img: slide3Img, cta: "Nunua Sasa", ctaColor: "#1a1f6e" },
+  { img: slide4Img, cta: "Wasiliana", ctaColor: "#1a1f6e" },
 ];
 
 function AdBanner({ onCtaClick }) {
@@ -32,59 +32,59 @@ function AdBanner({ onCtaClick }) {
   };
 
   const s = SLIDES[slide];
-  const isLeft = s.position === "bottom-left";
 
   return (
     <div
       className="relative mb-5 select-none rounded-2xl overflow-hidden shadow-xl"
-      style={{ width: "100%", paddingTop: "31.25%", position: "relative" }}
+      style={{ width: "100%", paddingTop: "33.33%" }} // 3:1 ratio
     >
-      {/* Image */}
+      {/* Image — full, no crop, no stretch */}
       <img
         src={s.img}
-        alt={s.cta}
+        alt="banner"
         style={{
           position: "absolute",
           inset: 0,
           width: "100%",
           height: "100%",
-          objectFit: "cover",
-          objectPosition: "center",
+          objectFit: "fill", // fill = exact fit, no crop, no stretch since ratio matches
           opacity: fading ? 0 : 1,
           transition: "opacity 0.3s ease",
           display: "block",
         }}
       />
 
-      {/* CTA button */}
+      {/* CTA button — bottom right, always visible */}
       <button
         onClick={() => onCtaClick(slide)}
         style={{
           position: "absolute",
-          bottom: "8%",
-          ...(isLeft ? { left: "3%" } : { right: "3%" }),
+          bottom: "12%",
+          right: "3%",
           background: s.ctaColor,
           color: "#fff",
-          fontSize: "clamp(9px, 1.6vw, 13px)",
-          fontWeight: 700,
-          padding: "clamp(4px, 0.8vw, 8px) clamp(10px, 2vw, 18px)",
-          borderRadius: 4,
-          border: "1.5px solid rgba(255,255,255,0.35)",
+          fontSize: "clamp(10px, 1.8vw, 14px)",
+          fontWeight: 800,
+          padding: "clamp(5px, 1vw, 10px) clamp(12px, 2.5vw, 22px)",
+          borderRadius: 5,
+          border: "2px solid rgba(255,255,255,0.5)",
           cursor: "pointer",
-          letterSpacing: ".4px",
+          letterSpacing: ".5px",
           zIndex: 20,
           opacity: fading ? 0 : 1,
           transition: "opacity 0.3s ease",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.25)",
+          textTransform: "uppercase",
         }}
       >
         {s.cta} →
       </button>
 
-      {/* Dots */}
+      {/* Dots — bottom center */}
       <div
         style={{
           position: "absolute",
-          bottom: "6%",
+          bottom: "5%",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
@@ -100,7 +100,7 @@ function AdBanner({ onCtaClick }) {
               height: 5,
               width: i === slide ? 18 : 5,
               borderRadius: 3,
-              background: i === slide ? "#fff" : "rgba(255,255,255,0.4)",
+              background: i === slide ? "#fff" : "rgba(255,255,255,0.5)",
               border: "none",
               cursor: "pointer",
               transition: "all .3s",
