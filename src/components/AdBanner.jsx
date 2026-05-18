@@ -109,72 +109,74 @@ function Slide1({ onCta }) {
 // ── Slide 2 — Red geometric diagonal ───────────────────────────────
 function Slide2({ onCta }) {
   return (
-    <div className="relative w-full h-full" style={{ background: "#fff", fontFamily: "Arial, sans-serif", border: "1px solid #eee" }}>
+    <div className="relative w-full h-full" style={{ background: "#fff", fontFamily: "Arial, sans-serif" }}>
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 680 160" preserveAspectRatio="none">
-        {/* left red diagonal */}
-        <polygon points="0,0 232,0 180,160 0,160" fill="#cc1a1a" />
-        {/* right red diagonal */}
-        <polygon points="680,0 518,0 555,160 680,160" fill="#cc1a1a" opacity="0.88" />
-        {/* circle frame */}
-        <circle cx="498" cy="74" r="58" fill="none" stroke="#cc1a1a" strokeWidth="2.5" />
-        <circle cx="498" cy="74" r="52" fill="#f5f5f5" />
-        {/* small decorative shapes */}
-        <rect x="318" y="14" width="24" height="9" rx="4.5" fill="#cc1a1a" opacity="0.13" />
-        <polygon points="308,112 323,130 293,130" fill="none" stroke="#cc1a1a" strokeWidth="1.5" opacity="0.18" />
-        <rect x="348" y="100" width="10" height="10" rx="1" fill="none" stroke="#cc1a1a" strokeWidth="1" opacity="0.15" />
-        {/* dot grids */}
-        {[16, 28, 40].map(x => [112, 124].map(y => <circle key={`l${x}${y}`} cx={x} cy={y} r="1.8" fill="#fff" opacity="0.3" />))}
-        {[602, 616, 630, 644].map(x => [16, 28].map(y => <circle key={`r${x}${y}`} cx={x} cy={y} r="1.8" fill="#444" opacity="0.1" />))}
-        {/* bottom line */}
-        <line x1="0" y1="159.5" x2="680" y2="159.5" stroke="#e5e5e5" strokeWidth="1" />
+        <polygon points="0,0 220,0 170,160 0,160" fill="#b8860b"/>
+        <polygon points="680,0 520,0 558,160 680,160" fill="#b8860b" opacity="0.9"/>
+        <polygon points="440,0 480,0 440,40" fill="#b8860b" opacity="0.12"/>
+        <polygon points="310,100 326,120 294,120" fill="none" stroke="#b8860b" strokeWidth="1.5" opacity="0.2"/>
+        <circle cx="500" cy="18" r="2" fill="#ccc" opacity="0.5"/>
+        <circle cx="514" cy="18" r="2" fill="#ccc" opacity="0.5"/>
+        <circle cx="528" cy="18" r="2" fill="#ccc" opacity="0.5"/>
+        <circle cx="500" cy="30" r="2" fill="#ccc" opacity="0.5"/>
+        <circle cx="514" cy="30" r="2" fill="#ccc" opacity="0.5"/>
+        <circle cx="528" cy="30" r="2" fill="#ccc" opacity="0.5"/>
+        <rect x="0" y="134" width="680" height="26" fill="#1a1a1a"/>
+        <line x1="0" y1="134" x2="680" y2="134" stroke="#b8860b" strokeWidth="1.5"/>
       </svg>
 
-      {/* Brand top-left on red */}
-      <div className="absolute z-10" style={{ left: 12, top: 9, display: "flex", alignItems: "center", gap: 5 }}>
-        <div style={{ width: 20, height: 20, background: "#fff", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="11" height="11" viewBox="0 0 12 12"><polygon points="6,1 11,6 6,11 1,6" fill="#cc1a1a" /></svg>
-        </div>
+      {/* LEFT: Brand on gold */}
+      <div className="absolute z-10" style={{ left: 10, top: 9, display: "flex", alignItems: "center", gap: 5 }}>
+        <img src={logo} alt="UDOM Market" style={{ width: 22, height: 22, objectFit: "contain" }} />
         <div>
           <div style={{ color: "#fff", fontSize: 8.5, fontWeight: 800, lineHeight: 1, letterSpacing: ".3px" }}>UDOM MARKET</div>
-          <div style={{ color: "#ffbbbb", fontSize: 6.5, lineHeight: 1 }}>your campus marketplace</div>
+          <div style={{ color: "rgba(255,255,255,0.75)", fontSize: 6.5, lineHeight: 1 }}>your campus marketplace</div>
         </div>
       </div>
 
-      {/* Main text */}
-      <div className="absolute z-10" style={{ left: 12, top: 34, maxWidth: 295 }}>
-        <div style={{ fontSize: 16, fontWeight: 400, color: "#222", lineHeight: 1.2 }}>We Are</div>
-        <div style={{ fontSize: 33, fontWeight: 900, color: "#cc1a1a", lineHeight: 1, letterSpacing: "-1px" }}>Campus</div>
-        <div style={{ fontSize: 26, fontWeight: 900, color: "#111", lineHeight: 1, letterSpacing: "-.5px" }}>Marketplace</div>
-        <div style={{ fontSize: 7.5, color: "#666", marginTop: 5, lineHeight: 1.65, maxWidth: 210 }}>
-          Buy directly with verified traders — fast, safe, and local. Fresh products listed daily — food, clothes, services &amp; more.
+      {/* CENTER WHITE: headline — constrained to white region */}
+      <div className="absolute z-10" style={{
+        left: 175, right: 200,
+        top: 0, bottom: 26,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        textAlign: "center", overflow: "hidden",
+      }}>
+        <div style={{ fontSize: 11, fontWeight: 400, color: "#888", letterSpacing: "1px", textTransform: "uppercase", marginBottom: 3 }}>Campus Marketplace</div>
+        <div style={{ fontSize: 36, fontWeight: 900, color: "#b8860b", lineHeight: 1, letterSpacing: "-1.5px", fontFamily: "'Montserrat', Arial, sans-serif", whiteSpace: "nowrap" }}>Verified</div>
+        <div style={{ fontSize: 27, fontWeight: 900, color: "#1a1a1a", lineHeight: 1, letterSpacing: "-0.5px", fontFamily: "'Montserrat', Arial, sans-serif", whiteSpace: "nowrap" }}>Products</div>
+        <div style={{ fontSize: 7.5, color: "#666", marginTop: 6, lineHeight: 1.7, maxWidth: "100%", fontFamily: "Arial, sans-serif" }}>
+          Buy from verified UDOM traders — food, clothes, services &amp; more.
         </div>
         <button
           onClick={onCta}
-          style={{ marginTop: 7, background: "#cc1a1a", color: "#fff", fontSize: 7.5, fontWeight: 700, padding: "4px 13px", borderRadius: 3, letterSpacing: ".3px", border: "none", cursor: "pointer" }}
+          style={{ marginTop: 8, background: "#b8860b", color: "#fff", fontSize: 8, fontWeight: 700, padding: "5px 14px", borderRadius: 3, border: "none", cursor: "pointer", letterSpacing: ".3px" }}
         >
           Contact Us
         </button>
       </div>
 
-      {/* Circle photo placeholder */}
-      <div className="absolute z-10" style={{ left: 446, top: 22, width: 104, height: 104, borderRadius: "50%", background: "#ebebeb", overflow: "hidden", display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-        <svg width="68" height="82" viewBox="0 0 68 82">
-          <ellipse cx="34" cy="20" rx="16" ry="16" fill="#d0d0d0" />
-          <path d="M6,82 Q6,48 34,42 Q62,48 62,82Z" fill="#d0d0d0" />
-        </svg>
+      {/* RIGHT: Slide2 actual image in circle */}
+      <div className="absolute z-10" style={{ right: 16, top: 10, bottom: 34, display: "flex", alignItems: "center" }}>
+        <img
+          src={slide2Img}
+          alt="Verified trader"
+          style={{ width: 110, height: 110, borderRadius: "50%", objectFit: "cover", objectPosition: "top center", border: "4px solid #fff", outline: "2px solid #b8860b" }}
+        />
       </div>
 
-      {/* Bottom bar */}
-      <div className="absolute z-10" style={{ bottom: 0, left: 0, right: 0, height: 22, background: "#f8f8f8", borderTop: "1px solid #ececec", display: "flex", alignItems: "center", gap: 12, padding: "0 13px" }}>
-        <span style={{ fontSize: 7.5, color: "#444" }}>📞 +255 748 399 067</span>
-        <span style={{ fontSize: 7.5, color: "#444" }}>✉ jacksonduwanghe@gmail.com</span>
-        <span style={{ fontSize: 7.5, color: "#444" }}>🌐 www.udommarket.co.tz</span>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 3 }}>
-          {[["f","#3b5998"],["ig","#e1306c"],["tw","#1da1f2"]].map(([label,bg]) => (
-            <div key={label} style={{ width: 15, height: 15, background: bg, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ color: "#fff", fontSize: label === "f" ? 8 : 6.5, fontWeight: 700 }}>{label}</span>
-            </div>
-          ))}
+      {/* BOTTOM BAR */}
+      <div className="absolute z-10" style={{
+        bottom: 0, left: 0, right: 0, height: 26,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b8860b" strokeWidth="2.5" strokeLinecap="round">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+          </svg>
+          <span style={{ color: "#b8860b", fontSize: 9, fontWeight: 700, letterSpacing: ".4px" }}>www.jacksonsoftdesigns.co.tz</span>
+          <span style={{ color: "#888", fontSize: 9 }}>Ltd</span>
         </div>
       </div>
     </div>
