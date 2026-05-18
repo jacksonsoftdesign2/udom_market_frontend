@@ -5,7 +5,6 @@ import ContactModal from "../components/ContactModal";
 import { useNavigate } from "react-router-dom";
 import translations from "../translations";
 import logo from "../assets/upmarket_logo.png";
-import banner from "../assets/banner.jpg";
 import Header from "../components/Header";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
@@ -534,19 +533,16 @@ if (key === "nearby") {
         </div>
 
         {/* ── AD BANNER ── */}
-        <AdBanner
-  bannerImg={banner}
+<AdBanner
   onCtaClick={(slideIndex) => {
     if (slideIndex === 0) {
-      window.scrollTo({ top: 400, behavior: 'smooth' });
-    } else if (slideIndex === 1) {
-      handleQuickSelect("deals");
-            window.scrollTo({ top: 400, behavior: 'smooth' });
-    } else if (slideIndex === 2) {
-      setShowContactOptions(true);
-    } else if (slideIndex === 3) {
-
       navigate('/register-trader');
+    } else if (slideIndex === 1) {
+      setShowContactOptions(true);
+    } else if (slideIndex === 2) {
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    } else if (slideIndex === 3) {
+      setShowContactOptions(true);
     }
   }}
 />
