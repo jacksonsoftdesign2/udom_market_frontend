@@ -91,7 +91,7 @@ export default function AdBanner({ onCtaClick }) {
   return (
     <div
       className="relative mb-5 select-none rounded-2xl overflow-hidden shadow-xl"
-      style={{ width: "100%", paddingTop: "33.33%", position: "relative" }}
+      style={{ width: "100%", paddingTop: "clamp(220px, 33.33%, 400px)", position: "relative" }}
     >
       {/* Image */}
       <img
