@@ -89,7 +89,7 @@ export default function AdBanner({ onCtaClick }) {
 
       <div
         className="relative mb-5 select-none rounded-2xl overflow-hidden shadow-xl"
-        style={{ width: "100%", paddingTop: "clamp(200px, 33.33%, 400px)", position: "relative" }}
+        style={{ width: "100%", paddingTop: "clamp(180px, 33.33%, 400px)", position: "relative" }}
         onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
         onTouchEnd={e => {
           const diff = touchStartX.current - e.changedTouches[0].clientX;
