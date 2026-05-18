@@ -21,7 +21,7 @@ const SLIDES = [
     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 001.95-1.57l1.65-8.43H6"/></svg>,
   },
   {
-    img: slide4Img, cta: "Wasiliana",
+    img: slide4Img, cta: "Tupigie/ Ujumbe",
     color: "#dc2626", shadow: "#991b1b", textColor: "#fff", ringColor: "#dc2626",
     icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
   },
