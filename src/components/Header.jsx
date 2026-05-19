@@ -140,16 +140,14 @@ useEffect(() => {
   return (
     <>
       {/* 🔝 FLOATING HEADER */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center md:top-4">
-        <div className="w-full md:w-[99%] 
-                        md:max-w-screen-2xl md:mx-auto 
-                        px-3 md:px-4 py-2 md:py-2
-                        flex flex-wrap items-center justify-between gap-2 md:gap-4
-                        md:rounded-xl 
-                        bg-white/20 backdrop-blur-md 
-                        border-b md:border border-white/20 
-                        text-yellow-700
-                        shadow-lg">
+  <div className="fixed top-0 left-0 right-0 z-50
+                          px-3 py-2
+                          flex items-center justify-between gap-2
+                          bg-white
+                          border-b border-gray-200
+                          text-yellow-700
+                          shadow-sm
+                          rounded-none">
 
           
          {/* LEFT: MENU BUTTON + LOGO + TITLE */}
@@ -157,13 +155,13 @@ useEffect(() => {
   <button
     ref={menuRef}
     onClick={toggleMenu}
-    className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-full bg-yellow-500 text-white 
-               hover:scale-105 md:hover:scale-110 transition active:scale-95
-               touch-manipulation flex-shrink-0"
+        className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-md bg-yellow-500 text-white 
+                      hover:scale-105 md:hover:scale-110 transition active:scale-95
+                      touch-manipulation flex-shrink-0"
   >
     ☰
   </button>
-            <div className="w-8 md:w-10 h-8 md:h-10 rounded-full overflow-hidden 
+            <div className="w-8 md:w-10 h-8 md:h-10 rounded-sm overflow-hidden 
                             bg-white flex items-center justify-center shadow flex-shrink-0">
               <img src={logo} alt="logo" className="w-6 md:w-7 h-6 md:h-7 object-contain" />
             </div>
