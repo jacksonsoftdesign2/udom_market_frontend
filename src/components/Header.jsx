@@ -140,14 +140,14 @@ useEffect(() => {
   return (
     <>
       {/* 🔝 FLOATING HEADER */}
-  <div className="fixed top-0 left-0 right-0 z-50
-                          px-3 py-2
-                          flex items-center justify-between gap-2
-                          bg-white
-                          border-b border-gray-200
-                          text-yellow-700
-                          shadow-sm
-                          rounded-none">
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
+   <div className="fixed top-0 left-0 right-0 z-50
+                        px-3 py-2
+                        flex items-center justify-between gap-2
+                        bg-white
+                        border-b border-gray-200
+                        text-yellow-700
+                        shadow-sm">
 
           
          {/* LEFT: MENU BUTTON + LOGO + TITLE */}
@@ -155,9 +155,9 @@ useEffect(() => {
   <button
     ref={menuRef}
     onClick={toggleMenu}
-        className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-md bg-yellow-500 text-white 
-                      hover:scale-105 md:hover:scale-110 transition active:scale-95
-                      touch-manipulation flex-shrink-0"
+    className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-md bg-yellow-500 text-white 
+               hover:scale-105 md:hover:scale-110 transition active:scale-95
+               touch-manipulation flex-shrink-0"
   >
     ☰
   </button>
