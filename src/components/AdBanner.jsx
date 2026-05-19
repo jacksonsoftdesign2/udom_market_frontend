@@ -89,7 +89,7 @@ export default function AdBanner({ onCtaClick }) {
 
       <div
   className="relative mb-5 select-none overflow-hidden"
-  style={{ width: "100%" }}
+  style={{ width: "100%", height: "clamp(130px, 30vw, 280px)", position: "relative" }}
        onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
         onTouchEnd={e => {
           const diff = touchStartX.current - e.changedTouches[0].clientX;
@@ -97,11 +97,11 @@ export default function AdBanner({ onCtaClick }) {
         }}
       >
         {/* Slide image */}
-    <div className={animClass} style={{ width:"100%", height:"100%" }}>
+    <div className={animClass} style={{ position:"absolute", inset:0, width:"100%", height:"100%" }}>
       <img
         src={s.img}
         alt="banner"
-        style={{ width:"100%", height:"auto", display:"block" }}
+        style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top", display:"block" }}
       />
     </div>
 
