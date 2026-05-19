@@ -11,11 +11,9 @@ import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
 import AdBanner from "../components/AdBanner";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
-       FiUsers, FiMapPin, FiTag, FiShoppingBag } from "react-icons/fi";
+       FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
 
-// ── Ad Banner Slides ────────────────────────────────────────────────
 
-// ── Ad Banner ───────────────────────────────────────────────────────
 
 // ── Category Bar ────────────────────────────────────────────────────
 function CategoryBar({ categories, selected, onSelect }) {
@@ -192,11 +190,11 @@ function SearchWithInstant({
     <div className="relative w-full" ref={!compact ? instantRef : undefined}>
       <form onSubmit={onSearch} className="flex gap-1.5 w-full">
         <div
-          className={`flex-1 flex items-center bg-white/80 backdrop-blur border border-gray-200 shadow-sm
-            ${compact ? "rounded-xl px-2" : "rounded-2xl px-3"}
+         className={`flex-1 flex items-center bg-white/80 backdrop-blur border border-gray-200 shadow-sm
+            ${compact ? "rounded-md px-2" : "rounded-lg px-3"}
             ${showInstant && !compact ? "border-blue-300 ring-2 ring-blue-100" : ""}`}
         >
-          <span className="text-gray-400 mr-1.5 text-sm flex-shrink-0">🔍</span>
+          <FiSearch className="text-gray-400 mr-1.5 flex-shrink-0" size={15} />
           <input
             type="search"
             value={searchInput}
@@ -213,7 +211,7 @@ function SearchWithInstant({
         <button
           type="submit"
           className={`bg-blue-500 text-white font-semibold hover:bg-blue-600 transition flex-shrink-0 whitespace-nowrap
-            ${compact ? "px-3 py-1.5 rounded-xl text-xs" : "px-3 py-2.5 rounded-2xl text-xs sm:text-sm sm:px-5 shadow-sm"}`}
+            ${compact ? "px-3 py-1.5 rounded-md text-xs" : "px-3 py-2.5 rounded-lg text-xs sm:text-sm sm:px-5 shadow-sm"}`}
         >
           Search
         </button>
@@ -510,7 +508,7 @@ if (key === "nearby") {
       {/* ── STICKY SEARCH — mobile only ── */}
       {searchSticky && (
         <div
-          className="fixed left-0 right-0 z-40 bg-white/90 backdrop-blur-md shadow-sm px-3 py-2 md:hidden"
+          className="fixed left-0 right-0 z-40 bg-white shadow-sm border-b border-gray-200 px-3 py-2 md:hidden"
           style={{ top: "56px" }}
         >
           <SearchWithInstant {...searchProps} compact />
