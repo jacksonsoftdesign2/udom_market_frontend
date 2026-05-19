@@ -42,7 +42,7 @@ export default function AdBanner({ onCtaClick }) {
   }, []);
 
   useEffect(() => {
-    const id = setInterval(() => go((slide + 1) % SLIDES.length, true), 4500);
+    const id = setInterval(() => go((slide + 1) % SLIDES.length, true), 10000);
     return () => clearInterval(id);
   }, [slide]);
 
@@ -88,8 +88,8 @@ export default function AdBanner({ onCtaClick }) {
       `}</style>
 
       <div
-        className="relative mb-5 select-none rounded-2xl overflow-hidden shadow-xl"
-        style={{ width: "100%", paddingTop: "clamp(180px, 33.33%, 400px)", position: "relative" }}
+        className="relative mb-5 select-none overflow-hidden"
+        style={{ width: "100%", paddingTop: "31.25%", position: "relative" }}
         onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
         onTouchEnd={e => {
           const diff = touchStartX.current - e.changedTouches[0].clientX;

@@ -523,15 +523,15 @@ if (key === "nearby") {
       )}
 
       {/* ── CONTENT ── */}
-      <div className="pt-24 pb-10 px-3 md:px-6 lg:px-12 max-w-7xl mx-auto relative z-10">
+      <div className="pt-24 pb-10 relative z-10">
 
-        {/* INLINE SEARCH with instant panel */}
-        <div ref={searchRef} className="mb-5">
-          <SearchWithInstant {...searchProps} />
-        </div>
+              {/* INLINE SEARCH with instant panel */}
+              <div ref={searchRef} className="mb-5 px-3 md:px-6 lg:px-12 max-w-7xl mx-auto">
+                <SearchWithInstant {...searchProps} />
+              </div>
 
-        {/* ── AD BANNER ── */}
-<AdBanner
+              {/* ── AD BANNER ── */}
+      <AdBanner
   onCtaClick={(slideIndex) => {
     if (slideIndex === 0) {
       navigate('/register-trader');
@@ -544,9 +544,9 @@ if (key === "nearby") {
     }
   }}
 />
-
-        {/* ── QUICK LINKS ── */}
-        <QuickLinks
+    <div className="px-3 md:px-6 lg:px-12 max-w-7xl mx-auto">
+            {/* ── QUICK LINKS ── */}
+            <QuickLinks
           activeKey={quickFilter}
           onSelect={handleQuickSelect}
           nearbyLoading={nearbyLoading}
@@ -744,7 +744,7 @@ if (key === "nearby") {
     </div>
   </div>
 )}
-
+</div>
       <Footer />
     </div>
   );
