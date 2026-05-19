@@ -88,22 +88,22 @@ export default function AdBanner({ onCtaClick }) {
       `}</style>
 
       <div
-        className="relative mb-5 select-none overflow-hidden"
-        style={{ width: "100%", paddingTop: "clamp(160px, 42vw, 340px)", position: "relative" }}
-        onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
+  className="relative mb-5 select-none overflow-hidden"
+  style={{ width: "100%" }}
+       onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
         onTouchEnd={e => {
           const diff = touchStartX.current - e.changedTouches[0].clientX;
           if (Math.abs(diff) > 40) go(diff > 0 ? (slide+1)%SLIDES.length : (slide>0?slide-1:SLIDES.length-1), diff > 0);
         }}
       >
         {/* Slide image */}
-        <div className={animClass} style={{ position:"absolute", inset:0, width:"100%", height:"100%" }}>
-          <img
-            src={s.img}
-            alt="banner"
-            style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", objectPosition:"center", display:"block" }}
-          />
-        </div>
+    <div className={animClass} style={{ width:"100%", height:"100%" }}>
+      <img
+        src={s.img}
+        alt="banner"
+        style={{ width:"100%", height:"auto", display:"block" }}
+      />
+    </div>
 
         {/* 3D CTA Button — Option B: shimmer + pulse ring */}
         <div
