@@ -207,8 +207,8 @@ useEffect(() => {
 
   {/* DROPDOWN */}
   {showTooltip && (
-    <div className="fixed right-2 top-16 z-[9999] w-60 rounded-2xl p-4 border border-slate-800"
-         style={{ background: '#0f172a' }}>
+    <div className="fixed right-2 top-16 z-[9999] w-60 rounded-md p-4 border border-slate-800"
+        style={{ background: '#0f172a' }}>
 
       <div className="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
         <div className="flex items-center gap-2">
