@@ -318,7 +318,7 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
     </p>
   </div>
 )}
-      <div className="pt-24 pb-12 px-3 md:px-6 lg:px-12 max-w-5xl mx-auto relative z-10">
+      <div className="pt-20 pb-12 relative z-10 max-w-5xl mx-auto">
 
         {/* ── BACK BUTTON ── */}
   <div className="mb-5 flex items-center gap-2">
@@ -343,11 +343,11 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
   </button>
 </div>
         {/* ── MAIN CARD ── */}
-        <div className="bg-white/60 backdrop-blur-lg border border-white/60 rounded-3xl shadow-xl overflow-hidden mb-8">
+        <div className="bg-white border-b border-gray-100 mb-0">
           <div className="flex flex-col md:flex-row">
 
             {/* ── IMAGE PANEL ── */}
-            <div className="md:w-[46%] p-4 flex flex-col">
+            <div className="w-full md:w-[45%] p-4 flex flex-col border-b md:border-b-0 md:border-r border-gray-100">
               {/* Main image */}
               <div
                 className="relative rounded-2xl overflow-hidden bg-gray-100 cursor-zoom-in shadow-md"
@@ -408,7 +408,7 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
             </div>
 
             {/* ── INFO PANEL ── */}
-            <div className="md:w-[54%] p-5 md:p-7 flex flex-col gap-4">
+            <div className="w-full md:w-[55%] p-4 md:p-6 flex flex-col gap-4">
 
               {/* Category + Status badges */}
               <div className="flex flex-wrap gap-2">
