@@ -10,17 +10,10 @@ const daysRemaining = (date) =>
 export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
   const [imgIdx, setImgIdx] = useState(0);
   
-
-  useEffect(() => {
-    if (!item.images || item.images.length <= 1) return;
-    const id = setInterval(() => setImgIdx(i => (i + 1) % item.images.length), 2500);
-    return () => clearInterval(id);
-  }, [item.images]);
-
   const avifRef = useRef(null);
 useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
 
-const imgRow = item.images?.[imgIdx];
+const imgRow = item.images?.[0];
 const imgSrc = typeof imgRow === 'object'
   ? pickSrc(imgRow, 'thumb', avifRef.current)
   : (imgRow || item.imageUrl || null);
