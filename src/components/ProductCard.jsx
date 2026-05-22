@@ -24,7 +24,7 @@ const imgSrc = typeof imgRow === 'object'
 
   return (
   <div
-    className="rounded-xl overflow-hidden bg-white/50 backdrop-blur border border-white/60 shadow hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col cursor-pointer"
+    className="rounded-sm overflow-hidden bg-white border border-[#1a3a8f33] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col cursor-pointer"
     onClick={onClick}
     onMouseEnter={() => {
       if (!item.images?.length) return;
@@ -57,13 +57,13 @@ const imgSrc = typeof imgRow === 'object'
   )}
 
         {/* Category */}
-        <span className="absolute top-1.5 left-1.5 text-[10px] px-1.5 py-0.5 bg-blue-500 text-white rounded-full font-semibold leading-tight">
+        <span className="absolute top-1.5 left-1.5 text-[10px] px-1.5 py-0.5 bg-[#1a3a8f] text-white rounded-sm font-semibold leading-tight">
           {item.category || "General"}
         </span>
 
         {/* Status */}
-        <span className={`absolute top-1.5 right-1.5 text-[10px] px-1.5 py-0.5 rounded-full font-semibold leading-tight ${
-          isAvailable ? "bg-green-400 text-white" : "bg-gray-300 text-gray-700"
+        <span className={`absolute top-1.5 right-1.5 text-[10px] px-1.5 py-0.5 rounded-sm font-semibold leading-tight ${
+        isAvailable ? "bg-[#16a34a] text-white" : "bg-gray-300 text-gray-700"
         }`}>
           {isAvailable ? "Available" : "Unavailable"}
         </span>
@@ -80,7 +80,7 @@ const imgSrc = typeof imgRow === 'object'
         {/* Trader */}
         {item.trader_name && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-2 py-1">
-            <p className="text-blue-600 text-[10px] font-bold truncate"><span className="inline-flex items-center gap-0.5">
+            <p className="text-[#F5C518] text-[10px] font-bold truncate"><span className="inline-flex items-center gap-0.5">
   <FiUser size={9} />
   <FiHome size={9} />
 </span> {item.trader_name}</p>
@@ -89,32 +89,32 @@ const imgSrc = typeof imgRow === 'object'
       </div>
 
       {/* BODY */}
-      <div className="p-2.5 flex flex-col gap-1.5 flex-1">
+      <div className="p-2 flex flex-col gap-1 flex-1">
 
         {/* Name */}
-        <h3 className="font-bold text-xs text-gray-800 truncate leading-tight">{item.name}</h3>
+        <h3 className="font-bold text-xs text-[#1a3a8f] truncate leading-tight">{item.name}</h3>
 
         {/* Price */}
-        <p className="text-sm font-extrabold text-blue-700 leading-tight">
+        <p className="text-sm font-extrabold text-[#F5C518] leading-tight">
           Tsh {item.price ? Number(item.price).toLocaleString() : "—"}
         </p>
 
         {/* Stats row: days | stock | sold */}
         <div className="grid grid-cols-3 gap-1 text-center">
-          <div className={`rounded-lg py-1 px-0.5 ${isLowDays ? "bg-red-50" : "bg-blue-50"}`}>
-            <p className={`text-[10px] font-bold leading-tight ${isLowDays ? "text-red-500" : "text-blue-500"}`}>
+          <div className="rounded-sm py-0.5 px-0.5 bg-[#e8edf7]">
+          <p className={`text-[10px] font-bold leading-tight ${isLowDays ? "text-red-500" : "text-[#1a3a8f]"}`}>
               {remaining !== null ? `${remaining}` : "—"}
             </p>
             <p className="text-[9px] text-gray-400 leading-tight">days left</p>
           </div>
-          <div className={`rounded-lg py-1 px-0.5 ${isLowStock ? "bg-yellow-50" : "bg-green-50"}`}>
-            <p className={`text-[10px] font-bold leading-tight ${isLowStock ? "text-yellow-600" : "text-green-600"}`}>
+          <div className="rounded-sm py-0.5 px-0.5 bg-[#e8edf7]">
+          <p className={`text-[10px] font-bold leading-tight ${isLowStock ? "text-yellow-600" : "text-[#16a34a]"}`}>
               {item.stock ?? "—"}
             </p>
             <p className="text-[9px] text-gray-400 leading-tight">stock</p>
           </div>
-          <div className="rounded-lg py-1 px-0.5 bg-purple-50">
-            <p className="text-[10px] font-bold text-purple-600 leading-tight">
+          <div className="rounded-sm py-0.5 px-0.5 bg-[#e8edf7]">
+          <p className="text-[10px] font-bold text-[#1a3a8f] leading-tight">
               {item.sold ?? item.total_sold ?? 0}
             </p>
             <p className="text-[9px] text-gray-400 leading-tight">sold</p>
@@ -127,16 +127,16 @@ const imgSrc = typeof imgRow === 'object'
         )}
 
         {/* BUTTONS */}
-        <div className="flex gap-1.5 mt-auto pt-1">
+        <div className="flex gap-1 mt-auto pt-0.5">
           <button
             onClick={onClick}
-            className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1.5 rounded-lg border border-blue-400 text-blue-600 font-semibold hover:bg-blue-50 transition"
+            className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1 rounded-sm border border-[#1a3a8f] text-[#1a3a8f] font-semibold hover:bg-[#e8edf7] transition"
           >
             <FiEye size={12} /> View
           </button>
      <button
   onClick={(e) => { e.stopPropagation(); onBuy?.(item); }}
-  className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1.5 rounded-lg bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+  className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1 rounded-sm bg-[#1a3a8f] text-[#F5C518] font-semibold hover:bg-[#0f2460] transition"
 >
   <FiShoppingCart size={12} /> Buy
 </button>
