@@ -25,3 +25,7 @@ body {
 .leaflet-container {
   z-index: 0;
 }
+
+body {
+  overflow-x: hidden;
+}

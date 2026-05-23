@@ -486,7 +486,7 @@ if (key === "nearby") {
   };
 
   return (
-    <div className="relative min-h-screen text-gray-800 overflow-x-hidden">
+    <div className="relative min-h-screen text-gray-800">
 
       {/* ── BACKGROUND ── */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-white via-blue-50 to-white" />
