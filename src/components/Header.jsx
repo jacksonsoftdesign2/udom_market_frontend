@@ -7,7 +7,7 @@ import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
 import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight } from "react-icons/fa";
 
-export default function Header({ cartCount, stickySearch }) {
+export default function Header({ cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [lang, setLang] = useState("sw");
@@ -172,6 +172,27 @@ useEffect(() => {
                            hover:scale-105 md:hover:scale-110 hover:brightness-125">
               UDOM Market
             </h1>
+            {/* Desktop: icon-only buttons after title */}
+{scrolledInProduct && (
+  <div className="hidden md:flex items-center gap-1.5 ml-2 transition-all duration-300">
+    <button
+      onClick={onBackClick}
+      className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-blue-600 hover:bg-white transition"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </svg>
+    </button>
+    <button
+      onClick={onHomeClick}
+      className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-gray-500 hover:bg-white transition"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      </svg>
+    </button>
+  </div>
+)}
            
           </div>
 <div
@@ -181,7 +202,9 @@ useEffect(() => {
   onClick={() => setShowTooltip(prev => !prev)}
 >
   {/* MOBILE */}
-  <div className="flex md:hidden items-center gap-1.5 bg-slate-900 rounded-full px-3 py-1.5">
+<div className="relative flex md:hidden items-center">
+  {/* Stats pill — hides on scroll */}
+  <div className={`flex items-center gap-1.5 bg-slate-900 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolledInProduct ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
     <span className="relative flex h-2 w-2 flex-shrink-0">
       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60"></span>
       <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -191,6 +214,27 @@ useEffect(() => {
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     <span className="text-blue-400 text-xs font-bold">{displayVisitors.toLocaleString()}</span>
   </div>
+
+  {/* Nav icons — shows on scroll */}
+  <div className={`absolute right-0 flex items-center gap-1.5 transition-all duration-300 ${scrolledInProduct ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+    <button
+      onClick={onBackClick}
+      className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-blue-600 hover:bg-white transition"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </svg>
+    </button>
+    <button
+      onClick={onHomeClick}
+      className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-gray-500 hover:bg-white transition"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      </svg>
+    </button>
+  </div>
+</div>
 
   {/* DESKTOP */}
   <div className="hidden md:flex items-center gap-2 bg-slate-900 rounded-full px-4 py-2">

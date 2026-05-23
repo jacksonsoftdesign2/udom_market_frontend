@@ -84,6 +84,13 @@ export default function ProductDetail() {
   const [showContact, setShowContact] = useState(false);
   const touchStartX = useRef(null);
   const [searchParams] = useSearchParams();
+  const [scrolled, setScrolled] = useState(false);
+
+useEffect(() => {
+  const onScroll = () => setScrolled(window.scrollY > 60);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
 
 useEffect(() => {
   if (searchParams.get("order") === "1" && product) {
@@ -196,7 +203,7 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
 
       {/* ── BACKGROUND ── */}
 
-      <Header />
+   <Header scrolledInProduct={scrolled} onBackClick={() => navigate(-1)} onHomeClick={() => navigate("/")} />
 
       {showOrder && <OrderModal product={product} onClose={() => setShowOrder(false)} onContact={() => { setShowOrder(false); setShowContact(true); }} />}
       {showContact && <ContactModal product={product} onClose={() => setShowContact(false)} />}
@@ -316,7 +323,7 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
       <div className="pt-20 pb-12 relative z-10 max-w-5xl mx-auto">
 
         {/* ── BACK BUTTON ── */}
-  <div className="mb-5 flex items-center gap-2">
+  <div className={`mb-5 flex items-center gap-2 transition-all duration-300 ${scrolled ? "opacity-0 max-h-0 mb-0 overflow-hidden pointer-events-none" : "opacity-100"}`}>
   <button
     onClick={() => navigate(-1)}
     className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-sm bg-white/70 backdrop-blur border border-gray-200 text-blue-600 hover:border-blue-300 hover:bg-white shadow-sm transition group"
