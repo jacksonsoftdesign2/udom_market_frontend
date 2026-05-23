@@ -41,12 +41,12 @@ const imgSrc = typeof imgRow === 'object'
     }}
   >
       {/* IMAGE */}
-     <div className="relative overflow-hidden h-32 bg-gray-100">
+     <div className="relative overflow-hidden h-44 bg-gray-100">
   {imgSrc ? (
     <img
       src={imgSrc}
       alt={item.name}
-      className="w-full h-full object-cover"
+      className="w-full h-full object-contain"
       onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
     />
   ) : (
