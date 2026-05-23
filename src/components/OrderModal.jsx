@@ -130,7 +130,7 @@ export default function OrderModal({ product, onClose, onContact }) {
       >
 
         {/* ── HEADER ── */}
-        <div style={{ background: "#1a3a8f", padding: "10px 13px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
+        <div style={{ background: "#1a3a8f", padding: "7px 13px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
             <div style={{ color: "#fff", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>Place Order</div>
             <div style={{ color: "#F5C518", fontSize: 12, maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.name}</div>
@@ -141,7 +141,7 @@ export default function OrderModal({ product, onClose, onContact }) {
         </div>
 
         {/* ── PRICE + QTY BAR ── */}
-        <div style={{ padding: "8px 13px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #e0e0e0", flexShrink: 0, background: "#fff" }}>
+        <div style={{ padding: "6px 13px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #e0e0e0", flexShrink: 0, background: "#fff" }}>
           <div>
             <div style={{ fontSize: 11, color: "#666", marginBottom: 2 }}>Unit price: Tsh {unitPrice.toLocaleString()}</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#222" }}>
@@ -162,8 +162,9 @@ export default function OrderModal({ product, onClose, onContact }) {
               onChange={handleQtyInput}
               style={{ width: 32, height: 26, border: "none", textAlign: "center", fontSize: 13, color: "#333", background: "#fff", outline: "none", MozAppearance: "textfield" }}
             />
-            <button onClick={() => changeQty(1)} style={{ background: "#fff", border: "none", borderLeft: "1px solid #bbb", color: "#333", width: 26, height: 26, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+<button onClick={() => changeQty(1)} style={{ background: "#fff", border: "none", borderLeft: "1px solid #bbb", color: "#333", width: 26, height: 26, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
           </div>
+          <div style={{ fontSize: 10, color: "#999", textAlign: "center", marginTop: 2 }}>Max: {maxQty}</div>
         </div>
 
         {/* ── BODY ── */}
@@ -175,10 +176,10 @@ export default function OrderModal({ product, onClose, onContact }) {
             <button onClick={onClose} style={{ padding: "9px 32px", background: "#1a3a8f", color: "#fff", border: "none", borderRadius: 3, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Done</button>
           </div>
         ) : (
-          <div id="order-modal-body" style={{ overflowY: "auto", padding: "11px 13px", flex: 1 }}>
+          <div id="order-modal-body" style={{ overflowY: "auto", padding: "8px 13px", flex: 1 }}>
 
             {/* Phone */}
-            <div style={{ marginBottom: 9 }}>
+            <div style={{ marginBottom: 6 }}>
               <div style={{ fontSize: 11, color: "#555", marginBottom: 3 }}>Phone Number <span style={{ color: "#e24b4a" }}>*</span></div>
               <input
                 type="tel"
@@ -191,7 +192,7 @@ export default function OrderModal({ product, onClose, onContact }) {
             </div>
 
             {/* Full Name */}
-            <div style={{ marginBottom: 9 }}>
+            <div style={{ marginBottom: 6 }}>
               <div style={{ fontSize: 11, color: "#555", marginBottom: 3 }}>Full Name <span style={{ color: "#e24b4a" }}>*</span></div>
               <input
                 type="text"
@@ -216,21 +217,21 @@ export default function OrderModal({ product, onClose, onContact }) {
                 setErrors(er => ({ ...er, region: "", district: "", street: "" }));
               }}
               errors={{ region: errors.region, district: errors.district, street: errors.street }}
-              inputStyle={{ width: "100%", padding: "7px 9px", border: "1px solid #ccc", borderRadius: 3, fontSize: 13, color: "#333", background: "#fff", outline: "none", boxSizing: "border-box", marginBottom: 9 }}
+              inputStyle={{ width: "100%", padding: "7px 9px", border: "1px solid #ccc", borderRadius: 3, fontSize: 13, color: "#333", background: "#fff", outline: "none", boxSizing: "border-box", marginBottom: 6 }}
               labelStyle={{ fontSize: 11, color: "#555", marginBottom: 3, display: "block" }}
               locationBtnStyle={{ width: "100%", padding: 8, border: "1.5px solid #1a3a8f", background: "#fff", borderRadius: 3, color: "#1a3a8f", fontSize: 12, fontWeight: 500, cursor: "pointer", marginBottom: 4 }}
               mapHintStyle={{ fontSize: 11, color: "#999", textAlign: "center", marginBottom: 11 }}
             />
 
             {/* Note */}
-            <div style={{ marginBottom: 9 }}>
+            <div style={{ marginBottom: 6 }}>
               <div style={{ fontSize: 12, color: "#1a3a8f", fontWeight: 500, marginBottom: 3 }}>Note (optional)</div>
               <textarea
                 placeholder="Any special request or delivery instructions..."
                 value={form.explanation}
                 onChange={e => setForm(f => ({ ...f, explanation: e.target.value }))}
                 rows={3}
-                style={{ width: "100%", padding: "7px 9px", border: "1px solid #ccc", borderRadius: 3, fontSize: 13, color: "#333", background: "#fff", outline: "none", resize: "vertical", boxSizing: "border-box", minHeight: 68 }}
+                style={{ width: "100%", padding: "7px 9px", border: "1px solid #ccc", borderRadius: 3, fontSize: 13, color: "#333", background: "#fff", outline: "none", resize: "vertical", boxSizing: "border-box", minHeight: 44 }}
               />
             </div>
 
