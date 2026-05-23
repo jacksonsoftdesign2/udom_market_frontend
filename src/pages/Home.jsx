@@ -87,14 +87,14 @@ function InstantResults({ results, onSelectCategory, onSelectTrader, onClose }) 
 
   if (!hasAny) {
     return (
-      <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur rounded-2xl shadow-xl border border-gray-100 z-50 px-4 py-5 text-center text-gray-400 text-sm">
+      <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 px-4 py-5 text-center text-gray-400 text-sm">
         No results found
       </div>
     );
   }
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur rounded-2xl shadow-xl border border-gray-100 z-50 max-h-[60vh] overflow-y-auto">
+    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 max-h-[60vh] overflow-y-auto">
 
       {products.length > 0 && (
         <div className="px-3 pt-3 pb-1">
@@ -190,7 +190,7 @@ function SearchWithInstant({
     <div className="relative w-full" ref={!compact ? instantRef : undefined}>
       <form onSubmit={onSearch} className="flex gap-1.5 w-full">
         <div
-         className={`flex-1 flex items-center bg-white/80 backdrop-blur border border-gray-200 shadow-sm
+         className={`flex-1 flex items-center bg-white border border-gray-200 shadow-sm
             ${compact ? "rounded-md px-2" : "rounded-lg px-3"}
             ${showInstant && !compact ? "border-blue-300 ring-2 ring-blue-100" : ""}`}
         >
