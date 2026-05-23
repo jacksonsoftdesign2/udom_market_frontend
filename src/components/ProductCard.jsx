@@ -24,11 +24,11 @@ const imgSrc = typeof imgRow === 'object'
 
   return (
   <div
-    className="rounded-sm overflow-hidden bg-white border border-[#1a3a8f33] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col cursor-pointer"
+    className="rounded-sm overflow-hidden bg-white border border-[#1a3a8f50] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col cursor-pointer"
     onClick={onClick}
     onMouseEnter={() => {
       if (!item.images?.length) return;
-      requestIdleCallback(() => {
+      setTimeout(() => {
         item.images.forEach((img, i) => {
           if (!img) return;
           // First image → medium (what user sees on product page)
