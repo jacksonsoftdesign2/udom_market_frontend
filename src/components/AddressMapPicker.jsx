@@ -94,7 +94,7 @@ function LazyMap({ center, zoom, markerPos, onDrag, onDragEnd }) {
   const [ready, setReady] = useState(leafletLoaded);
   useEffect(() => { if (!leafletLoaded) loadLeaflet().then(() => setReady(true)); }, []);
   if (!ready) return (
-    <div className="flex items-center justify-center h-full bg-gray-100 rounded-2xl">
+    <div className="flex items-center justify-center h-full bg-gray-100 rounded-sm">
       <div className="flex flex-col items-center gap-2">
         <svg className="animate-spin w-6 h-6 text-blue-400" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -131,13 +131,13 @@ function AutocompleteInput({ label, value, onChange, suggestions, onSelect, plac
         onChange={e => { onChange(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         placeholder={placeholder} disabled={disabled} autoComplete="off"
-        className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-400 transition
+        className={`w-full px-3 py-2.5 rounded-sm border text-sm outline-none focus:ring-2 focus:ring-blue-400 transition
           ${error ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"}
           ${disabled ? "bg-gray-100 cursor-not-allowed text-gray-400" : ""}`}
       />
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
       {open && filtered.length > 0 && (value || "").length > 0 && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-48 overflow-y-auto">
           {filtered.map(s => (
             <button key={s} type="button" onMouseDown={() => { onSelect(s); setOpen(false); }}
               className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors first:rounded-t-xl last:rounded-b-xl">
@@ -385,7 +385,7 @@ const handleMarkerMove = (lat, lng) => {
             onChange={e => handleStreetChange(e.target.value)}
             placeholder="Type street or village name…"
             autoComplete="off"
-            className={`w-full px-3 py-2.5 rounded-xl border text-sm outline-none focus:ring-2 focus:ring-blue-400 transition pr-8
+            className={`w-full px-3 py-2.5 rounded-sm border text-sm outline-none focus:ring-2 focus:ring-blue-400 transition pr-8
               ${errors.street ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"}`}
           />
           {streetLoading && (
@@ -399,7 +399,7 @@ const handleMarkerMove = (lat, lng) => {
         </div>
         {errors.street && <p className="text-xs text-red-500 mt-1">{errors.street}</p>}
         {streetSuggestions.length > 0 && localAddress.street.length > 0 && (
-          <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-40 overflow-y-auto">
+          <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-40 overflow-y-auto">
             {streetSuggestions.map((s, i) => (
               <button key={i} type="button" onMouseDown={() => handleStreetSelect(s)}
                 className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors first:rounded-t-xl last:rounded-b-xl">
@@ -412,7 +412,7 @@ const handleMarkerMove = (lat, lng) => {
 
       {/* GPS Button */}
       <button type="button" onClick={handleUseMyLocation} disabled={gpsLoading}
-        className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-blue-400 text-blue-600 rounded-xl text-sm font-semibold hover:bg-blue-50 transition-all disabled:opacity-60">
+        className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-blue-400 text-blue-600 rounded-sm text-sm font-semibold hover:bg-blue-50 transition-all disabled:opacity-60">
         {gpsLoading ? (
           <>
             <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -454,7 +454,7 @@ const handleMarkerMove = (lat, lng) => {
 
       {/* Coordinates saved indicator */}
       {localAddress.latitude && localAddress.longitude && (
-        <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+        <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-sm px-3 py-2">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
