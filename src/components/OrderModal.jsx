@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FiX } from "react-icons/fi";
 import AddressMapPicker from "./AddressMapPicker";
 
@@ -23,12 +23,6 @@ export default function OrderModal({ product, onClose, onContact }) {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  // Lock body scroll while modal is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
 
   // ── Validation ──
   const validate = () => {
@@ -115,7 +109,7 @@ export default function OrderModal({ product, onClose, onContact }) {
   if (!product.stock || product.stock <= 0)
     return (
       <div
-        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+        className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
         onClick={onClose}
       >
         <div
@@ -173,13 +167,12 @@ export default function OrderModal({ product, onClose, onContact }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div className="flex min-h-full items-center justify-center p-4">
       <div
         id="order-modal-body"
-        className="bg-white rounded-lg shadow-2xl w-full max-w-md my-auto"
+        className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-y-auto max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -381,7 +374,6 @@ export default function OrderModal({ product, onClose, onContact }) {
             </div>
           </div>
         )}
-      </div>
       </div>
     </div>
   );
