@@ -88,7 +88,7 @@ export default function OrderModal({ product, onClose, onContact }) {
 
   // ── Out of stock ──
   if (!product.stock || product.stock <= 0) return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white shadow-2xl w-full max-w-sm overflow-hidden" style={{ borderRadius: 4 }} onClick={e => e.stopPropagation()}>
         <div style={{ background: "#1a3a8f", padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
@@ -113,7 +113,7 @@ export default function OrderModal({ product, onClose, onContact }) {
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div
         onClick={e => e.stopPropagation()}
         style={{
