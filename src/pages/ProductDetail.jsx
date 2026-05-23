@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FiZoomIn } from "react-icons/fi";
+import { FiZoomIn, FiHeart, FiShare2 } from "react-icons/fi";
 import { supportsAVIF, pickSrc } from "../utils/imageUtils";
 const API = import.meta.env.VITE_API_URL;
 
@@ -17,10 +17,10 @@ function ThumbStrip({ images, active, onSelect }) {
         <button
           key={i}
           onClick={() => onSelect(i)}
-          className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
+          className={`flex-shrink-0 w-16 h-16 rounded-sm overflow-hidden border-2 transition-all duration-200 ${
             i === active
-              ? "border-blue-500 shadow-md scale-105"
-              : "border-transparent opacity-60 hover:opacity-90"
+        ? "border-[#1a2e6e]"
+        : "border-transparent opacity-60 hover:opacity-90"
           }`}
         >
           <img
@@ -39,7 +39,7 @@ function RelatedCard({ item, onClick }) {
   return (
     <div
       onClick={() => onClick(item.id)}
-      className="cursor-pointer group rounded-2xl overflow-hidden bg-white/60 backdrop-blur border border-white/60 shadow hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      className="cursor-pointer group rounded-sm overflow-hidden bg-white border border-gray-200 shadow hover:shadow-md transition-all duration-300 flex flex-col"
     >
       <div className="relative h-36 overflow-hidden">
         <img
@@ -51,13 +51,13 @@ function RelatedCard({ item, onClick }) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
           onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
         />
-        <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 bg-blue-500 text-white rounded-full font-semibold">
+        <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 bg-[#1a2e6e] text-white rounded-sm font-semibold">
           {item.category || "General"}
         </span>
       </div>
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="text-xs font-bold text-gray-800 line-clamp-2 leading-snug">{item.name}</p>
-        <p className="text-xs font-bold text-blue-700 mt-auto">
+        <p className="text-xs font-bold text-[#F5C518] mt-auto">
           Tsh {item.price ? Number(item.price).toLocaleString() : "—"}
         </p>
         {item.trader_name && (
@@ -179,7 +179,7 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
         <p className="font-bold text-lg text-gray-600">{error || "Product not found"}</p>
         <button
           onClick={() => navigate(-1)}
-          className="mt-2 px-6 py-2.5 bg-blue-500 text-white rounded-xl text-sm font-semibold hover:bg-blue-600 transition"
+          className="mt-2 px-6 py-2.5 bg-blue-500 text-white rounded-sm text-sm font-semibold hover:bg-blue-600 transition"
         >
           ← Go Back
         </button>
@@ -195,11 +195,6 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
     <div className="relative min-h-screen text-gray-800 overflow-x-hidden">
 
       {/* ── BACKGROUND ── */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-white via-blue-50 to-white" />
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute top-[-80px] left-[-80px] w-[300px] h-[300px] bg-white/60 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] bg-blue-200/40 rounded-full blur-[120px]" />
-      </div>
 
       <Header />
 
@@ -294,7 +289,7 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
             <button
               key={i}
               onClick={() => setActiveImg(i)}
-              className={`flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
+              className={`flex-shrink-0 w-14 h-14 rounded-sm overflow-hidden border-2 transition-all ${
                 i === activeImg ? "border-blue-400 scale-105" : "border-white/20 opacity-50 hover:opacity-80"
               }`}
             >
@@ -324,7 +319,7 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
   <div className="mb-5 flex items-center gap-2">
   <button
     onClick={() => navigate(-1)}
-    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl bg-white/70 backdrop-blur border border-gray-200 text-blue-600 hover:border-blue-300 hover:bg-white shadow-sm transition group"
+    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-sm bg-white/70 backdrop-blur border border-gray-200 text-blue-600 hover:border-blue-300 hover:bg-white shadow-sm transition group"
   >
     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -334,7 +329,7 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
 
   <button
     onClick={() => navigate("/")}
-    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl bg-white/70 backdrop-blur border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-white shadow-sm transition group"
+    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-sm bg-white/70 backdrop-blur border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-white shadow-sm transition group"
   >
     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -350,7 +345,7 @@ className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
             <div className="w-full md:w-[45%] p-4 flex flex-col border-b md:border-b-0 md:border-r border-gray-100">
               {/* Main image */}
               <div
-                className="relative rounded-2xl overflow-hidden bg-gray-100 cursor-zoom-in shadow-md"
+                className="relative rounded-sm overflow-hidden bg-gray-100 cursor-zoom-in shadow-md"
                 style={{ paddingBottom: "75%" }}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
@@ -411,48 +406,66 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
             <div className="w-full md:w-[55%] p-4 md:p-6 flex flex-col gap-4">
 
               {/* Category + Status badges */}
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">
+                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap gap-2">
+                  <span className="text-xs px-3 py-1 bg-[#1a2e6e] text-white rounded-sm font-semibold">
                   {product.category || "General"}
-                </span>
-                <span className={`text-xs px-3 py-1 rounded-full font-semibold ${isAvailable ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                  </span>
+                  <span className={`text-xs px-3 py-1 rounded-sm font-semibold ${isAvailable ? "bg-[#16a34a] text-white" : "bg-gray-100 text-gray-500"}`}>
                   {isAvailable ? "✓ Available" : "Unavailable"}
-                </span>
+                  </span>
                 {product.stock <= 5 && product.stock > 0 && (
                   <span className="text-xs px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full font-semibold">
                     ⚡ Only {product.stock} left!
                   </span>
                 )}
-              </div>
+           </div>
+            <div className="flex gap-3 text-gray-400">
+              <FiHeart size={18} className="cursor-pointer hover:text-red-500 transition" />
+              <FiShare2 size={18} className="cursor-pointer hover:text-[#1a2e6e] transition" />
+            </div>
+          </div>
 
               {/* Product name */}
               <h2 className="text-2xl font-semibold text-gray-900 leading-tight">{product.name}</h2>
 
               {/* Price */}
-              <div className="flex items-end gap-2">
-                <p className="text-xl font-bold text-blue-700">
-                  Tsh {Number(product.price || 0).toLocaleString()}
-                </p>
-                <span className="text-sm text-gray-400 mb-1">/ Product</span>
-              </div>
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xl font-bold text-[#F5C518]">
+                Tsh {Number(product.price || 0).toLocaleString()}
+              </p>
+              <span className="text-sm text-gray-400">/ Product</span>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-gray-400">In stock</p>
+              <p className="text-sm font-bold text-[#16a34a]">{product.stock || 0}</p>
+            </div>
+          </div>
 
             {/* Trader info */}
 {product.trader_name && (
-  <div className="bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100 space-y-2">
-    <div className="flex items-center gap-2">
-      {product.trader_image ? (
-        <img src={product.trader_image} alt="" className="w-9 h-9 rounded-full object-cover border-2 border-blue-100" />
-      ) : (
-        <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-sm font-bold text-blue-600 flex-shrink-0">
-          {product.trader_name.charAt(0).toUpperCase()}
-        </div>
-      )}
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-gray-400 font-medium">Sold by</p>
-        <p className="text-sm font-bold text-gray-700 truncate">{product.trader_name}</p>
+<div className="bg-gray-50 rounded-sm px-3 py-2.5 border border-gray-100 space-y-2">
+<div className="flex items-center justify-between">
+  <div className="flex items-center gap-2">
+    {product.trader_image ? (
+      <img src={product.trader_image} alt="" className="w-9 h-9 rounded-full object-cover border-2 border-blue-100" />
+    ) : (
+      <div className="w-9 h-9 rounded-sm bg-[#1a2e6e] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+        {product.trader_name.charAt(0).toUpperCase()}
       </div>
+    )}
+    <div className="flex-1 min-w-0">
+      <p className="text-xs text-gray-400 font-medium">Sold by</p>
+      <p className="text-sm font-bold text-gray-700 truncate">{product.trader_name}</p>
     </div>
-
+  </div>
+  <div className="text-right">
+    <div className="flex gap-0.5 justify-end text-[#F5C518] text-xs">★★★★½</div>
+    <p className="text-[10px] text-[#1a2e6e] cursor-pointer">4.5 · View shop</p>
+  </div>
+</div>
+    
     {/* Trader contact details */}
     <div className="grid grid-cols-2 gap-1.5 pt-1 border-t border-gray-100">
       {product.trader_phone && (
@@ -499,6 +512,7 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
       )}
     </div>
   </div>
+  
 )}
 
               {/* Description */}
@@ -509,19 +523,13 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
                 </div>
               )}
 
-              {/* Stock */}
-              <div className="flex items-center gap-3">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">In Stock</p>
-                <span className={`text-sm font-semibold ${product.stock <= 5 ? "text-yellow-600" : "text-green-600"}`}>
-                  {product.stock || 0} Products
-                </span>
-              </div>
+
 
               {/* Specs */}
               {Array.isArray(product.specs) && product.specs.length > 0 && (
                 <div>
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Specifications</p>
-                  <div className="rounded-xl overflow-hidden border border-gray-100">
+                  <div className="rounded-sm overflow-hidden border border-gray-100">
                     {product.specs.map((spec, i) => (
                       <div key={spec.id || i} className={`grid grid-cols-3 px-3 py-2 text-xs ${i % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
                         <span className="font-semibold text-gray-500">{spec.attribute}</span>
@@ -538,15 +546,15 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
                <button
   onClick={() => setShowOrder(true)}
   disabled={!isAvailable}
-  className={`flex-1 py-3 rounded-2xl font-bold text-sm transition-all shadow-md active:scale-95 ${
-    isAvailable ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+  className={`flex-1 py-3 rounded-sm font-bold text-sm transition-all shadow-md active:scale-95 ${
+    isAvailable ? "bg-[#1a2e6e] hover:bg-[#0f2460] text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
   }`}
 >
   🛒 Add to Cart
 </button>
 <button
   onClick={() => setShowContact(true)}
-  className="px-4 py-3 rounded-2xl font-bold text-sm border-2 bg-green-500 text-white hover:bg-white hover:text-green-500 tansition"
+  className="px-4 py-3 rounded-sm font-bold text-sm border-2 bg-green-500 text-white hover:bg-white hover:text-green-500 tansition"
 >
  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />

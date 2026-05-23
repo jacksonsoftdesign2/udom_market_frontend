@@ -1,3 +1,4 @@
+//saivi haitumiki ilikuwa ni ya kushow navigation for pages ie home>login
 import { Navigate, useLocation } from "react-router-dom";
 
 export default function ProtectedRoute({ children }) {
