@@ -494,7 +494,7 @@ if (key === "nearby") {
         <div className="absolute top-[-80px] left-[-80px] w-[300px] h-[300px] bg-white/60 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-100px] right-[-100px] w-[300px] h-[300px] bg-blue-200/40 rounded-full blur-[120px]" />
       </div>
-      <div className="fixed inset-0 -z-10 backdrop-blur-[6px]" />
+      
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
         <img src={logo} alt="" className="w-[60vw] max-w-[600px] opacity-[0.07] object-contain" />
       </div>
