@@ -663,7 +663,7 @@ if (key === "nearby") {
         )}
 
       </div>
-
+      </div>
       {buyItem && (
         <BuyOptionsModal
           product={buyItem}
@@ -738,7 +738,7 @@ if (key === "nearby") {
     </div>
   </div>
 )}
-</div>
+
       <Footer />
     </div>
   );
