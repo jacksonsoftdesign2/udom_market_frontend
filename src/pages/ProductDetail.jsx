@@ -4,7 +4,7 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FiZoomIn, FiHeart, FiShare2 } from "react-icons/fi";
+import { FiZoomIn,FiShoppingCart, FiHeart, FiShare2 } from "react-icons/fi";
 import { supportsAVIF, pickSrc } from "../utils/imageUtils";
 const API = import.meta.env.VITE_API_URL;
 
@@ -557,7 +557,7 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
     isAvailable ? "bg-[#1a2e6e] hover:bg-[#0f2460] text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
   }`}
 >
-  🛒 Add to Cart
+   <FiShoppingCart size={12} /> Add to Cart
 </button>
 <button
   onClick={() => setShowContact(true)}
