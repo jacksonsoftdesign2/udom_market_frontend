@@ -123,14 +123,14 @@ export default function OrderModal({ product, onClose, onContact }) {
           maxWidth: 340,
           display: "flex",
           flexDirection: "column",
-          maxHeight: "92vh",
+          maxHeight: "85vh",
           overflow: "hidden",
           boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
         }}
       >
 
         {/* ── HEADER ── */}
-        <div style={{ background: "#1a3a8f", padding: "7px 13px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
+        <div style={{ background: "#1a3a8f", padding: "5px 13px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
             <div style={{ color: "#fff", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>Place Order</div>
             <div style={{ color: "#F5C518", fontSize: 12, maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{product.name}</div>
@@ -141,7 +141,7 @@ export default function OrderModal({ product, onClose, onContact }) {
         </div>
 
         {/* ── PRICE + QTY BAR ── */}
-        <div style={{ padding: "6px 13px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #e0e0e0", flexShrink: 0, background: "#fff" }}>
+        <div style={{ padding: "4px 13px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #e0e0e0", flexShrink: 0, background: "#fff" }}>
           <div>
             <div style={{ fontSize: 11, color: "#666", marginBottom: 2 }}>Unit price: Tsh {unitPrice.toLocaleString()}</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#222" }}>
@@ -176,10 +176,10 @@ export default function OrderModal({ product, onClose, onContact }) {
             <button onClick={onClose} style={{ padding: "9px 32px", background: "#1a3a8f", color: "#fff", border: "none", borderRadius: 3, fontSize: 13, fontWeight: 500, cursor: "pointer" }}>Done</button>
           </div>
         ) : (
-          <div id="order-modal-body" style={{ overflowY: "auto", padding: "8px 13px", flex: 1 }}>
+          <div id="order-modal-body" style={{ overflowY: "auto", padding: "5px 13px", flex: 1 }}>
 
             {/* Phone */}
-            <div style={{ marginBottom: 6 }}>
+            <div style={{ marginBottom: 4 }}>
               <div style={{ fontSize: 11, color: "#555", marginBottom: 3 }}>Phone Number <span style={{ color: "#e24b4a" }}>*</span></div>
               <input
                 type="tel"
@@ -192,7 +192,7 @@ export default function OrderModal({ product, onClose, onContact }) {
             </div>
 
             {/* Full Name */}
-            <div style={{ marginBottom: 6 }}>
+            <div style={{ marginBottom: 4 }}>
               <div style={{ fontSize: 11, color: "#555", marginBottom: 3 }}>Full Name <span style={{ color: "#e24b4a" }}>*</span></div>
               <input
                 type="text"
@@ -224,14 +224,14 @@ export default function OrderModal({ product, onClose, onContact }) {
             />
 
             {/* Note */}
-            <div style={{ marginBottom: 6 }}>
+            <div style={{ marginBottom: 4}}>
               <div style={{ fontSize: 12, color: "#1a3a8f", fontWeight: 500, marginBottom: 3 }}>Note (optional)</div>
               <textarea
                 placeholder="Any special request or delivery instructions..."
                 value={form.explanation}
                 onChange={e => setForm(f => ({ ...f, explanation: e.target.value }))}
-                rows={3}
-                style={{ width: "100%", padding: "7px 9px", border: "1px solid #ccc", borderRadius: 3, fontSize: 13, color: "#333", background: "#fff", outline: "none", resize: "vertical", boxSizing: "border-box", minHeight: 44 }}
+                rows={2}
+                style={{ width: "100%", padding: "7px 9px", border: "1px solid #ccc", borderRadius: 3, fontSize: 13, color: "#333", background: "#fff", outline: "none", resize: "vertical", boxSizing: "border-box", minHeight: 36 }}
               />
             </div>
 
@@ -240,7 +240,7 @@ export default function OrderModal({ product, onClose, onContact }) {
 
         {/* ── FOOTER ── */}
         {!success && (
-          <div style={{ padding: "10px 13px", borderTop: "1px solid #e0e0e0", display: "flex", gap: 8, flexShrink: 0, background: "#fff" }}>
+          <div style={{ padding: "7px 13px", borderTop: "1px solid #e0e0e0", display: "flex", gap: 8, flexShrink: 0, background: "#fff" }}>
             <button onClick={onClose} style={{ flex: 1, padding: 9, border: "1px solid #ccc", background: "#fff", borderRadius: 4, fontSize: 13, color: "#444", cursor: "pointer" }}>
               Cancel
             </button>
