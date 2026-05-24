@@ -550,14 +550,14 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
 
               {/* CTA buttons */}
               <div className="flex gap-3 mt-auto pt-2">
-               <button
+<button
   onClick={() => setShowOrder(true)}
   disabled={!isAvailable}
-  className={`flex-1 py-3 rounded-sm font-bold text-sm transition-all shadow-md active:scale-95 ${
+  className={`flex-1 py-3 rounded-sm font-bold text-sm transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 ${
     isAvailable ? "bg-[#1a2e6e] hover:bg-[#0f2460] text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
   }`}
 >
-   <FiShoppingCart size={12} /> Add to Cart
+  <FiShoppingCart size={14} /> Add to Cart
 </button>
 <button
   onClick={() => setShowContact(true)}
