@@ -1,17 +1,17 @@
 export default function BuyOptionsModal({ product, onClose, onOrder, onContact }) {
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end md:items-center justify-center"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-t-[8px] md:rounded-[8px] shadow-2xl w-full max-w-sm pb-8"
+        className="bg-white rounded-t-[8px] sm:rounded-[8px] w-full max-w-sm pb-8 shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 bg-gray-200 rounded-full" />
-        </div>
+{/* Drag handle */}
+<div className="flex justify-center pt-3 pb-1 sm:hidden">
+  <div className="w-10 h-1 bg-gray-200 rounded-full" />
+</div>
 
         {/* Header */}
         <div className="px-6 pt-3 pb-2 text-center">
