@@ -23,7 +23,7 @@ export default function PaymentMockup({ user, onClose }) {
 
   return (
     <div className={`fixed inset-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm px-4 ${step === "contact" ? "items-end md:items-center" : "items-center"}`}>
-      <div className={`w-full max-w-sm bg-white shadow-2xl overflow-hidden ${step === "contact" ? "rounded-t-3xl md:rounded-3xl" : "rounded-3xl"}`}>
+      <div className={`w-full max-w-sm bg-white shadow-2xl overflow-hidden ${step === "contact" ? "rounded-t-[8px] md:rounded-[8px]" : "rounded-3xl"}`}>
 
         {step === "contact" && (
           <div className="flex justify-center pt-3 pb-1 md:hidden">
@@ -75,7 +75,7 @@ export default function PaymentMockup({ user, onClose }) {
           {step === "main" && (
             <>
               {user && (
-                <div className="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100">
+                <div className="flex items-center gap-3 bg-gray-50 rounded-[4px] px-4 py-3 border border-gray-100">
                   <img
                     src={user.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.first_name + " " + user.last_name)}&background=f97316&color=fff`}
                     alt="profile"
@@ -93,7 +93,7 @@ export default function PaymentMockup({ user, onClose }) {
                 </div>
               )}
 
-              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 rounded-2xl px-4 py-4 text-center">
+              <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 rounded-[4px] px-4 py-4 text-center">
                 <p className="text-xs text-gray-500 font-medium mb-1">One-time Registration Fee</p>
                 <p className="text-4xl font-black text-orange-600">10,000</p>
                 <p className="text-sm text-orange-400 font-semibold">TZS</p>
@@ -103,7 +103,7 @@ export default function PaymentMockup({ user, onClose }) {
               <div className="space-y-2">
                 <button
                   onClick={() => setStep("method")}
-                  className="w-full bg-orange-500 text-white py-3.5 rounded-2xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition flex items-center justify-center gap-2 shadow-lg shadow-orange-200"
+                  className="w-full bg-orange-500 text-white py-3.5 rounded-[4px] font-bold text-sm hover:from-orange-600 hover:to-red-600 transition flex items-center justify-center gap-2 shadow-lg shadow-orange-200"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -114,7 +114,7 @@ export default function PaymentMockup({ user, onClose }) {
                 </button>
                 <button
                   onClick={() => setStep("contact")}
-                  className="w-full bg-blue-50 border border-blue-200 text-blue-700 py-3 rounded-2xl font-semibold text-sm hover:bg-blue-100 transition flex items-center justify-center gap-2"
+                  className="w-full bg-blue-50 border border-blue-200 text-blue-700 py-3 rounded-[4px] font-semibold text-sm hover:bg-blue-100 transition flex items-center justify-center gap-2"
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -124,7 +124,7 @@ export default function PaymentMockup({ user, onClose }) {
                 </button>
                 <button
                   onClick={handleClose}
-                  className="w-full bg-gray-100 text-gray-500 py-2.5 rounded-2xl font-medium text-sm hover:bg-gray-200 transition"
+                  className="w-full bg-gray-100 text-gray-500 py-2.5 rounded-[4px] font-medium text-sm hover:bg-gray-200 transition"
                 >
                   Close for Now
                 </button>
@@ -181,7 +181,7 @@ export default function PaymentMockup({ user, onClose }) {
           {/* ── CONTACT STEP ── */}
           {step === "contact" && (
             <div className="space-y-3">
-              <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-4 space-y-1">
+              <div className="bg-blue-50 border border-blue-100 rounded-[4px] px-4 py-4 space-y-1">
                 <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">
                   Contact Management
                 </p>
@@ -236,7 +236,7 @@ export default function PaymentMockup({ user, onClose }) {
 
               <button
                 onClick={() => setStep("main")}
-                className="w-full bg-green-500 text-white py-2.5 rounded-2xl font-medium text-sm hover:bg-green-600 transition"
+                className="w-full bg-green-500 text-white py-2.5 rounded-[4px] font-medium text-sm hover:bg-green-600 transition"
               >
                 Back
               </button>

@@ -74,7 +74,7 @@ function ChangePassword() {
 if (success) {
   return (
     <div className="max-w-md mx-auto mt-10">
-      <div className="bg-white rounded-2xl shadow p-8 flex flex-col items-center text-center">
+      <div className="bg-white rounded-[4px] shadow p-8 flex flex-col items-center text-center">
         <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
           <FiCheck size={32} className="text-green-500" />
         </div>
@@ -101,7 +101,7 @@ if (success) {
 
   return (
     <div className="max-w-md mx-auto mt-6">
-      <div className="bg-white rounded-2xl shadow p-6 md:p-8">
+      <div className="bg-white rounded-[4px] shadow p-6 md:p-8">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
