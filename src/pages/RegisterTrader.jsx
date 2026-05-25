@@ -63,10 +63,6 @@ const [showPaymentModal, setShowPaymentModal] = useState(false);
   is_primary: true,
 });
 
-  const [referees, setReferees] = useState([
-    { name: "", phone: "", relation: "" }
-  ]);
-
   const [showPassword, setShowPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -74,7 +70,7 @@ const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [registrationData, setRegistrationData] = useState(null);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7;
+  const totalSteps = 6;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // FETCH CATEGORIES
@@ -117,23 +113,6 @@ useEffect(() => {
     setForm({ ...form, profile_image: e.target.files[0] });
   };
 
-  // REFEREES
- const handleRefereeChange = (index, e) => {
-  const { name, value } = e.target;
-  const updated = [...referees];
- updated[index][name] = name === "phone" ? value : value.toUpperCase();
-  setReferees(updated);
-};
-
-  const addReferee = () => {
-    if (referees.length < 3) {
-      setReferees([...referees, { name: "", phone: "", relation: "" }]);
-    }
-  };
-  //to clear extra referee fields if user added more than 1 referee and then wants to clear the form
-  const removeReferee = (index) => {
-  setReferees(referees.filter((_, i) => i !== index));
-};
 
   // CLEAR
   const handleClear = () => {
@@ -161,7 +140,7 @@ useEffect(() => {
     is_primary: true,
   });
 
-    setReferees([{ name: "", phone: "", relation: "" }]);
+    
   };
 
   // HANDLE PAYMENT
@@ -287,14 +266,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
   }
   return true;
 
-      case 5: // Referees
-        if (referees.some(ref => !ref.name.trim() || !ref.phone.trim() || !ref.relation.trim())) {
-          setErrorMessage("All referee fields are required");
-          setShowErrorModal(true);
-          return false;
-        }
-        return true;
-      case 6: {// Security
+      case 5: {// Security
         if (!form.password) {
           setErrorMessage("Password is required");
           setShowErrorModal(true);
@@ -346,7 +318,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
 
     // Final validation
      if (!validateStep(4)) return;
-    if (!validateStep(6)) {
+    if (!validateStep(5)) {
       return;
     }
     setIsSubmitting(true);
@@ -365,7 +337,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
 
     // Add addresses and referees
     formData.append('addresses', JSON.stringify([address]));
-    formData.append('referees', JSON.stringify(referees));
+    
 
     try {
       const res = await axios.post(
@@ -637,12 +609,12 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
             {/* Step Indicator */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3 gap-0.5 md:gap-2">
-                {[1, 2, 3, 4, 5, 6, 7].map((step) => (
+                {[1, 2, 3, 4, 5, 6].map((step) => (
                   <div key={step} className="flex items-center flex-1 min-w-0">
                     <div className={`w-6 h-6 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-white text-xs md:text-base flex-shrink-0 ${currentStep >= step ? 'bg-blue-600' : 'bg-gray-300'}`}>
                       {step}
                     </div>
-                    {step < 7 && (
+                    {step < 6 && (
                       <div className={`flex-1 h-1 mx-0.5 md:mx-2 min-w-0 ${currentStep > step ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
                     )}
                   </div>
@@ -743,40 +715,8 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
                 </div>
               )}
 
-           {/* Step 5: Referees */}
-{currentStep === 5 && (
-  <div className="bg-gray-50 p-4 rounded-xl">
-    <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.referee}</h3>
-    {referees.map((ref, index) => (
-      <div key={index} className="bg-white p-3 rounded-lg mb-3 shadow-sm">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-600">Mdhamini {index + 1}</span>
-          {index > 0 && (
-            <button
-              type="button"
-              onClick={() => removeReferee(index)}
-              className="text-red-500 hover:text-red-700 font-bold text-lg border border-blue-500 rounded-full w-6 h-6 flex items-center justify-center transition-all"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input name="name" placeholder="Name" value={ref.name} onChange={(e) => handleRefereeChange(index, e)} className="input" />
-          <input name="phone" placeholder="Phone" value={ref.phone} onChange={(e) => handleRefereeChange(index, e)} className="input" />
-          <input name="relation" placeholder="Relation" value={ref.relation} onChange={(e) => handleRefereeChange(index, e)} className="input" />
-        </div>
-      </div>
-    ))}
-    {referees.length < 3 && (
-      <button type="button" onClick={addReferee} className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-        + {t.add_referee}
-      </button>
-    )}
-  </div>
-)}
             {/* Step 6: Security/Password */}
-           {currentStep === 6 && (
+           {currentStep === 5 && (
   <div className="bg-gray-50 p-4 rounded-xl">
     <h3 className="text-lg font-semibold text-gray-800 mb-3">{t.security}</h3>
 
@@ -900,7 +840,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
   </div>
 )}
             {/* Step 7: Review/Summary */}
-            {currentStep === 7 && (
+            {currentStep === 6 && (
               <div className="bg-gray-50 p-4 rounded-xl space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">{t.review_info}</h3>
                 
@@ -944,19 +884,6 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
                   </div>
                 </div>
 
-                {/* Referees Review */}
-                <div className="bg-white p-3 rounded-lg border-l-4 border-red-500">
-                  <h4 className="font-semibold text-gray-800 mb-2">👥 {t.referee_info}</h4>
-                  <div className="space-y-2 text-sm">
-                    {referees.map((ref, idx) => (
-                      <div key={idx} className="bg-gray-50 p-2 rounded">
-                        <div><span className="text-gray-600">{t.first_name}:</span> <span className="font-medium">{ref.name}</span></div>
-                        <div><span className="text-gray-600">{t.phone}:</span> <span className="font-medium">{ref.phone}</span></div>
-                        <div><span className="text-gray-600">{t.referee}:</span> <span className="font-medium">{ref.relation}</span></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
 
                 {/* Security Review */}
                 <div className="bg-white p-3 rounded-lg border-l-4 border-yellow-500">
@@ -974,7 +901,7 @@ const getProfilePictureUrl = () => registrationData?.profile_image || logo;
 
             {/* Buttons */}
             <div className="flex gap-3 pt-4">
-              {currentStep < 7 ? (
+              {currentStep < 6 ? (
                 <>
                   <button type="button" onClick={handleNextStep} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all">
                     {t.next}
