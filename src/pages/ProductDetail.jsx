@@ -557,7 +557,7 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
     isAvailable ? "bg-[#1a2e6e] hover:bg-[#0f2460] text-white" : "bg-gray-200 text-gray-400 cursor-not-allowed"
   }`}
 >
-  <FiShoppingCart size={14} /> Add to Cart
+  <FiShoppingCart size={14} /> Place Order
 </button>
 <button
   onClick={() => setShowContact(true)}
