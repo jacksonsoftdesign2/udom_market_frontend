@@ -364,7 +364,7 @@ function RegisterTrader() {
 
       {/* SUCCESS MODAL — untouched */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[300] p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
             <div className="bg-gradient-to-r from-green-400 to-green-600 p-6 text-center">
               <h2 className="text-3xl font-bold text-white mb-2">🎉 Congratulations!</h2>
@@ -425,7 +425,7 @@ function RegisterTrader() {
 
       {/* ERROR MODAL — untouched */}
       {showErrorModal && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[300] p-4 animate-fade-in">
           <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden border border-red-100">
             <div className="bg-red-50 px-5 py-4 flex items-center gap-3 border-b border-red-100">
               <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
