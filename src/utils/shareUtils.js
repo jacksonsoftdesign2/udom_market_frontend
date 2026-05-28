@@ -5,8 +5,14 @@ export const getProductUrl = (productId) => {
   return `${base}/product/${productId}`;
 };
 
-export const getShareText = (product) =>
-  `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}\n\n${getProductUrl(product.id)}`;
+const getProductSlug = (name) =>
+  name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+export const getShareText = (product) => {
+  const base = import.meta.env.VITE_APP_URL || window.location.origin;
+  const slugUrl = `${base}/product/${getProductSlug(product.name)}`;
+  return `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}\n\n${slugUrl}`;
+};
 
 const loadCanvasImage = (src) =>
   new Promise((resolve, reject) => {
