@@ -249,7 +249,7 @@ function RegisterTrader() {
       `}</style>
 
       {/* MAIN PAGE */}
-      <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-white flex flex-col items-center justify-center p-4 pt-24 pb-10">
+      <div className="h-screen bg-gradient-to-br from-white via-blue-50 to-white flex flex-col items-center justify-center p-3 pt-16 md:pt-20 overflow-hidden">
         <div className="flex flex-col md:flex-row gap-6 w-full max-w-5xl">
 
           {/* LEFT PANEL */}
@@ -282,7 +282,7 @@ function RegisterTrader() {
           </div>
 
           {/* RIGHT PANEL */}
-          <div className="w-full md:w-7/12 bg-white border border-gray-200 rounded-[4px] overflow-hidden">
+          <div className="w-full md:w-7/12 bg-white border border-gray-200 rounded-[4px] overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 80px)" }}>
             <div className="bg-[#1a3a8f] px-5 py-4 flex items-center justify-between">
               <div>
                 <p className="text-[#F5C518] font-semibold text-sm">{t.register}</p>
@@ -313,7 +313,8 @@ function RegisterTrader() {
               </div>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); if (validateStep(5)) setShowPreviewModal(true); }} className="p-5 space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); if (validateStep(5)) setShowPreviewModal(true); }} className="flex flex-col flex-1 overflow-hidden">
+  <div className="flex-1 overflow-y-auto p-4 space-y-3">
 
               {currentStep === 1 && (
                 <>
@@ -462,7 +463,8 @@ function RegisterTrader() {
                 </div>
               )}
 
-              <div className="flex gap-2 pt-2 border-t border-gray-100">
+              </div>
+          <div className="flex gap-2 p-4 border-t border-gray-100 flex-shrink-0">
                 {currentStep < 3 ? (
                   <button type="button" onClick={handleNextStep} className="flex-1 bg-[#1a3a8f] text-[#F5C518] py-2.5 rounded-[3px] text-sm font-semibold hover:bg-[#0f2460] transition-all">{t.next}</button>
                 ) : (
