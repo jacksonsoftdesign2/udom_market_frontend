@@ -6,6 +6,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FiZoomIn,FiShoppingCart, FiHeart, FiShare2 } from "react-icons/fi";
 import { supportsAVIF, pickSrc } from "../utils/imageUtils";
+import ShareSheet from "../components/ShareSheet";
+import { generateShareCard } from "../utils/shareUtils";
 const API = import.meta.env.VITE_API_URL;
 
 // ── Thumbnail Strip ─────────────────────────────────────────────────
@@ -85,7 +87,10 @@ export default function ProductDetail() {
   const touchStartX = useRef(null);
   const [searchParams] = useSearchParams();
   const [scrolled, setScrolled] = useState(false);
-
+  const [showShareSheet, setShowShareSheet] = useState(false);
+  const [shareCardBlob, setShareCardBlob] = useState(null);
+  const [shareCardPreview, setShareCardPreview] = useState(null);
+  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
 useEffect(() => {
   const onScroll = () => setScrolled(window.scrollY > 60);
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -197,7 +202,45 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
 
   const images = product.images?.length ? product.images : [];
   const isAvailable = product.status === "Available";
-
+  const handleShare = async () => {
+  const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+  if (navigator.share && isMobile) {
+    try {
+      const blob = await generateShareCard(product, images, activeImg, avifRef.current);
+      const file = new File([blob], "product.jpg", { type: "image/jpeg" });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: product.name,
+          text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}`,
+          files: [file],
+        });
+        return;
+      }
+      await navigator.share({
+        title: product.name,
+        text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}`,
+        url: `${import.meta.env.VITE_APP_URL || window.location.origin}/product/${product.id}`,
+      });
+      return;
+    } catch (e) {
+      if (e.name === "AbortError") return;
+    }
+  }
+  // Desktop or fallback → custom bottom sheet
+  setShowShareSheet(true);
+  setIsGeneratingCard(true);
+  setShareCardBlob(null);
+  setShareCardPreview(null);
+  try {
+    const blob = await generateShareCard(product, images, activeImg, avifRef.current);
+    setShareCardBlob(blob);
+    setShareCardPreview(URL.createObjectURL(blob));
+  } catch (e) {
+    console.error("Card generation failed", e);
+  } finally {
+    setIsGeneratingCard(false);
+  }
+};
   return (
     <div className="relative min-h-screen text-gray-800 overflow-x-hidden">
 
@@ -422,14 +465,16 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
                   {isAvailable ? "✓ Available" : "Unavailable"}
                   </span>
                 {product.stock <= 5 && product.stock > 0 && (
-                  <span className="text-xs px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full font-semibold">
+                  <span className="text-xs px-3 py-1 bg-[#F5C518] text-white rounded-sm font-semibold">
                     ⚡ Only {product.stock} left!
                   </span>
                 )}
            </div>
+
+           {/*like and share buttons*/}
             <div className="flex gap-3 text-gray-400">
               <FiHeart size={18} className="cursor-pointer hover:text-red-500 transition" />
-              <FiShare2 size={18} className="cursor-pointer hover:text-[#1a2e6e] transition" />
+              <FiShare2 size={18} className="cursor-pointer hover:text-[#1a2e6e] transition" onClick={handleShare} />
             </div>
           </div>
 
@@ -442,7 +487,7 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
               <p className="text-xl font-bold text-[#F5C518]">
                 Tsh {Number(product.price || 0).toLocaleString()}
               </p>
-              <span className="text-sm text-gray-400">/ Product</span>
+
             </div>
             <div className="text-right">
               <p className="text-[10px] text-gray-400">In stock</p>
@@ -596,6 +641,18 @@ Contact
           </section>
         )}
       </div>
+
+      {showShareSheet && (
+        <ShareSheet
+          product={product}
+          images={images}
+          activeImg={activeImg}
+          cardBlob={shareCardBlob}
+          cardPreview={shareCardPreview}
+          isGenerating={isGeneratingCard}
+          onClose={() => setShowShareSheet(false)}
+        />
+      )}
 
       <Footer />
     </div>
