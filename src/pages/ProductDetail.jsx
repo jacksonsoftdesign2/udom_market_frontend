@@ -208,14 +208,15 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
     try {
       const blob = await generateShareCard(product, images, activeImg, avifRef.current);
       const file = new File([blob], "product.jpg", { type: "image/jpeg" });
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          title: product.name,
-          text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}`,
-          files: [file],
-        });
-        return;
-      }
+        if (navigator.canShare?.({ files: [file] })) {
+          const slugUrl = `${import.meta.env.VITE_APP_URL || window.location.origin}/product/${product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+          await navigator.share({
+            title: product.name,
+            text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}\n\n${slugUrl}`,
+            files: [file],
+          });
+          return;
+        }
       await navigator.share({
         title: product.name,
         text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}`,
