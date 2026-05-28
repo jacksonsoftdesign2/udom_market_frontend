@@ -569,26 +569,26 @@ function RegisterTrader() {
       {/* ── SUCCESS MODAL ── */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div className="bg-gradient-to-r from-green-400 to-green-600 p-6 text-center">
-              <h2 className="text-3xl font-bold text-white mb-2">🎉 Congratulations!</h2>
-              <p className="text-green-50">Registration Successful</p>
+          <div className="bg-white rounded-[4px] shadow-2xl max-w-md w-full overflow-hidden">
+        <div className="bg-[#1a3a8f] p-6 text-center">
+          <h2 className="text-3xl font-bold text-[#F5C518] mb-2">🎉 Congratulations!</h2>
+          <p className="text-blue-300">Registration Successful</p>
             </div>
             <div className="p-6">
               <div className="text-center mb-4">
-                <img src={getProfilePictureUrl()} alt={registrationData?.name} className="w-24 h-24 rounded-full mx-auto border-4 border-green-400 object-cover shadow-lg" />
+                <img src={getProfilePictureUrl()} alt={registrationData?.name} className="w-24 h-24 rounded-full mx-auto border-4 border-[#F5C518] object-cover shadow-lg" />
               </div>
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-1">{registrationData?.name}</h3>
                 <p className="text-sm text-gray-600 mb-2">{registrationData?.email}</p>
                 <div className="flex items-center justify-center gap-3 mt-2">
-                  <p className="text-lg font-semibold text-green-600">ID: {registrationData?.user_code}</p>
+                  <p className="text-lg font-semibold text-[#1a3a8f]">ID: {registrationData?.user_code}</p>
                   <button type="button"
                     onClick={async () => {
                       try { await navigator.clipboard.writeText(registrationData?.user_code); setCopied(true); setTimeout(() => setCopied(false), 2000); }
                       catch (err) { console.error("Copy failed", err); }
                     }}
-                    className="flex items-center gap-1 bg-gray-100 hover:bg-green-300 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                    className="flex items-center gap-1 bg-gray-100 hover:bg-[#e8edf7] text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-[4px] transition-all"
                   >
                     {copied ? (
                       <><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied</>
@@ -598,18 +598,18 @@ function RegisterTrader() {
                   </button>
                 </div>
               </div>
-              <div className="bg-blue-50 p-4 rounded-xl mb-6 border border-blue-200">
-                <p className="text-sm text-gray-700 mb-2"><strong>Registration Fee:</strong></p>
-                <p className="text-3xl font-bold text-blue-600">TZS 10,000</p>
+          <div className="bg-[#f0f4ff] p-4 rounded-[4px] mb-6 border border-[#c7d6f5]">
+            <p className="text-sm text-gray-700 mb-2"><strong>Registration Fee:</strong></p>
+            <p className="text-3xl font-bold text-[#1a3a8f]">TZS 10,000</p>
                 <p className="text-xs text-gray-500 mt-1">Complete payment to activate your trader account</p>
               </div>
               <div className="space-y-3">
                 <button onClick={() => setShowPaymentModal(true)} disabled={paymentProcessing}
-                  className="w-full bg-gradient-to-r from-green-400 to-green-600 text-white py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                  className="w-full bg-[#1a3a8f] text-[#F5C518] py-3 rounded-[4px] font-semibold hover:bg-[#0f2460] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
                   {paymentProcessing ? "Processing..." : "Proceed to Payment"}
                 </button>
                 <button onClick={() => { setShowSuccessModal(false); localStorage.setItem("user_code", registrationData?.user_code); navigate("/login", { state: { user_code: registrationData?.user_code } }); }}
-                  className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-all">
+                  className="w-full bg-[#f8fafc] border border-[#e2e8f0] text-gray-600 py-3 rounded-[4px] font-semibold hover:bg-[#f1f5f9] transition-all">
                   Close for Now
                 </button>
               </div>
