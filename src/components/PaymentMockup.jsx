@@ -22,7 +22,7 @@ export default function PaymentMockup({ user, onClose }) {
   };
 
   return (
-    <div className={`fixed inset-0 z-50 flex justify-center bg-black/60 backdrop-blur-sm px-4 ${step === "contact" ? "items-end md:items-center" : "items-center"}`}>
+    <div className={`fixed inset-0 z-[10002] flex justify-center bg-black/60 backdrop-blur-sm px-4 ${step === "contact" ? "items-end md:items-center" : "items-center"}`}>
       <div className={`w-full max-w-sm bg-white shadow-2xl overflow-hidden ${step === "contact" ? "rounded-t-[4px] md:rounded-[4px]" : "rounded-[4px]"}`}>
 
         {step === "contact" && (
