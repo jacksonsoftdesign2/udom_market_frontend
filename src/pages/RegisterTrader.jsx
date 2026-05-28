@@ -249,11 +249,11 @@ function RegisterTrader() {
       `}</style>
 
       {/* MAIN PAGE */}
-      <div className="h-screen bg-gradient-to-br from-white via-blue-50 to-white flex flex-col items-center justify-center p-3 pt-16 md:pt-20 overflow-hidden">
-        <div className="flex flex-col md:flex-row gap-6 w-full max-w-5xl">
+      <div className="h-screen bg-gradient-to-br from-white via-blue-50 to-white flex flex-col items-center justify-center px-3 pt-14 pb-2 overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-4 w-full max-w-5xl min-h-0 flex-1">
 
           {/* LEFT PANEL */}
-          <div className="hidden md:flex flex-col w-full md:w-5/12 bg-white border border-gray-200 rounded-[4px] overflow-hidden">
+          <div className="hidden md:flex flex-col w-full md:w-5/12 bg-white border border-gray-200 rounded-[4px] overflow-hidden h-full min-h-0" style={{ maxHeight: "calc(100vh - 72px)" }}>
             <div className="bg-[#1a3a8f] p-6 text-center">
               <div className="w-12 h-12 bg-[#F5C518] rounded-[4px] flex items-center justify-center mx-auto mb-3">
                 <span className="text-[#1a3a8f] font-bold text-xl">U</span>
@@ -282,7 +282,7 @@ function RegisterTrader() {
           </div>
 
           {/* RIGHT PANEL */}
-          <div className="w-full md:w-7/12 bg-white border border-gray-200 rounded-[4px] overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 80px)" }}>
+          <div className="w-full md:w-7/12 bg-white border border-gray-200 rounded-[4px] overflow-hidden flex flex-col h-full min-h-0">
             <div className="bg-[#1a3a8f] px-5 py-4 flex items-center justify-between">
               <div>
                 <p className="text-[#F5C518] font-semibold text-sm">{t.register}</p>
