@@ -7,10 +7,10 @@ import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
 import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight } from "react-icons/fa";
 
-export default function Header({ cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick }) {
+export default function Header({ cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick, lang: langProp, onLangChange }) {
+  const [lang, setLang] = useState(langProp || "sw");
   const navigate = useNavigate();
   const location = useLocation();
-  const [lang, setLang] = useState("sw");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -37,7 +37,8 @@ const [today, setToday] = useState(new Date());
     { label: t.about, icon: <FaInfoCircle />, action: () => navigate("/about") },
   ];
 
-  const toggleLanguage = () => setLang((prev) => (prev === "sw" ? "en" : "sw"));
+  const toggleLanguage = () => {
+  const next = lang === "sw" ? "en" : "sw"; setLang(next); onLangChange?.(next);};
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   // auto update time in midnight hours

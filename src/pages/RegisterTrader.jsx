@@ -241,7 +241,7 @@ function RegisterTrader() {
 
   return (
     <>
-      <Header />
+      <Header lang={lang} onLangChange={setLang} />
 
       <style>{`
         @keyframes slideInFromRight { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -288,10 +288,7 @@ function RegisterTrader() {
                 <p className="text-[#F5C518] font-semibold text-sm">{t.register}</p>
                 <p className="text-blue-300 text-xs mt-0.5">{t.step} {currentStep} {t.of} {totalSteps}</p>
               </div>
-              <div className="flex gap-1.5">
-                <button type="button" onClick={() => setLang("sw")} className={`px-2.5 py-1 rounded-[3px] text-xs font-semibold border transition-all ${lang === "sw" ? "bg-[#F5C518] text-[#1a3a8f] border-[#F5C518]" : "border-[#2d4fa8] text-blue-300"}`}>SW</button>
-                <button type="button" onClick={() => setLang("en")} className={`px-2.5 py-1 rounded-[3px] text-xs font-semibold border transition-all ${lang === "en" ? "bg-[#F5C518] text-[#1a3a8f] border-[#F5C518]" : "border-[#2d4fa8] text-blue-300"}`}>EN</button>
-              </div>
+
             </div>
 
             <div className="px-5 py-3 border-b border-gray-100">
