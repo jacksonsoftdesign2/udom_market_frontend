@@ -202,7 +202,7 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
 
   const images = product.images?.length ? product.images : [];
   const isAvailable = product.status === "Available";
-  const handleShare = async () => {
+ const handleShare = async () => {
   const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
   if (navigator.share && isMobile) {
     try {
@@ -226,20 +226,18 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
       if (e.name === "AbortError") return;
     }
   }
-  // Desktop or fallback → custom bottom sheet
+  // ✅ open sheet immediately, generate card in background
   setShowShareSheet(true);
   setIsGeneratingCard(true);
   setShareCardBlob(null);
   setShareCardPreview(null);
-  try {
-    const blob = await generateShareCard(product, images, activeImg, avifRef.current);
-    setShareCardBlob(blob);
-    setShareCardPreview(URL.createObjectURL(blob));
-  } catch (e) {
-    console.error("Card generation failed", e);
-  } finally {
-    setIsGeneratingCard(false);
-  }
+  generateShareCard(product, images, activeImg, avifRef.current)
+    .then(blob => {
+      setShareCardBlob(blob);
+      setShareCardPreview(URL.createObjectURL(blob));
+    })
+    .catch(e => console.error("Card generation failed", e))
+    .finally(() => setIsGeneratingCard(false));
 };
   return (
     <div className="relative min-h-screen text-gray-800 overflow-x-hidden">

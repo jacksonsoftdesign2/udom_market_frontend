@@ -1,5 +1,5 @@
 import { pickSrc } from "./imageUtils";
-
+import logo from "../assets/upmarket_logo.png";
 export const getProductUrl = (productId) => {
   const base = import.meta.env.VITE_APP_URL || window.location.origin;
   return `${base}/product/${productId}`;
@@ -71,16 +71,27 @@ export const generateShareCard = async (product, images, activeImg, avifSupporte
   const LOGO_CX = 44 + LOGO_SIZE / 2;
   const LOGO_CY = ROW_Y + LOGO_SIZE / 2;
 
-  // UDOM logo circle
-  ctx.beginPath();
-  ctx.arc(LOGO_CX, LOGO_CY, LOGO_SIZE / 2, 0, Math.PI * 2);
-  ctx.fillStyle = "#1a2e6e";
-  ctx.fill();
-  ctx.font = "bold 30px sans-serif";
+// UDOM logo circle
+ctx.beginPath();
+ctx.arc(LOGO_CX, LOGO_CY, LOGO_SIZE / 2, 0, Math.PI * 2);
+ctx.fillStyle = "#1a2e6e";
+ctx.fill();
+ctx.save();
+ctx.beginPath();
+ctx.arc(LOGO_CX, LOGO_CY, LOGO_SIZE / 2, 0, Math.PI * 2);
+ctx.clip();
+try {
+  const logoImg = await loadCanvasImage(logo);
+  ctx.drawImage(logoImg, LOGO_CX - LOGO_SIZE / 2, LOGO_CY - LOGO_SIZE / 2, LOGO_SIZE, LOGO_SIZE);
+} catch {
+  // fallback to U if logo fails to load
   ctx.fillStyle = "#F5C518";
+  ctx.font = "bold 30px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText("U", LOGO_CX, LOGO_CY);
+}
+ctx.restore();
 
   // Trader avatar circle
   const TRADER_CX = 44 + LOGO_SIZE + 14 + AVATAR_SIZE / 2;
