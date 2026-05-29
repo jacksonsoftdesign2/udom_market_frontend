@@ -18,7 +18,7 @@ export default function AdminDashboard() {
         const usersData = await usersRes.json();
         const productsData = await productsRes.json();
 
-        const traders = usersData.users?.filter(u => u.role === "trader") || [];
+        const traders = usersData.users?.filter(u => u.role === "trader" && !u.is_deleted) || [];
         const products = productsData.products || [];
 
         setStats({
