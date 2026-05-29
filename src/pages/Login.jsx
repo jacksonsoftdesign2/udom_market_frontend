@@ -11,6 +11,7 @@ import { MdAdminPanelSettings, MdStorefront } from "react-icons/md";
 import { BsCheckCircleFill } from "react-icons/bs";
 import { requestNotificationPermission } from "../utils/notifications";
 import PaymentMockup from "../components/PaymentMockup";
+import SetNewPasswordModal from "../components/SetNewPasswordModal";
 import adv from '../assets/advertisements/adv.jpeg';
 import adv1 from '../assets/advertisements/adv1.jpeg';
 import adv2 from '../assets/advertisements/adv2.jpeg';
@@ -47,7 +48,7 @@ function Login() {
 	const navigate = useNavigate();
     const location = useLocation();
     const [rememberMe, setRememberMe] = useState(localStorage.getItem("rememberMe") === "true");
-
+    const [showSetNewPassword, setShowSetNewPassword] = useState(false);
             const storedUser = localStorage.getItem("user");
             const parsedUser = storedUser ? JSON.parse(storedUser) : null;
              const from = location.state?.from?.pathname || "/";
@@ -136,6 +137,13 @@ if (data.user.role === "trader") {
 }
 
 // ── Check if trader account is not yet activated ──
+
+if (data.user.must_change_password) {
+    setStage("idle");
+    setShowSetNewPassword(true);
+    return;
+}
+
 if (data.user.role === "trader" && data.user.payment_status !== "paid") {
     setStage("idle");
     setPaymentUserData(data.user);
@@ -487,6 +495,25 @@ className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-
         onClose={() => setShowPaymentModal(false)}
     />
 )}
+
+{showSetNewPassword && (
+    <SetNewPasswordModal
+        onSuccess={() => {
+            setShowSetNewPassword(false);
+            // Now continue the normal post-login redirect
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            setSuccessData(user);
+            setStage("success");
+            setTimeout(() => {
+                if (user.role === "admin")       navigate("/admin/dashboard");
+                else if (user.role === "trader") navigate("/trader/dashboard");
+                else                             navigate("/");
+            }, 3500);
+        }}
+    />
+)}
+
+
 
 </>
 );
