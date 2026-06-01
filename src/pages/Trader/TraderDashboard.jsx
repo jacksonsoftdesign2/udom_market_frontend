@@ -10,6 +10,7 @@ import { FiEdit, FiLock, FiLogOut, FiShoppingBag, FiPackage, FiCreditCard, FiBar
 import React from "react";
 import { listenForForegroundNotifications, removeFcmToken, requestNotificationPermission } from "../../utils/notifications";
 import Analytics from "./Analytics";
+import NameRequests from "./NameRequests";
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -352,7 +353,9 @@ useEffect(() => {
     </div>
   )}
 
-  {activeSection === "products" && <Products />}
+  {activeSection === "products" && (
+  <Products onGoToNameRequests={() => setActiveSection("name-requests")} />
+)}
   {activeSection === "orders" && (
   <TraderOrders 
   onPendingCountChange={setPendingCount}
@@ -383,6 +386,9 @@ useEffect(() => {
   <ChangePassword />
 )}
 {activeSection === "analytics" && <Analytics />}
+{activeSection === "name-requests" && (
+  <NameRequests />
+)}
 </div>
       </main>
 
