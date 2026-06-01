@@ -115,11 +115,11 @@ const [scrolled, setScrolled] = useState(false);
 const [pendingCount, setPendingCount] = useState(0);
   
 const navItems = [
-  { key: "products",  label: "Products",         icon: <FiShoppingBag size={16} /> },
-   { key: "orders",    label: "Orders",           icon: <FiPackage size={16} />, badge: pendingCount },
-  { key: "payments",  label: "Payments",          icon: <FiCreditCard size={16} /> },
-  { key: "analytics", label: "Analytics",         icon: <FiBarChart2 size={16} /> },
-  { key: "category",  label: "Request Category",  icon: <FiList size={16} /> },
+  { key: "products",       label: "Products",          icon: <FiShoppingBag size={16} /> },
+  { key: "orders",         label: "Orders",            icon: <FiPackage size={16} />, badge: pendingCount },
+  { key: "payments",       label: "Payments",          icon: <FiCreditCard size={16} /> },
+  { key: "analytics",      label: "Analytics",         icon: <FiBarChart2 size={16} /> },
+  { key: "name-requests",  label: "Name Request",      icon: <FiList size={16} /> },
 ];
 
 const sidebarOnlyItems = [
@@ -363,7 +363,7 @@ useEffect(() => {
   
 
 
-{!["products", "orders", "editprofile", "changepassword", "analytics"].includes(activeSection) && (
+{!["products", "orders", "editprofile", "changepassword", "analytics", "name-requests"].includes(activeSection) && (
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 text-center text-gray-400">
       <div className="flex justify-center mb-2 text-gray-300">
         {(() => {
