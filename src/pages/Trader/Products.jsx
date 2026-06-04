@@ -67,7 +67,19 @@ function Products() {
   const [loadingBrands, setLoadingBrands] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
   const [loadingVariants, setLoadingVariants] = useState(false);
-
+  const [editBrands, setEditBrands] = useState([]);
+  const [editModels, setEditModels] = useState([]);
+  const [editVariants, setEditVariants] = useState([]);
+  const [editBrandSearch, setEditBrandSearch] = useState("");
+  const [editModelSearch, setEditModelSearch] = useState("");
+  const [editVariantSearch, setEditVariantSearch] = useState("");
+  const [editBrandDropOpen, setEditBrandDropOpen] = useState(false);
+  const [editModelDropOpen, setEditModelDropOpen] = useState(false);
+  const [editVariantDropOpen, setEditVariantDropOpen] = useState(false);
+  const [loadingEditBrands, setLoadingEditBrands] = useState(false);
+  const [loadingEditModels, setLoadingEditModels] = useState(false);
+  const [loadingEditVariants, setLoadingEditVariants] = useState(false);
+ 
   useEffect(() => {
     fetch(`${API}/users/categories`)
       .then((res) => res.json())
@@ -94,6 +106,36 @@ function Products() {
     }));
   };
 
+
+  const fetchEditBrands = async (categoryId, q = '') => {
+  setLoadingEditBrands(true);
+  try {
+    const res = await fetch(`${API}/products/brands?category_id=${categoryId}&q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    setEditBrands(Array.isArray(data) ? data : []);
+  } catch { setEditBrands([]); }
+  finally { setLoadingEditBrands(false); }
+};
+
+const fetchEditModels = async (brandId, q = '') => {
+  setLoadingEditModels(true);
+  try {
+    const res = await fetch(`${API}/products/models?brand_id=${brandId}&q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    setEditModels(Array.isArray(data) ? data : []);
+  } catch { setEditModels([]); }
+  finally { setLoadingEditModels(false); }
+};
+
+const fetchEditVariants = async (modelId, q = '') => {
+  setLoadingEditVariants(true);
+  try {
+    const res = await fetch(`${API}/products/variants?model_id=${modelId}&q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+    setEditVariants(Array.isArray(data) ? data : []);
+  } catch { setEditVariants([]); }
+  finally { setLoadingEditVariants(false); }
+};
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 60_000);
     return () => clearInterval(id);
@@ -386,18 +428,31 @@ function Products() {
 
   // ── edit ─────────────────────────────────────────────────────────────────
 
-  const openEdit = (product) => {
-    setEditingProduct({
-      ...product,
-      price: String(product.price),
-      stock: String(product.stock),
-      specs: (product.specs || []).map((s) => ({ ...s })),
-      images: (product.images || []).map(img =>
-        typeof img === 'object' ? (img.image_url || '') : img
-      ).filter(Boolean),
-      newImageFiles: [],
-    });
-  };
+const openEdit = (product) => {
+  setEditingProduct({
+    ...product,
+    price: String(product.price),
+    stock: String(product.stock),
+    specs: (product.specs || []).map((s) => ({ ...s })),
+    images: (product.images || []).map(img =>
+      typeof img === 'object' ? (img.image_url || '') : img
+    ).filter(Boolean),
+    newImageFiles: [],
+    // naming fields
+    brand_id:    product.brand_id    || null,
+    brand_name:  product.brand_name  || '',
+    model_id:    product.model_id    || null,
+    model_name:  product.model_name  || '',
+    variant_id:  product.variant_id  || null,
+    variant_name: product.variant_name || '',
+    category_type: categories.find(c => String(c.id) === String(product.category_id))?.type || 'product',
+  });
+  // pre-load dropdowns if category already set
+  if (product.category_id) fetchEditBrands(product.category_id);
+  if (product.brand_id)    fetchEditModels(product.brand_id);
+  if (product.model_id)    fetchEditVariants(product.model_id);
+  setEditBrandSearch(''); setEditModelSearch(''); setEditVariantSearch('');
+};
 
   const handleEditChange = (field, value) =>
     setEditingProduct((prev) => ({ ...prev, [field]: value }));
@@ -419,7 +474,58 @@ function Products() {
     e.target.value = "";
     setImageLimitMsg("");
   };
+     
 
+  const handleEditCategoryChange = (catId) => {
+  const cat = categories.find(c => String(c.id) === String(catId));
+  setEditingProduct(prev => ({
+    ...prev,
+    category_id: catId,
+    category_type: cat?.type || 'product',
+    brand_id: null, brand_name: '',
+    model_id: null, model_name: '',
+    variant_id: null, variant_name: '',
+    name: '',
+  }));
+  setEditBrands([]); setEditModels([]); setEditVariants([]);
+  setEditBrandSearch(''); setEditModelSearch(''); setEditVariantSearch('');
+  if (catId) fetchEditBrands(catId);
+};
+
+const handleEditBrandSelect = (brand) => {
+  setEditingProduct(prev => ({
+    ...prev,
+    brand_id: brand.id, brand_name: brand.name,
+    model_id: null, model_name: '',
+    variant_id: null, variant_name: '',
+    name: brand.name,
+  }));
+  setEditModels([]); setEditVariants([]);
+  setEditModelSearch(''); setEditVariantSearch('');
+  setEditBrandDropOpen(false); setEditBrandSearch('');
+  fetchEditModels(brand.id);
+};
+
+const handleEditModelSelect = (model) => {
+  setEditingProduct(prev => ({
+    ...prev,
+    model_id: model.id, model_name: model.name,
+    variant_id: null, variant_name: '',
+  }));
+  setEditVariants([]);
+  setEditVariantSearch('');
+  setEditModelDropOpen(false); setEditModelSearch('');
+  fetchEditVariants(model.id);
+};
+
+const handleEditVariantSelect = (variant) => {
+  setEditingProduct(prev => ({
+    ...prev,
+    variant_id: variant.id, variant_name: variant.name,
+    name: `${prev.brand_name} ${variant.name}`.trim(),
+  }));
+  setEditVariantDropOpen(false); setEditVariantSearch('');
+};
   const handleSpecChange = (id, field, value) =>
     setEditingProduct((prev) => ({
       ...prev,
@@ -445,6 +551,9 @@ function Products() {
     data.append('price',       editingProduct.price);
     data.append('stock',       editingProduct.stock);
     data.append('category_id', editingProduct.category_id || editingProduct.category);
+    if (editingProduct.brand_id)   data.append('brand_id',   editingProduct.brand_id);
+    if (editingProduct.model_id)   data.append('model_id',   editingProduct.model_id);
+    if (editingProduct.variant_id) data.append('variant_id', editingProduct.variant_id);
     data.append('status',      editingProduct.status);
     data.append('specs',       JSON.stringify(editingProduct.specs));
     (editingProduct.newImageFiles || []).forEach(file => data.append('images', file));
@@ -919,19 +1028,158 @@ function Products() {
 
             <div className="p-5 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelCls}>Product Name</label>
-                  <input type="text" value={editingProduct.name} onChange={(e) => handleEditChange("name", e.target.value)} className={inputCls} />
-                </div>
-                <div>
-                  <label className={labelCls}>Category</label>
-                  <select value={editingProduct.category_id || ""} onChange={(e) => handleEditChange("category_id", e.target.value)} className={inputCls}>
-                    <option value="">Select category</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
+{/* Category */}
+<div>
+  <label className={labelCls}>Category <span className="text-red-500">*</span></label>
+  <select
+    value={editingProduct.category_id || ""}
+    onChange={(e) => handleEditCategoryChange(e.target.value)}
+    className={inputCls}
+  >
+    <option value="">Select category</option>
+    {categories.map(cat => (
+      <option key={cat.id} value={cat.id}>{cat.name}</option>
+    ))}
+  </select>
+</div>
+
+{/* Brand / Model / Variant — same cascade as Add Product */}
+{editingProduct.category_id && (() => {
+  const labels = getLabels(editingProduct.category_type || 'product');
+  return (
+    <div className="space-y-3 col-span-2">
+
+      {/* Brand */}
+      <div className="relative">
+        <label className={labelCls}>{labels.l1} <span className="text-red-500">*</span></label>
+        <div
+          className={`${inputCls} flex items-center justify-between cursor-pointer`}
+          onClick={() => { setEditBrandDropOpen(p => !p); setEditModelDropOpen(false); setEditVariantDropOpen(false); }}
+        >
+          <span className={editingProduct.brand_name ? "text-gray-800" : "text-gray-400"}>
+            {editingProduct.brand_name || `Search ${labels.l1}...`}
+          </span>
+          {editingProduct.brand_id
+            ? <button onClick={(e) => { e.stopPropagation(); setEditingProduct(p => ({ ...p, brand_id: null, brand_name: '', model_id: null, model_name: '', variant_id: null, variant_name: '', name: '' })); setEditModels([]); setEditVariants([]); }} className="text-gray-400 hover:text-gray-600"><FaTimes size={11}/></button>
+            : <span className="text-gray-400 text-xs">▼</span>
+          }
+        </div>
+        {editBrandDropOpen && (
+          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+              <FaSearch size={12} className="text-gray-400" />
+              <input autoFocus type="text" placeholder={`Search ${labels.l1}...`}
+                value={editBrandSearch}
+                onChange={(e) => { setEditBrandSearch(e.target.value); fetchEditBrands(editingProduct.category_id, e.target.value); }}
+                className="flex-1 text-sm outline-none bg-transparent"
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+            <div className="max-h-40 overflow-y-auto">
+              {loadingEditBrands
+                ? <p className="text-xs text-gray-400 px-3 py-2">Loading...</p>
+                : editBrands.length > 0
+                  ? editBrands.map(b => <div key={b.id} onClick={() => handleEditBrandSelect(b)} className="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer">{b.name}</div>)
+                  : <p className="text-xs text-gray-400 px-3 py-2 italic">No results</p>
+              }
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Model */}
+      <div className="relative">
+        <label className={`${labelCls} ${!editingProduct.brand_id ? 'opacity-40' : ''}`}>{labels.l2} <span className="text-red-500">*</span></label>
+        <div
+          className={`${inputCls} flex items-center justify-between ${editingProduct.brand_id ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed bg-gray-50'}`}
+          onClick={() => { if (!editingProduct.brand_id) return; setEditModelDropOpen(p => !p); setEditBrandDropOpen(false); setEditVariantDropOpen(false); }}
+        >
+          <span className={editingProduct.model_name ? "text-gray-800" : "text-gray-400"}>
+            {!editingProduct.brand_id ? `Select ${labels.l1} first...` : editingProduct.model_name || `Search ${labels.l2}...`}
+          </span>
+          {editingProduct.model_id
+            ? <button onClick={(e) => { e.stopPropagation(); setEditingProduct(p => ({ ...p, model_id: null, model_name: '', variant_id: null, variant_name: '' })); setEditVariants([]); }} className="text-gray-400 hover:text-gray-600"><FaTimes size={11}/></button>
+            : <span className="text-gray-400 text-xs">▼</span>
+          }
+        </div>
+        {editModelDropOpen && editingProduct.brand_id && (
+          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+              <FaSearch size={12} className="text-gray-400" />
+              <input autoFocus type="text" placeholder={`Search ${labels.l2}...`}
+                value={editModelSearch}
+                onChange={(e) => { setEditModelSearch(e.target.value); fetchEditModels(editingProduct.brand_id, e.target.value); }}
+                className="flex-1 text-sm outline-none bg-transparent"
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+            <div className="max-h-40 overflow-y-auto">
+              {loadingEditModels
+                ? <p className="text-xs text-gray-400 px-3 py-2">Loading...</p>
+                : editModels.length > 0
+                  ? editModels.map(m => <div key={m.id} onClick={() => handleEditModelSelect(m)} className="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer">{m.name}</div>)
+                  : <p className="text-xs text-gray-400 px-3 py-2 italic">No results</p>
+              }
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Variant */}
+      <div className="relative">
+        <label className={`${labelCls} ${!editingProduct.model_id ? 'opacity-40' : ''}`}>{labels.l3} <span className="text-red-500">*</span></label>
+        <div
+          className={`${inputCls} flex items-center justify-between ${editingProduct.model_id ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed bg-gray-50'}`}
+          onClick={() => { if (!editingProduct.model_id) return; setEditVariantDropOpen(p => !p); setEditBrandDropOpen(false); setEditModelDropOpen(false); }}
+        >
+          <span className={editingProduct.variant_name ? "text-gray-800" : "text-gray-400"}>
+            {!editingProduct.model_id ? `Select ${labels.l2} first...` : editingProduct.variant_name || `Search ${labels.l3}...`}
+          </span>
+          {editingProduct.variant_id
+            ? <button onClick={(e) => { e.stopPropagation(); setEditingProduct(p => ({ ...p, variant_id: null, variant_name: '', name: p.brand_name })); }} className="text-gray-400 hover:text-gray-600"><FaTimes size={11}/></button>
+            : <span className="text-gray-400 text-xs">▼</span>
+          }
+        </div>
+        {editVariantDropOpen && editingProduct.model_id && (
+          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+              <FaSearch size={12} className="text-gray-400" />
+              <input autoFocus type="text" placeholder={`Search ${labels.l3}...`}
+                value={editVariantSearch}
+                onChange={(e) => { setEditVariantSearch(e.target.value); fetchEditVariants(editingProduct.model_id, e.target.value); }}
+                className="flex-1 text-sm outline-none bg-transparent"
+                onClick={e => e.stopPropagation()}
+              />
+            </div>
+            <div className="max-h-40 overflow-y-auto">
+              {loadingEditVariants
+                ? <p className="text-xs text-gray-400 px-3 py-2">Loading...</p>
+                : editVariants.length > 0
+                  ? editVariants.map(v => <div key={v.id} onClick={() => handleEditVariantSelect(v)} className="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer">{v.name}</div>)
+                  : <p className="text-xs text-gray-400 px-3 py-2 italic">No results</p>
+              }
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Generated name preview */}
+      {editingProduct.brand_id && (
+        <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+          <p className="text-xs text-blue-400 mb-0.5">Product name (generated)</p>
+          <p className="text-sm font-semibold text-blue-700">
+            {editingProduct.brand_name}
+            {editingProduct.variant_name
+              ? ` ${editingProduct.variant_name}`
+              : <span className="text-blue-300 font-normal italic"> — select {labels.l3} to complete</span>
+            }
+          </p>
+        </div>
+      )}
+    </div>
+  );
+})()}
+
                 <div>
                   <label className={labelCls}>Price (TZS)</label>
                   <input type="text" inputMode="numeric" pattern="[0-9]*" placeholder="0" value={editingProduct.price}
@@ -1095,12 +1343,14 @@ function Products() {
                   </span>
 
                   {/* ── NEW: ⚠ needs update banner for old products without brand_id ── */}
-                  {!product.brand_id && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-amber-500 bg-opacity-90 text-white text-xs font-semibold px-2 py-1 flex items-center gap-1">
-                      <span>⚠</span> Needs name update
-                    </div>
-                  )}
-
+                    {(!product.brand_id || !product.model_id || !product.variant_id) && (
+                      <button
+                        onClick={() => openEdit(product)}
+                        className="absolute bottom-0 left-0 right-0 bg-amber-500 bg-opacity-90 text-white text-xs font-semibold px-2 py-1 flex items-center gap-1 hover:bg-amber-600 transition w-full"
+                      >
+                        <span>⚠</span> Tap to update naming
+                      </button>
+                    )}
                   {/* Image carousel nav */}
                   {(product.images || []).length > 1 && (
                     <>
