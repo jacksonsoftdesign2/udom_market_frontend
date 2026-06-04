@@ -571,17 +571,23 @@ const handleEditVariantSelect = (variant) => {
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message);
-      setProducts(prev => prev.map(p => p.id === editingProduct.id ? {
-        ...result.product,
-        listingDate: result.product.listing_date,
-        createdDate: result.product.created_at,
-        specs: result.product.specs
-          ? (typeof result.product.specs === 'string'
-              ? JSON.parse(result.product.specs)
-              : result.product.specs)
-          : [],
-        images: result.product.images || [],
-      } : p));
+setProducts(prev => prev.map(p => p.id === editingProduct.id ? {
+  ...result.product,
+  brand_id:     editingProduct.brand_id,
+  model_id:     editingProduct.model_id,
+  variant_id:   editingProduct.variant_id,
+  brand_name:   editingProduct.brand_name,
+  model_name:   editingProduct.model_name,
+  variant_name: editingProduct.variant_name,
+  listingDate: result.product.listing_date,
+  createdDate: result.product.created_at,
+  specs: result.product.specs
+    ? (typeof result.product.specs === 'string'
+        ? JSON.parse(result.product.specs)
+        : result.product.specs)
+    : [],
+  images: result.product.images || [],
+} : p));
       setEditSuccessMsg("updated");
       setTimeout(() => {
         setEditSuccessMsg("");
@@ -1027,7 +1033,7 @@ const handleEditVariantSelect = (variant) => {
             </div>
 
             <div className="p-5 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3">
 {/* Category */}
 <div>
   <label className={labelCls}>Category <span className="text-red-500">*</span></label>
@@ -1047,7 +1053,7 @@ const handleEditVariantSelect = (variant) => {
 {editingProduct.category_id && (() => {
   const labels = getLabels(editingProduct.category_type || 'product');
   return (
-    <div className="space-y-3 col-span-2">
+    <div className="space-y-3">
 
       {/* Brand */}
       <div className="relative">
@@ -1179,7 +1185,8 @@ const handleEditVariantSelect = (variant) => {
     </div>
   );
 })()}
-
+</div>
+                <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>Price (TZS)</label>
                   <input type="text" inputMode="numeric" pattern="[0-9]*" placeholder="0" value={editingProduct.price}
