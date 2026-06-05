@@ -3,7 +3,7 @@ import{ API } from "../../api";
 import { useState, useEffect } from "react";
 import {
   FaBox, FaEdit, FaTrash, FaPlus, FaSearch,
-  FaChevronLeft, FaChevronRight, FaTimes, FaRedo, FaUpload, FaTag,
+  FaChevronLeft, FaChevronRight, FaTimes, FaRedo, FaUpload, FaTag, FaList,
 } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import ProductListView from "./ProductListView";
