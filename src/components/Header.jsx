@@ -6,6 +6,7 @@ import gbFlag from "../assets/gb.png";
 import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
 import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight } from "react-icons/fa";
+import ClaimForm from "./ClaimForm";
 
 export default function Header({ cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick, lang: langProp, onLangChange }) {
   const [lang, setLang] = useState(langProp || "sw");
@@ -27,14 +28,15 @@ const [weekly, setWeekly] = useState([]);
 const [today, setToday] = useState(new Date());
 
 
-
-  // MENU ITEMS
+const [showClaim, setShowClaim] = useState(false);
   const menuItems = [
     { label: t.home, icon: <FaHome />, action: () => navigate("/") },
     { label: t.login, icon: <FaUser />, action: () => navigate("/login") },
     { label: t.register, icon: <FaInfoCircle />, action: () => navigate("/register-trader") },
     { label: t.delivery, icon: <FaTruckMoving />, action: () => navigate("/delivery") },
     { label: t.about, icon: <FaInfoCircle />, action: () => navigate("/about") },
+    { label: t.about, icon: <FaInfoCircle />, action: () => navigate("/about") },
+    { label: "Wasiliana / Claim", icon: <span>🚨</span>, action: () => setShowClaim(true) },
   ];
 
   const toggleLanguage = () => {
@@ -441,6 +443,16 @@ ${menuOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full pointer-
     ))}
   </nav>
 </div>
+{/* Claim Modal */}
+      {showClaim && (
+        <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setShowClaim(false)}>
+          <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-sm overflow-hidden"
+            onClick={e => e.stopPropagation()}>
+            <ClaimForm onClose={() => setShowClaim(false)} />
+          </div>
+        </div>
+      )}
     </>
   );
 }
