@@ -94,6 +94,11 @@ const imgSrc = typeof imgRow === 'object'
         {/* Name */}
         <h3 className="font-bold text-xs text-[#1a3a8f] truncate leading-tight">{item.name}</h3>
 
+        {/* Description */}
+        <p className="text-[10px] text-gray-500 line-clamp-2 leading-tight min-h-[24px]">
+          {item.description || "No description available"}
+        </p>
+
         {/* Price */}
         <p className="text-sm font-extrabold text-[#F5C518] leading-tight">
           Tsh {item.price ? Number(item.price).toLocaleString() : "—"}
