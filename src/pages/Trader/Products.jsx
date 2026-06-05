@@ -289,6 +289,8 @@ const fetchEditVariants = async (modelId, q = '') => {
     if (!addForm.price)      errors.price    = true;
     if (!addForm.stock)      errors.stock    = true;
     if (addForm.images.length === 0) errors.images = true;
+    if (!addForm.description.trim()) errors.description = true;
+    if (addForm.specs.length < 3)    errors.specs = true;
     return errors;
   };
 
@@ -365,8 +367,11 @@ const fetchEditVariants = async (modelId, q = '') => {
   };
 
   // Add-form spec helpers
-  const addAddSpec = () =>
-    setAddForm((prev) => ({ ...prev, specs: [...prev.specs, newSpec()] }));
+const addAddSpec = () => {
+  if (addForm.specs.length >= 12) { setSpecLimitMsg("Maximum 12 specs allowed."); return; }
+  setAddForm((prev) => ({ ...prev, specs: [...prev.specs, newSpec()] }));
+  setAddErrors(p => ({ ...p, specs: false }));
+};
 
   const updateAddSpec = (id, field, value) =>
     setAddForm((prev) => ({
@@ -947,12 +952,13 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
               <textarea
                 placeholder="Describe your product…"
                 value={addForm.description}
-                onChange={(e) => setAddForm({ ...addForm, description: e.target.value.slice(0, 100) })}
+                onChange={(e) => { setAddForm({ ...addForm, description: e.target.value.slice(0, 100) }); setAddErrors(p => ({ ...p, description: false })); }}
                 className={inputCls} rows={3} maxLength={100}
               />
-              <p className={`text-xs mt-1 text-right ${addForm.description.length >= 80 ? "text-red-400" : "text-gray-400"}`}>
+             <p className={`text-xs mt-1 text-right ${addForm.description.length >= 80 ? "text-red-400" : "text-gray-400"}`}>
                 {addForm.description.length}/100
               </p>
+              {addErrors.description && <p className="text-xs text-red-500 mt-1">Description is required.</p>}
             </div>
 
             {/* Images */}
@@ -1002,8 +1008,11 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
               </div>
             </div>
             {specLimitMsg && <p className="text-xs text-red-500 mt-1">{specLimitMsg}</p>}
+            {addErrors.specs && <p className="text-xs text-red-500 mt-1">At least 3 product details are required (max 12).</p>}
 
             {/* Submit */}
+
+
             <div className="flex gap-3">
               <button
                 onClick={handleAddProduct}
@@ -1278,7 +1287,9 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
                   ))}
                 </div>
               </div>
-              {specLimitMsg && <p className="text-xs text-red-500 mt-1">{specLimitMsg}</p>}
+            {specLimitMsg && <p className="text-xs text-red-500 mt-1">{specLimitMsg}</p>}
+            {addErrors.specs && <p className="text-xs text-red-500 mt-1">At least 3 product details are required (max 12).</p>}
+
             </div>
 
             {editSuccessMsg && (
