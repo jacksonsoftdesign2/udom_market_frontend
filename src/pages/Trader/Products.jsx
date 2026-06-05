@@ -6,7 +6,7 @@ import {
   FaChevronLeft, FaChevronRight, FaTimes, FaRedo, FaUpload, FaTag,
 } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
-
+import ProductListView from "./ProductListView";
 // ── helpers ────────────────────────────────────────────────────────────────
 
 // ── NEW: emptyForm now includes hierarchy fields ──
@@ -79,7 +79,7 @@ function Products() {
   const [loadingEditBrands, setLoadingEditBrands] = useState(false);
   const [loadingEditModels, setLoadingEditModels] = useState(false);
   const [loadingEditVariants, setLoadingEditVariants] = useState(false);
- 
+  const [showList, setShowList] = useState(false);
   useEffect(() => {
     fetch(`${API}/users/categories`)
       .then((res) => res.json())
@@ -619,17 +619,23 @@ setProducts(prev => prev.map(p => p.id === editingProduct.id ? {
     "block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide";
 
   // ── render ────────────────────────────────────────────────────────────────
-
+if (showList) return <ProductListView onClose={() => setShowList(false)} />;
   return (
     <div className="space-y-4">
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <FaBox className="text-blue-600" />
-          My Products
-          <span className="text-sm font-normal text-gray-400">({products.length})</span>
-        </h2>
+<h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+  <FaBox className="text-blue-600" />
+  My Products
+  <span className="text-sm font-normal text-gray-400">({products.length})</span>
+  <button
+    onClick={() => setShowList(true)}
+    className="text-xs text-blue-500 font-normal flex items-center gap-1 hover:text-blue-700 ml-1"
+  >
+    <FaList size={11} /> See all
+  </button>
+</h2>
         <button
           onClick={() => { setShowAddForm(!showAddForm); setAddForm(emptyForm); setAddErrors({}); setBrands([]); setModels([]); setVariants([]); }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm font-medium w-full sm:w-auto justify-center"
