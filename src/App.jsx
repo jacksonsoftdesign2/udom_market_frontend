@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminTraders from "./pages/Admin/AdminTraders";
 import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminNameRequests from "./pages/Admin/AdminNameRequests";
+import AdminClaims from "./pages/Admin/AdminClaims";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
       <Route path="/admin/traders"     element={<AdminProtectedRoute><AdminTraders /></AdminProtectedRoute>} />
       <Route path="/admin/products"    element={<AdminProtectedRoute><AdminProducts /></AdminProtectedRoute>} />
       <Route path="/admin/name-requests" element={<AdminProtectedRoute><AdminNameRequests /></AdminProtectedRoute>} />
+      <Route path="/admin/claims" element={<AdminProtectedRoute><AdminClaims /></AdminProtectedRoute>} />
     </Routes>
   );
 }

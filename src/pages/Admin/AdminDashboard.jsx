@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { API } from "../../api";
 import AdminLayout from "./AdminLayout";
-import { FiUsers, FiPackage, FiCheckCircle, FiClock, FiTrendingUp } from "react-icons/fi";
+import { FiUsers, FiPackage, FiCheckCircle, FiClock, FiTrendingUp, FiAlertCircle } from "react-icons/fi";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -21,6 +21,10 @@ export default function AdminDashboard() {
         const traders = usersData.users?.filter(u => u.role === "trader" && !u.is_deleted) || [];
         const products = productsData.products || [];
 
+        const claimsRes = await fetch(`${API}/admin/claims`, { headers: { Authorization: `Bearer ${token}` } });
+        const claimsData = await claimsRes.json();
+        const claims = Array.isArray(claimsData) ? claimsData : [];
+
         setStats({
           totalTraders:    traders.length,
           pendingApproval: traders.filter(t => !t.is_approved).length,
@@ -28,6 +32,8 @@ export default function AdminDashboard() {
           totalProducts:   products.length,
           pendingProducts: products.filter(p => p.verification_status === "pending").length,
           approvedProducts: products.filter(p => p.verification_status === "approved").length,
+          totalClaims:  claims.length,
+          newClaims:    claims.filter(c => c.status === "new").length,
         });
       } catch (err) {
         console.error(err);
@@ -44,9 +50,10 @@ export default function AdminDashboard() {
     { label: "Paid Traders",       value: stats.paidTraders,     icon: FiCheckCircle, color: "#16a34a", bg: "#dcfce7" },
     { label: "Total Products",     value: stats.totalProducts,   icon: FiPackage,     color: "#7c3aed", bg: "#ede9fe" },
     { label: "Pending Products",   value: stats.pendingProducts, icon: FiClock,       color: "#dc2626", bg: "#fee2e2" },
-    { label: "Approved Products",  value: stats.approvedProducts,icon: FiTrendingUp,  color: "#0891b2", bg: "#cffafe" },
+    { label: "Approved Products",  value: stats.approvedProducts, icon: FiTrendingUp,   color: "#0891b2", bg: "#cffafe" },
+    { label: "Total Claims",       value: stats.totalClaims,      icon: FiAlertCircle,  color: "#dc2626", bg: "#fee2e2" },
+    { label: "New Claims",         value: stats.newClaims,        icon: FiAlertCircle,  color: "#b91c1c", bg: "#fecaca" },
   ] : [];
-
   return (
     <AdminLayout>
       <div className="mb-6">
