@@ -76,6 +76,7 @@ export default function AdminManagement() {
     setSocket(s);
 
     s.on("vote_update",        () => fetchData());
+    s.on("filler_selected",    () => fetchData());
     s.on("sequence_ready",     () => fetchData());
     s.on("approval_progress",  () => fetchData());
     s.on("action_completed",   () => { fetchData(); setMessage({ type: "success", text: "Action completed successfully!" }); });
@@ -83,6 +84,13 @@ export default function AdminManagement() {
 
     return () => s.disconnect();
   }, [me?.id]);
+
+  useEffect(() => {
+  const interval = setInterval(() => {
+    if (session?.status === 'pending') fetchData();
+  }, 5000); // poll every 5 seconds when session is pending
+  return () => clearInterval(interval);
+}, [session?.status]);
 
   // ── Helpers ────────────────────────────────────────────────────────
   const showMsg = (type, text) => {
