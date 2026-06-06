@@ -319,9 +319,11 @@ export default function AdminManagement() {
                         {votesForThis} vote{votesForThis !== 1 ? "s" : ""}
                       </span>
                     )}
-                    {canDelete && !isMe && !session && (
-                      <button
-                        onClick={() => handleVote("DELETE", admin.id)}
+                        {canDelete && !isMe && 
+                        (!session || (session?.status === 'pending' && session?.action_type === 'DELETE' && !votes.some(v => v.admin_id === me.id))) &&
+                        parseInt(admin.id) !== parseInt(session?.target_admin_id) && (
+                          <button
+                            onClick={() => handleVote("DELETE", admin.id)}
                         className="flex items-center gap-1 px-3 py-1.5 rounded-[4px]
                                    text-xs font-medium text-red-600 border border-red-200
                                    hover:bg-red-50 transition">
