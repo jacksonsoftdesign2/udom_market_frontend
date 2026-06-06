@@ -102,11 +102,9 @@ function Login() {
     e.preventDefault();
     setError("");
     setStage("searching"); // Stage 1 — logo spinning, searching...
-    const codeToSave = userCode;
-    setUserCode("");
-	setPassword("");
-    try {
-        const response = await fetch(`${API}/users/login`, {
+const codeToSave = userCode;
+try {
+    const response = await fetch(`${API}/users/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_code: userCode, password }),
@@ -121,6 +119,8 @@ function Login() {
         }
 
         // Save to localStorage
+setUserCode("");
+setPassword("");
 localStorage.setItem("token", data.token);
 localStorage.setItem("user", JSON.stringify(data.user));
 if (rememberMe) {
