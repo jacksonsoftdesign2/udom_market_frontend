@@ -377,7 +377,7 @@ export default function AdminManagement() {
               {/* ADD: selected filler fills form */}
               {session.status === "pending" &&
                session.action_type === "ADD" &&
-               session.selected_filler === me.id &&
+               parseInt(session.selected_filler) === parseInt(me.id) &&
                !showAddForm && (
                 <div className="mt-4 p-4 bg-[#e8edf7] rounded-[4px]">
                   <p className="text-sm font-semibold text-[#1a3a8f] mb-2">
@@ -391,6 +391,20 @@ export default function AdminManagement() {
                   </button>
                 </div>
               )}
+               
+            {/* ADD: waiting for filler */}
+              {session.status === "pending" &&
+               session.action_type === "ADD" &&
+               session.selected_filler &&
+               parseInt(session.selected_filler) !== parseInt(me.id) && (
+                <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-[4px]">
+                  <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    <FiClock size={15} />
+                    Another admin has been selected to fill the new admin details. Please wait...
+                  </div>
+                </div>
+              )}
+              
 
               {/* Add form */}
               {showAddForm && (
