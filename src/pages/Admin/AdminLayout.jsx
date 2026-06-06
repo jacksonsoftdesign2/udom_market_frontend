@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import {
   FiGrid, FiUsers, FiPackage, FiLogOut,
-  FiBell, FiMenu, FiX, FiChevronRight, FiTag, FiAlertCircle
+  FiBell, FiMenu, FiX, FiChevronRight, FiTag, FiAlertCircle, FiShield
 } from "react-icons/fi";
 import AdminNotifications from "./AdminNotifications";
 
@@ -13,11 +14,31 @@ const NAV = [
   { to: "/admin/products",  icon: FiPackage, label: "Products"  },
   { to: "/admin/name-requests",  icon: FiTag,     label: "Name Requests" },
   { to: "/admin/claims",        icon: FiAlertCircle, label: "Claims"    },
+  { to: "/admin/admins", icon: FiShield, label: "Admins" },
 ];
 
 export default function AdminLayout({ children }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+    useEffect(() => {
+    if (!user?.id) return;
+
+    const socket = io(import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:3000", {
+      query: { adminId: user.id }
+    });
+
+    socket.on("suspicious_activity", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      navigate("/login");
+    });
+
+    socket.on("action_completed", () => {
+      window.dispatchEvent(new Event("admins_updated"));
+    });
+
+    return () => socket.disconnect();
+  }, [user?.id]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 

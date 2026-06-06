@@ -14,6 +14,7 @@ import AdminTraders from "./pages/Admin/AdminTraders";
 import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminNameRequests from "./pages/Admin/AdminNameRequests";
 import AdminClaims from "./pages/Admin/AdminClaims";
+import AdminManagement from "./pages/Admin/AdminManagement";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
       <Route path="/admin/products"    element={<AdminProtectedRoute><AdminProducts /></AdminProtectedRoute>} />
       <Route path="/admin/name-requests" element={<AdminProtectedRoute><AdminNameRequests /></AdminProtectedRoute>} />
       <Route path="/admin/claims" element={<AdminProtectedRoute><AdminClaims /></AdminProtectedRoute>} />
+      <Route path="/admin/admins" element={<AdminProtectedRoute><AdminManagement /></AdminProtectedRoute>} />
     </Routes>
   );
 }
