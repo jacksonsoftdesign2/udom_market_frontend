@@ -49,6 +49,16 @@ export default function AdminManagement() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  useEffect(() => {
+  if (!session || session.status !== 'pending') return;
+  const expiresAt = new Date(session.expires_at).getTime();
+  const now = Date.now();
+  const remaining = expiresAt - now;
+  if (remaining <= 0) { fetchData(); return; }
+  const timer = setTimeout(() => fetchData(), remaining);
+  return () => clearTimeout(timer);
+}, [session]);
+
   // ── Listen for admins_updated from AdminLayout ──────────────────────
   useEffect(() => {
     const handler = () => fetchData();
@@ -201,7 +211,10 @@ export default function AdminManagement() {
   const adminCount    = admins.length;
   const canAdd        = adminCount < 5;
   const canDelete     = adminCount > 3;
-  const votes         = session?.votes || [];
+  const votes = (session?.votes || []).map(v => ({
+  ...v,
+  admin_id: parseInt(v.admin_id)
+}));
   const sequence      = session?.approval_sequence || [];
   const approvals     = session?.approvals || [];
   const requiredVotes = session?.action_type === "DELETE" ? adminCount - 1 : adminCount;
@@ -241,16 +254,27 @@ export default function AdminManagement() {
               <FiShield size={15} />
               {adminCount} / 5 Admins
             </div>
-            {canAdd && !session && (
-              <button
-                onClick={() => handleVote("ADD")}
-                className="flex items-center gap-2 px-4 py-2 rounded-[4px] text-sm
-                           font-medium text-white transition"
-                style={{ background: "#1a3a8f" }}>
-                <FiUserPlus size={15} />
-                Add Admin
-              </button>
-            )}
+{canAdd && (!session || (session?.status === 'pending' && session?.action_type === 'ADD')) && (
+  votes.some(v => v.admin_id === me.id) ? (
+    <button
+      disabled
+      className="flex items-center gap-2 px-4 py-2 rounded-[4px] text-sm
+                 font-medium text-white opacity-60 cursor-not-allowed"
+      style={{ background: "#1a3a8f" }}>
+      <FiClock size={15} />
+      Waiting... ({votes.length}/{adminCount} voted)
+    </button>
+  ) : (
+    <button
+      onClick={() => handleVote("ADD")}
+      className="flex items-center gap-2 px-4 py-2 rounded-[4px] text-sm
+                 font-medium text-white transition"
+      style={{ background: "#1a3a8f" }}>
+      <FiUserPlus size={15} />
+      Add Admin
+    </button>
+  )
+)}
           </div>
 
           {/* ── Admin list ── */}
