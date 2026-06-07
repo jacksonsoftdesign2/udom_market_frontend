@@ -92,7 +92,7 @@ function ForgotPasswordModal({ onClose }) {
     if (!userCode || !phone || !email) return setError("All fields are required.");
     setLoading(true);
     try {
-      await axios.post(`${API}/users/forgot-password`, { user_code: userCode.replace(/\s|\//g, ""), phone, email });
+      await axios.post(`${API}/users/forgot-password`, { user_code: userCode, phone, email });
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send OTP.");
@@ -106,7 +106,7 @@ function ForgotPasswordModal({ onClose }) {
     if (otp.length < 6) return setError("Enter the full 6-character OTP.");
     setLoading(true);
     try {
-      const res = await axios.post(`${API}/users/verify-otp`, { user_code: userCode.replace(/\s|\//g, ""), otp });
+      const res = await axios.post(`${API}/users/verify-otp`, { user_code: userCode, otp });
       setResetToken(res.data.reset_token);
       setStep(3);
     } catch (err) {
@@ -120,7 +120,7 @@ function ForgotPasswordModal({ onClose }) {
     setOtpDigits(["", "", "", "", "", ""]);
     setLoading(true);
     try {
-      await axios.post(`${API}/users/forgot-password`, { user_code: userCode.replace(/\s|\//g, ""), phone, email });
+      await axios.post(`${API}/users/forgot-password`, { user_code: userCode, phone, email });
       setExpired(false);
       setTimeLeft(600);
       setSuccess("New OTP sent to your email.");
@@ -140,7 +140,7 @@ function ForgotPasswordModal({ onClose }) {
       setSuccess("Password reset successfully! You can now log in.");
       setTimeout(() => {
   onClose();
-  navigate("/login", { state: { user_code: userCode.replace(/\s|\//g, "") } });
+  navigate("/login", { state: { user_code: userCode } });
 }, 2500);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to reset password.");
@@ -222,6 +222,7 @@ function ForgotPasswordModal({ onClose }) {
             const isDeleting = e.target.value.length < userCode.length;
             setUserCode(formatUserCode(e.target.value, isDeleting));
           }}
+           onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("fp-phone")?.focus(); }}}
                         className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#1a3a8f] focus:ring-1 focus:ring-[#1a3a8f]/20 bg-white"
               />
             </div>
@@ -233,6 +234,7 @@ function ForgotPasswordModal({ onClose }) {
                 placeholder="Registered phone number"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
+                 onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("fp-phone")?.focus(); }}}
                 className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#1a3a8f] focus:ring-1 focus:ring-[#1a3a8f]/20 bg-white"
               />
             </div>
@@ -244,6 +246,7 @@ function ForgotPasswordModal({ onClose }) {
                 placeholder="Registered email address"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                 onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); document.getElementById("fp-phone")?.focus(); }}}
                 className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#1a3a8f] focus:ring-1 focus:ring-[#1a3a8f]/20 bg-white"
               />
             </div>
