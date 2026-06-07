@@ -1,10 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiX, FiMail, FiPhone, FiUser, FiEye, FiEyeOff, FiClock, FiAlertCircle } from "react-icons/fi";
-import { IoKeyOutline } from "react-icons/io5";
+import { FiX, FiMail, FiPhone, FiUser, FiEye, FiEyeOff, FiClock, FiAlertCircle, FiLock } from "react-icons/fi";
 import axios from "axios";
 
 const API = import.meta.env.VITE_API_URL;
+
+function formatUserCode(value, isDeleting = false) {
+  let v = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 7);
+  let result = "";
+  if (v.length >= 1) result += v.slice(0, 2);
+  if (v.length > 2) result += " " + v.slice(2, 4);
+  if (v.length >= 4 && !isDeleting) {
+    result += "/" + v.slice(4, 7);
+  } else if (v.length > 4) {
+    result += "/" + v.slice(4, 7);
+  }
+  return result;
+}
 
 function ForgotPasswordModal({ onClose }) {
   const [step, setStep] = useState(1);
@@ -159,7 +171,7 @@ function ForgotPasswordModal({ onClose }) {
         {/* Icon + heading */}
         <div className="flex flex-col items-center mb-5">
           <div className="w-12 h-12 rounded-[8px] bg-[#eef1f9] flex items-center justify-center mb-3">
-            <IoKeyOutline size={24} color="#1a3a8f" />
+            <FiLock size={24} color="#1a3a8f" />
           </div>
           <h2 className="text-base font-bold text-gray-800 text-center">Forgot your password?</h2>
           <p className="text-xs text-gray-400 mt-1 text-center">
