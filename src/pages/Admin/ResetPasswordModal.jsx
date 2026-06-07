@@ -2,6 +2,20 @@ import { useState } from "react";
 import { API } from "../../api";
 import { FiX, FiCopy, FiCheck, FiMail, FiPhone, FiUser, FiKey, FiSend } from "react-icons/fi";
 
+function formatUserCode(value, isDeleting = false) {
+  let v = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 7);
+  let result = "";
+  if (v.length >= 1) result += v.slice(0, 2);
+  if (v.length > 2) result += " " + v.slice(2, 4);
+  if (v.length >= 4 && !isDeleting) {
+    result += "/" + v.slice(4, 7);
+  } else if (v.length > 4) {
+    result += "/" + v.slice(4, 7);
+  }
+  return result;
+}
+
+
 export default function ResetPasswordModal({ trader, onClose }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); // { tempPassword, trader }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { FiX, FiMail, FiPhone, FiUser, FiEye, FiEyeOff, FiClock } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { FiX, FiMail, FiPhone, FiUser, FiEye, FiEyeOff, FiClock, FiAlertCircle } from "react-icons/fi";
 import { IoKeyOutline } from "react-icons/io5";
 import axios from "axios";
 
@@ -29,7 +30,7 @@ function ForgotPasswordModal({ onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const [success, setSuccess] = useState("");
-
+  const navigate = useNavigate();
   // ── Countdown ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (step !== 2) return;
@@ -79,7 +80,7 @@ function ForgotPasswordModal({ onClose }) {
     if (!userCode || !phone || !email) return setError("All fields are required.");
     setLoading(true);
     try {
-      await axios.post(`${API}/users/forgot-password`, { user_code: userCode, phone, email });
+      await axios.post(`${API}/users/forgot-password`, { user_code: userCode.replace(/\s|\//g, ""), phone, email });
       setStep(2);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send OTP.");
@@ -93,7 +94,7 @@ function ForgotPasswordModal({ onClose }) {
     if (otp.length < 6) return setError("Enter the full 6-character OTP.");
     setLoading(true);
     try {
-      const res = await axios.post(`${API}/users/verify-otp`, { user_code: userCode, otp });
+      const res = await axios.post(`${API}/users/verify-otp`, { user_code: userCode.replace(/\s|\//g, ""), otp });
       setResetToken(res.data.reset_token);
       setStep(3);
     } catch (err) {
@@ -107,7 +108,7 @@ function ForgotPasswordModal({ onClose }) {
     setOtpDigits(["", "", "", "", "", ""]);
     setLoading(true);
     try {
-      await axios.post(`${API}/users/forgot-password`, { user_code: userCode, phone, email });
+      await axios.post(`${API}/users/forgot-password`, { user_code: userCode.replace(/\s|\//g, ""), phone, email });
       setExpired(false);
       setTimeLeft(600);
       setSuccess("New OTP sent to your email.");
@@ -125,7 +126,10 @@ function ForgotPasswordModal({ onClose }) {
     try {
       await axios.put(`${API}/users/reset-password/${resetToken}`, { new_password: newPassword });
       setSuccess("Password reset successfully! You can now log in.");
-      setTimeout(onClose, 2500);
+      setTimeout(() => {
+  onClose();
+  navigate("/login", { state: { user_code: userCode.replace(/\s|\//g, "") } });
+}, 2500);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to reset password.");
     } finally { setLoading(false); }
@@ -197,12 +201,16 @@ function ForgotPasswordModal({ onClose }) {
           <div className="space-y-3">
             <div className="relative">
               <FiUser size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Trader ID (e.g. TRD001)"
-                value={userCode}
-                onChange={e => setUserCode(e.target.value.toUpperCase())}
-                className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#1a3a8f] focus:ring-1 focus:ring-[#1a3a8f]/20 bg-white"
+        <input
+          type="text"
+          placeholder="TR --/---"
+          value={userCode}
+          maxLength={9}
+          onChange={e => {
+            const isDeleting = e.target.value.length < userCode.length;
+            setUserCode(formatUserCode(e.target.value, isDeleting));
+          }}
+                        className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#1a3a8f] focus:ring-1 focus:ring-[#1a3a8f]/20 bg-white"
               />
             </div>
 
@@ -228,11 +236,12 @@ function ForgotPasswordModal({ onClose }) {
               />
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2 rounded-[4px]">
-                {error}
-              </div>
-            )}
+              {error && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2.5 rounded-[4px]">
+                  <FiAlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
 
             <button
               onClick={handleSendOtp}
@@ -285,8 +294,9 @@ function ForgotPasswordModal({ onClose }) {
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2 rounded-[4px]">
-                {error}
+              <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2.5 rounded-[4px]">
+                <FiAlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
             {success && (
@@ -357,11 +367,12 @@ function ForgotPasswordModal({ onClose }) {
               Must be 8+ characters with uppercase, lowercase, number and special character (@$!%*?&)
             </p>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2 rounded-[4px]">
-                {error}
-              </div>
-            )}
+          {error && (
+            <div className="flex items-start gap-2 bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2.5 rounded-[4px]">
+              <FiAlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
             {success && (
               <div className="bg-green-50 border border-green-200 text-green-600 text-xs px-3 py-2 rounded-[4px]">
                 {success}
