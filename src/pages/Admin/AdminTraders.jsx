@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { API } from "../../api";
 import AdminLayout from "./AdminLayout";
-import ResetPasswordModal from "./ResetPasswordModal";
 import {
   FiSearch, FiCheck, FiTrash2, FiKey, FiDollarSign,
   FiAlertCircle, FiRefreshCw
@@ -32,7 +31,6 @@ export default function AdminTraders() {
   const [search, setSearch]           = useState(saved.search   ?? "");
   const [filter, setFilter]           = useState(saved.filter   ?? "All");
   const [selected, setSelected]       = useState(saved.selected ?? []);
-  const [resetTrader, setResetTrader] = useState(null);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [toast, setToast]             = useState(null);
   const [actionLoading, setActionLoading] = useState({}); // per-row loading
@@ -447,14 +445,7 @@ export default function AdminTraders() {
                               <FiDollarSign size={13} />
                             </button>
                           )}
-                          <button
-                            onClick={() => setResetTrader(trader)}
-                            title="Reset password"
-                            disabled={rowBusy}
-                            className="p-1.5 rounded-[4px] bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition"
-                          >
-                            <FiKey size={13} />
-                          </button>
+
                           <button
                             onClick={() => deleteTrader(trader.id)}
                             title="Delete trader"
@@ -485,17 +476,7 @@ export default function AdminTraders() {
       </div>
 
       {/* Reset password modal */}
-      {resetTrader && (
-        <ResetPasswordModal
-          trader={resetTrader}
-          token={token}
-          onClose={() => setResetTrader(null)}
-          onSuccess={(id) => {
-            showToast("Password reset — email sent to trader ✓");
-            setResetTrader(null);
-          }}
-        />
-      )}
+
     </AdminLayout>
   );
 }
