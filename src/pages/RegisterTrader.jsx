@@ -69,6 +69,7 @@ function RegisterTrader() {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [slideDir, setSlideDir] = useState("right");
   const [slideKey, setSlideKey] = useState(0);
+  const [settings, setSettings] = useState(null);
 
   const [form, setForm] = useState({
     first_name: "", middle_name: "", last_name: "", gender: "",
@@ -97,11 +98,25 @@ function RegisterTrader() {
       .catch((err) => console.error(err));
   }, []);
 
+
+
   useEffect(() => {
     if (!showErrorModal) return;
     const id = setTimeout(() => { setShowErrorModal(false); setErrorMessage(""); }, 10000);
     return () => clearTimeout(id);
   }, [showErrorModal]);
+
+  useEffect(() => {
+  const fetchSettings = async () => {
+    try {
+      const res = await axios.get(`${API}/admin/payment-settings`);
+      setSettings(res.data);
+    } catch (err) {
+      console.error('Error fetching payment settings:', err);
+    }
+  };
+  fetchSettings();
+}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -598,19 +613,33 @@ function RegisterTrader() {
                   </button>
                 </div>
               </div>
-          <div className="bg-[#f0f4ff] p-4 rounded-[4px] mb-6 border border-[#c7d6f5]">
-            <p className="text-sm text-gray-700 mb-2"><strong>Registration Fee:</strong></p>
-            <p className="text-3xl font-bold text-[#1a3a8f]">TZS 10,000</p>
-                <p className="text-xs text-gray-500 mt-1">Complete payment to activate your trader account</p>
+              <div className="bg-[#f0f4ff] p-4 rounded-[4px] mb-6 border border-[#c7d6f5]">
+                <p className="text-sm text-gray-700 mb-2"><strong>Registration Fee:</strong></p>
+                <p className="text-3xl font-bold text-[#1a3a8f]">
+                  {settings?.payments_active && settings?.registration_active 
+                    ? `TZS ${settings.registration_fee?.toLocaleString()}` 
+                    : "Free"}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {settings?.payments_active && settings?.registration_active
+                    ? "Complete payment to activate your trader account"
+                    : "Your account is now active!"}
+                </p>
               </div>
               <div className="space-y-3">
-                <button onClick={() => setShowPaymentModal(true)} disabled={paymentProcessing}
-                  className="w-full bg-[#1a3a8f] text-[#F5C518] py-3 rounded-[4px] font-semibold hover:bg-[#0f2460] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                  {paymentProcessing ? "Processing..." : "Proceed to Payment"}
-                </button>
+                {settings?.payments_active && settings?.registration_active ? (
+                  <button onClick={() => setShowPaymentModal(true)} disabled={paymentProcessing}
+                    className="w-full bg-[#1a3a8f] text-[#F5C518] py-3 rounded-[4px] font-semibold hover:bg-[#0f2460] transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    {paymentProcessing ? "Processing..." : "Proceed to Payment"}
+                  </button>
+                ) : (
+                  <div className="w-full bg-green-50 border border-green-200 rounded-[4px] p-3 text-center">
+                    <p className="text-green-700 font-semibold text-sm">✓ Registration complete! Your account is active.</p>
+                  </div>
+                )}
                 <button onClick={() => { setShowSuccessModal(false); localStorage.setItem("user_code", registrationData?.user_code); navigate("/login", { state: { user_code: registrationData?.user_code } }); }}
                   className="w-full bg-[#f8fafc] border border-[#e2e8f0] text-gray-600 py-3 rounded-[4px] font-semibold hover:bg-[#f1f5f9] transition-all">
-                  Close for Now
+                  Go to Login
                 </button>
               </div>
             </div>

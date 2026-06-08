@@ -9,16 +9,18 @@ import { FiCreditCard, FiCheck, FiX, FiClock, FiAlertCircle } from "react-icons/
 export default function Payments() {
   const [settings, setSettings] = useState(null);
   const [payments, setPayments] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentPayment, setCurrentPayment] = useState(null);
   const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  // Fetch payment settings and trader's payment history
+  // Fetch payment settings, trader's payment history, and user data
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const userFromStorage = JSON.parse(localStorage.getItem("user") || "{}");
+        setUser(userFromStorage);
+
         const [settingsRes, paymentsRes] = await Promise.all([
           axios.get(`${API}/admin/payment-settings`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -42,62 +44,70 @@ export default function Payments() {
     }
   }, [token]);
 
-  // Get latest payment
-  const latestPayment = payments.length > 0 ? payments[0] : null;
-
-  // Calculate next due date (30 days from latest approved payment)
-  const getNextDueDate = () => {
-    if (!latestPayment || latestPayment.status !== "approved") {
-      return "Not yet active";
+  // ── CHECK PAYMENT STATUS ──
+  const getPaymentStatus = () => {
+    // If payments globally disabled
+    if (!settings?.payments_active) {
+      return {
+        isPaid: true,
+        status: "disabled",
+        message: "No payment required - payments are disabled",
+        daysRemaining: null,
+      };
     }
-    const lastPaymentDate = new Date(latestPayment.payment_date);
-    const nextDue = new Date(lastPaymentDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-    return nextDue.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
 
-  // Check if payment is overdue
-  const isPaymentDue = () => {
-    if (!latestPayment || latestPayment.status !== "approved") return false;
-    const lastPaymentDate = new Date(latestPayment.payment_date);
-    const thirtyDaysLater = new Date(lastPaymentDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-    return new Date() > thirtyDaysLater;
-  };
+    // If monthly payment is disabled
+    if (!settings?.monthly_active) {
+      return {
+        isPaid: true,
+        status: "disabled",
+        message: "No payment required - monthly payments are disabled",
+        daysRemaining: null,
+      };
+    }
 
-  // Get status badge
-  const getStatusBadge = (status) => {
-    const badges = {
-      pending: {
-        icon: FiClock,
-        bg: "bg-yellow-50",
-        text: "text-yellow-700",
-        border: "border-yellow-200",
-        label: "Pending",
-      },
-      approved: {
-        icon: FiCheck,
-        bg: "bg-green-50",
-        text: "text-green-700",
-        border: "border-green-200",
-        label: "Approved",
-      },
-      rejected: {
-        icon: FiX,
-        bg: "bg-red-50",
-        text: "text-red-700",
-        border: "border-red-200",
-        label: "Rejected",
-      },
+    // Get latest approved payment
+    const latestApprovedPayment = payments.find(p => p.status === "approved");
+
+    if (!latestApprovedPayment) {
+      // No approved payment yet - payment is due
+      return {
+        isPaid: false,
+        status: "overdue",
+        message: `Payment overdue - Please pay TZS ${settings?.monthly_fee?.toLocaleString()}`,
+        daysRemaining: 0,
+        amountDue: settings?.monthly_fee,
+      };
+    }
+
+    // Calculate days since last approved payment
+    const lastPaymentDate = new Date(latestApprovedPayment.payment_date);
+    const today = new Date();
+    const daysSincePayment = Math.floor((today - lastPaymentDate) / (1000 * 60 * 60 * 24));
+    const daysRemaining = 30 - daysSincePayment;
+
+    if (daysSincePayment >= 30) {
+      // Payment is due again (30 days passed)
+      return {
+        isPaid: false,
+        status: "overdue",
+        message: `Payment overdue - Please pay TZS ${settings?.monthly_fee?.toLocaleString()}`,
+        daysRemaining: 0,
+        amountDue: settings?.monthly_fee,
+      };
+    }
+
+    // Still within 30-day period
+    return {
+      isPaid: true,
+      status: "active",
+      message: `✓ Account Active`,
+      daysRemaining,
+      lastPaymentAmount: latestApprovedPayment.amount,
     };
-    return badges[status] || badges.pending;
   };
 
-  const handlePayNow = () => {
-    setShowPaymentModal(true);
-  };
+  const paymentStatus = getPaymentStatus();
 
   if (loading) {
     return (
@@ -125,20 +135,20 @@ export default function Payments() {
             <p className="text-gray-600 mt-2">Manage your trader account subscription</p>
           </div>
 
-          {/* ── CURRENT STATUS CARD ── */}
+          {/* ── STATUS CARD ── */}
           <div className="bg-white rounded-[4px] border border-gray-100 p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left: Status */}
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-3">Account Status</p>
                 <div className="flex items-center gap-3">
-                  {latestPayment?.status === "approved" ? (
+                  {paymentStatus.status === "disabled" ? (
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <FiCheck className="w-6 h-6 text-blue-600" />
+                    </div>
+                  ) : paymentStatus.isPaid ? (
                     <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
                       <FiCheck className="w-6 h-6 text-green-600" />
-                    </div>
-                  ) : latestPayment?.status === "pending" ? (
-                    <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
-                      <FiClock className="w-6 h-6 text-yellow-600" />
                     </div>
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
@@ -147,36 +157,73 @@ export default function Payments() {
                   )}
                   <div>
                     <p className="text-lg font-bold text-gray-800">
-                      {latestPayment?.status === "approved"
+                      {paymentStatus.status === "disabled"
+                        ? "✓ No Payment Required"
+                        : paymentStatus.isPaid
                         ? "✓ Active"
-                        : latestPayment?.status === "pending"
-                        ? "⏳ Pending"
-                        : "⚠️ Not Active"}
+                        : "⚠️ Payment Due"}
                     </p>
-                    <p className="text-sm text-gray-500">
-                      {latestPayment
-                        ? `Last payment: ${new Date(latestPayment.payment_date).toLocaleDateString()}`
-                        : "No payments yet"}
-                    </p>
+                    <p className="text-sm text-gray-500">{paymentStatus.message}</p>
                   </div>
                 </div>
               </div>
 
-              {/* Right: Next Due */}
+              {/* Right: Days Remaining or Info */}
               <div>
-                <p className="text-gray-600 text-sm font-medium mb-3">Next Payment Due</p>
-                <div>
-                  <p className="text-2xl font-bold text-[#1a3a8f]">{getNextDueDate()}</p>
-                  {isPaymentDue() && (
-                    <p className="text-sm text-red-600 font-semibold mt-1">⚠️ Payment overdue</p>
-                  )}
-                  {latestPayment?.status === "approved" && !isPaymentDue() && (
-                    <p className="text-sm text-green-600 mt-1">Your account is active</p>
-                  )}
-                </div>
+                {paymentStatus.status === "disabled" ? (
+                  <>
+                    <p className="text-gray-600 text-sm font-medium mb-3">Payment Status</p>
+                    <div>
+                      <p className="text-2xl font-bold text-blue-600">Disabled</p>
+                      <p className="text-sm text-gray-500 mt-1">You can operate without monthly payments</p>
+                    </div>
+                  </>
+                ) : paymentStatus.isPaid ? (
+                  <>
+                    <p className="text-gray-600 text-sm font-medium mb-3">Days Remaining</p>
+                    <div>
+                      <p className="text-4xl font-bold text-green-600">{paymentStatus.daysRemaining}</p>
+                      <p className="text-sm text-gray-500 mt-1">days until next payment</p>
+                      {paymentStatus.lastPaymentAmount && (
+                        <p className="text-xs text-gray-400 mt-2">
+                          Last paid: TZS {paymentStatus.lastPaymentAmount?.toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-600 text-sm font-medium mb-3">Action Required</p>
+                    <div>
+                      <p className="text-2xl font-bold text-red-600">Pay Now</p>
+                      <p className="text-sm text-gray-500 mt-1">Your account access is limited</p>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
+
+          {/* ── PAYMENT REQUIRED ALERT ── */}
+          {!paymentStatus.isPaid && paymentStatus.status !== "disabled" && (
+            <div className="bg-red-50 border border-red-200 rounded-[4px] p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-red-700 font-semibold text-sm">Payment Required</p>
+                  <p className="text-red-600 text-sm mt-1">
+                    Your account access is limited. You cannot add new products or edit listings until payment is made.
+                  </p>
+                  <button
+                    onClick={() => setShowPaymentModal(true)}
+                    className="mt-3 px-4 py-2 bg-red-600 text-white rounded-[4px] text-sm font-semibold hover:bg-red-700 transition"
+                  >
+                    Pay Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── MONTHLY FEE CARD ── */}
           {settings?.monthly_active && settings?.payments_active ? (
@@ -189,19 +236,30 @@ export default function Payments() {
                   </p>
                   <p className="text-[#4a6fa5] font-semibold mt-1">TZS per month</p>
                 </div>
-                <button
-                  onClick={handlePayNow}
-                  className="px-6 py-3 bg-[#1a3a8f] text-[#F5C518] rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition flex items-center gap-2 flex-shrink-0"
-                >
-                  <FiCreditCard size={16} />
-                  Pay Now
-                </button>
+                {paymentStatus.isPaid && paymentStatus.daysRemaining !== null && (
+                  <button
+                    onClick={() => setShowPaymentModal(true)}
+                    className="px-6 py-3 bg-[#1a3a8f] text-[#F5C518] rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition flex items-center gap-2 flex-shrink-0"
+                  >
+                    <FiCreditCard size={16} />
+                    Pay Early
+                  </button>
+                )}
+                {!paymentStatus.isPaid && paymentStatus.status !== "disabled" && (
+                  <button
+                    onClick={() => setShowPaymentModal(true)}
+                    className="px-6 py-3 bg-[#1a3a8f] text-[#F5C518] rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition flex items-center gap-2 flex-shrink-0"
+                  >
+                    <FiCreditCard size={16} />
+                    Pay Now
+                  </button>
+                )}
               </div>
             </div>
           ) : (
             <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-6 mb-6">
               <p className="text-blue-700 font-medium">
-                💡 Monthly payments are currently disabled. Your account access is active indefinitely.
+                💡 Monthly payments are currently disabled. Your account access is unrestricted.
               </p>
             </div>
           )}
@@ -246,8 +304,16 @@ export default function Payments() {
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {payments.map((payment) => {
+                      const getStatusBadge = (status) => {
+                        const badges = {
+                          pending: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200", label: "⏳ Pending" },
+                          approved: { bg: "bg-green-50", text: "text-green-700", border: "border-green-200", label: "✓ Approved" },
+                          rejected: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", label: "❌ Rejected" },
+                        };
+                        return badges[status] || badges.pending;
+                      };
                       const badge = getStatusBadge(payment.status);
-                      const StatusIcon = badge.icon;
+
                       return (
                         <tr key={payment.id} className="hover:bg-gray-50 transition">
                           <td className="px-6 py-4">
@@ -272,10 +338,9 @@ export default function Payments() {
                           </td>
                           <td className="px-6 py-4">
                             <div
-                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] border ${badge.bg} ${badge.text} ${badge.border}`}
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] border text-xs font-semibold ${badge.bg} ${badge.text} ${badge.border}`}
                             >
-                              <StatusIcon size={14} />
-                              <span className="text-xs font-semibold">{badge.label}</span>
+                              {badge.label}
                             </div>
                           </td>
                           <td className="px-6 py-4">
@@ -290,18 +355,6 @@ export default function Payments() {
                 </table>
               </div>
             )}
-          </div>
-
-          {/* ── INFO BOX ── */}
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-[4px] p-4">
-            <p className="text-sm text-blue-700 leading-relaxed">
-              <strong>📋 How it works:</strong>
-              <br />
-              You need to pay TZS {settings?.monthly_fee?.toLocaleString()} every 30 days to keep your trader account
-              active. Payments can be made via M-Pesa, Tigo, Airtel, or HaloPesa.
-              <br />
-              Click <strong>"Pay Now"</strong> to initiate a payment using your preferred mobile money provider.
-            </p>
           </div>
         </div>
       </div>
