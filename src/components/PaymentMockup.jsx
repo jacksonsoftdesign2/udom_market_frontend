@@ -1,25 +1,177 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { API } from "../api";
+import axios from "axios";
 
 const CONTACT = "+255748399067";
 
 const PAYMENT_METHODS = [
-  { name: "M-Pesa",       src: "/payment-logos/mpesa.png" },
-  { name: "Mix by YAS",   src: "/payment-logos/mixx.png" },
-  { name: "Airtel Money", src: "/payment-logos/airtel.png" },
-  { name: "HaloPesa",     src: "/payment-logos/halopesa.png" },
-  { name: "Azam Pesa",    src: "/payment-logos/azampesa.png" },
-  { name: "Visa",         src: "/payment-logos/visa.svg" },
+  { name: "M-Pesa",       src: "/payment-logos/mpesa.png",    provider: "Mpesa"    },
+  { name: "Mix by YAS",   src: "/payment-logos/mixx.png",     provider: "Tigo"     },
+  { name: "Airtel Money", src: "/payment-logos/airtel.png",   provider: "Airtel"   },
+  { name: "HaloPesa",     src: "/payment-logos/halopesa.png", provider: "Halopesa" },
+  { name: "Azam Pesa",    src: "/payment-logos/azampesa.png", provider: "Azampesa" },
+  { name: "Visa",         src: "/payment-logos/visa.svg",     provider: null       },
 ];
 
 export default function PaymentMockup({ user, onClose }) {
   const navigate = useNavigate();
   const [step, setStep] = useState("main");
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // ── AzamPay state ──
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [phone, setPhone] = useState("");
+  const [payStatus, setPayStatus] = useState("idle"); // idle | loading | waiting | success | failed
+  const [payMessage, setPayMessage] = useState("");
+  const [paymentId, setPaymentId] = useState(null);
+  const pollRef = useRef(null);
+
+  // ── Fetch payment settings on mount ──
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${API}/admin/payment-settings`);
+        setSettings(res.data);
+
+        // If registration payment is disabled/free, auto-approve and close
+        if (!res.data.payments_active || !res.data.registration_active) {
+          // Auto-approve: registration is free
+          setTimeout(() => {
+            onClose();
+            navigate("/login");
+          }, 1500);
+        }
+      } catch (err) {
+        console.error('Error fetching payment settings:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // cleanup polling on unmount
+  useEffect(() => () => clearInterval(pollRef.current), []);
 
   const handleClose = () => {
+    clearInterval(pollRef.current);
     onClose();
     navigate("/login");
   };
+
+  // ── Normalize phone to +255XXXXXXXXX ──
+  const normalizePhone = (raw) => {
+    let p = raw.replace(/[\s\-]/g, "");
+    if (/^0[67]\d{8}$/.test(p)) p = "+255" + p.slice(1);
+    if (/^255[67]\d{8}$/.test(p)) p = "+" + p;
+    return p;
+  };
+
+  // ── Select a method ──
+  const handleSelectMethod = (method) => {
+    if (!method.provider) {
+      // Visa → contact (not supported yet)
+      setStep("contact");
+      return;
+    }
+    setSelectedMethod(method);
+    setPhone("");
+    setPayStatus("idle");
+    setPayMessage("");
+    setStep("pay");
+  };
+
+  // ── Initiate registration payment ──
+  const handlePay = async () => {
+    const normalized = normalizePhone(phone);
+    if (!/^\+255[67]\d{8}$/.test(normalized)) {
+      setPayMessage("Enter a valid Tanzanian number e.g. 0748 399 067");
+      return;
+    }
+
+    setPayStatus("loading");
+    setPayMessage("");
+
+    try {
+      const res = await axios.post(
+        `${API}/payments/registration-pay`,
+        { user_code: user?.user_code, phone: normalized }
+      );
+
+      if (res.data.free) {
+        // Registration is free
+        setPayStatus("success");
+        setPayMessage(res.data.message);
+        setTimeout(() => {
+          onClose();
+          navigate("/login");
+        }, 2000);
+        return;
+      }
+
+      setPaymentId(res.data.payment_id);
+      setPayStatus("waiting");
+      setPayMessage(`Request sent! Check your ${selectedMethod.name} on ${normalized} and enter your PIN.`);
+
+      // ── Poll for status every 4 seconds ──
+      pollRef.current = setInterval(async () => {
+        try {
+          const statusRes = await axios.get(
+            `${API}/payments/trader-status/${res.data.payment_id}`
+          );
+          const status = statusRes.data?.status;
+          if (status === "approved") {
+            clearInterval(pollRef.current);
+            setPayStatus("success");
+            setPayMessage("Payment successful! Your account has been activated. Redirecting...");
+            setTimeout(() => {
+              onClose();
+              navigate("/login");
+            }, 2000);
+          } else if (status === "rejected") {
+            clearInterval(pollRef.current);
+            setPayStatus("failed");
+            setPayMessage("Payment failed or was rejected. Please try again.");
+          }
+        } catch (_) {}
+      }, 4000);
+
+      // Stop polling after 5 minutes
+      setTimeout(() => {
+        clearInterval(pollRef.current);
+        if (payStatus === "waiting") {
+          setPayStatus("failed");
+          setPayMessage("Payment timed out. Please try again.");
+        }
+      }, 300000);
+
+    } catch (err) {
+      setPayStatus("failed");
+      setPayMessage(err.response?.data?.message || "Failed to initiate payment. Try again.");
+    }
+  };
+
+  // ── Header label per step ──
+  const headerTitle = {
+    main:    null,
+    method:  "Select Payment Method",
+    pay:     selectedMethod ? `Pay via ${selectedMethod.name}` : "Pay",
+    contact: "Contact Management",
+  };
+
+  // ── If still loading settings, show spinner ──
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-[10002] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="bg-white rounded-[4px] p-8 flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#c7d6f5] border-t-[#1a3a8f] rounded-full animate-spin" />
+          <p className="text-sm font-semibold text-[#1a3a8f]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`fixed inset-0 z-[10002] flex justify-center bg-black/60 backdrop-blur-sm px-4 ${step === "contact" ? "items-end md:items-center" : "items-center"}`}>
@@ -50,7 +202,13 @@ export default function PaymentMockup({ user, onClose }) {
         ) : (
           <div className="bg-[#1a3a8f] px-4 py-3 flex items-center gap-3">
             <button
-              onClick={() => setStep(step === "contact" ? "method" : "main")}
+              onClick={() => {
+                clearInterval(pollRef.current);
+                setPayStatus("idle");
+                if (step === "contact") setStep("method");
+                else if (step === "pay") setStep("method");
+                else setStep("main");
+              }}
               className="text-[#F5C518]/70 hover:text-[#F5C518] transition flex-shrink-0"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -59,13 +217,11 @@ export default function PaymentMockup({ user, onClose }) {
               </svg>
             </button>
             <div className="flex-1 min-w-0">
-              <p className="text-[#F5C518] font-bold text-sm">
-                {step === "method" ? "Select Payment Method" : "Contact Management"}
-              </p>
+              <p className="text-[#F5C518] font-bold text-sm">{headerTitle[step]}</p>
               <p className="text-blue-300 text-xs font-mono truncate">{user?.user_code}</p>
             </div>
             <span className="bg-[#F5C518]/15 text-[#F5C518] text-xs font-bold px-3 py-1 rounded-[4px] border border-[#F5C518]/30 flex-shrink-0">
-              TZS 10,000
+              TZS {settings?.registration_fee?.toLocaleString() || "0"}
             </span>
           </div>
         )}
@@ -78,13 +234,13 @@ export default function PaymentMockup({ user, onClose }) {
               {user && (
                 <div className="flex items-center gap-3 bg-[#f8fafc] rounded-[4px] px-4 py-3 border border-[#e2e8f0]">
                   <img
-                    src={user.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.first_name + " " + user.last_name)}&background=1a3a8f&color=F5C518`}
+                    src={user.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.first_name || user.name || "") + " " + (user.last_name || ""))}&background=1a3a8f&color=F5C518`}
                     alt="profile"
                     className="w-10 h-10 rounded-full object-cover border-2 border-[#c7d6f5] flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-800 text-sm truncate">
-                      {user.first_name} {user.last_name}
+                      {user.first_name || user.name} {user.last_name || ""}
                     </p>
                     <p className="text-xs text-gray-400 font-mono">{user.user_code}</p>
                   </div>
@@ -96,7 +252,7 @@ export default function PaymentMockup({ user, onClose }) {
 
               <div className="bg-[#f0f4ff] border border-[#c7d6f5] rounded-[4px] px-4 py-4 text-center">
                 <p className="text-xs text-[#4a6fa5] font-medium mb-1">One-time Registration Fee</p>
-                <p className="text-4xl font-black text-[#1a3a8f]">10,000</p>
+                <p className="text-4xl font-black text-[#1a3a8f]">{settings?.registration_fee?.toLocaleString() || "0"}</p>
                 <p className="text-sm text-[#4a6fa5] font-semibold">TZS</p>
                 <p className="text-xs text-gray-400 mt-2">Pay once · Access forever</p>
               </div>
@@ -140,7 +296,7 @@ export default function PaymentMockup({ user, onClose }) {
                 {PAYMENT_METHODS.map((m, i) => (
                   <button
                     key={i}
-                    onClick={() => setStep("contact")}
+                    onClick={() => handleSelectMethod(m)}
                     className="border border-[#e2e8f0] rounded-[4px] p-2.5 hover:border-[#1a3a8f] hover:bg-[#f0f4ff] transition bg-white flex flex-col items-center gap-1"
                   >
                     <img src={m.src} alt={m.name} className="w-full h-10 object-contain" />
@@ -158,16 +314,16 @@ export default function PaymentMockup({ user, onClose }) {
                   <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
                 <p className="text-xs text-[#1a3a8f]">
-                  Online payment coming soon. Contact management to complete payment manually.
+                  Select your mobile money provider. Visa → contact management.
                 </p>
               </div>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setStep("contact")}
-                  className="flex-1 bg-[#1a3a8f] text-[#F5C518] py-2.5 rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition"
+                  className="flex-1 bg-[#f8fafc] border border-[#e2e8f0] text-gray-600 py-2.5 rounded-[4px] font-medium text-sm hover:bg-[#f1f5f9] transition"
                 >
-                  Contact to Pay
+                  Contact Instead
                 </button>
                 <button
                   onClick={() => setStep("main")}
@@ -176,6 +332,151 @@ export default function PaymentMockup({ user, onClose }) {
                   Back
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* ── PAY STEP ── */}
+          {step === "pay" && (
+            <div className="space-y-4">
+
+              {/* Selected method badge */}
+              <div className="flex items-center gap-3 bg-[#f0f4ff] border border-[#c7d6f5] rounded-[4px] px-4 py-3">
+                <img src={selectedMethod?.src} alt={selectedMethod?.name} className="h-8 w-14 object-contain flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-[#1a3a8f]">{selectedMethod?.name}</p>
+                  <p className="text-xs text-gray-400">Mobile money payment</p>
+                </div>
+                <span className="text-xs font-black text-[#1a3a8f]">TZS {settings?.registration_fee?.toLocaleString() || "0"}</span>
+              </div>
+
+              {/* Phone input — only show when idle or failed */}
+              {(payStatus === "idle" || payStatus === "failed") && (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                      Your {selectedMethod?.name} Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => { setPhone(e.target.value); setPayMessage(""); }}
+                      placeholder="e.g. 0748 399 067"
+                      className="w-full px-4 py-3 border border-[#c7d6f5] rounded-[4px] text-sm focus:outline-none focus:border-[#1a3a8f] bg-white"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Enter the number registered with {selectedMethod?.name}</p>
+                  </div>
+
+                  {payMessage && (
+                    <div className="bg-red-50 border border-red-100 rounded-[4px] px-3 py-2">
+                      <p className="text-xs text-red-600">{payMessage}</p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={handlePay}
+                    className="w-full bg-[#1a3a8f] text-[#F5C518] py-3.5 rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition flex items-center justify-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="22" y1="2" x2="11" y2="13"/>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                    Send Payment Request
+                  </button>
+                </>
+              )}
+
+              {/* Loading state */}
+              {payStatus === "loading" && (
+                <div className="flex flex-col items-center gap-3 py-4">
+                  <div className="w-12 h-12 border-4 border-[#c7d6f5] border-t-[#1a3a8f] rounded-full animate-spin" />
+                  <p className="text-sm font-semibold text-[#1a3a8f]">Sending request...</p>
+                  <p className="text-xs text-gray-400 text-center">Connecting to {selectedMethod?.name}</p>
+                </div>
+              )}
+
+              {/* Waiting for PIN */}
+              {payStatus === "waiting" && (
+                <div className="space-y-3">
+                  <div className="flex flex-col items-center gap-3 py-2">
+                    <div className="w-14 h-14 rounded-full bg-[#f0f4ff] flex items-center justify-center">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="#1a3a8f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                      </svg>
+                    </div>
+                    <p className="text-sm font-bold text-[#1a3a8f] text-center">Check your phone!</p>
+                    <p className="text-xs text-gray-500 text-center leading-relaxed">{payMessage}</p>
+                  </div>
+
+                  <div className="bg-[#f0f4ff] border border-[#c7d6f5] rounded-[4px] px-4 py-3 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-[#1a3a8f] text-white text-[10px] flex items-center justify-center font-bold flex-shrink-0">1</div>
+                      <p className="text-xs text-gray-600">A USSD prompt appeared on your phone</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-[#1a3a8f] text-white text-[10px] flex items-center justify-center font-bold flex-shrink-0">2</div>
+                      <p className="text-xs text-gray-600">Enter your {selectedMethod?.name} PIN</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-gray-200 text-gray-500 text-[10px] flex items-center justify-center font-bold flex-shrink-0">3</div>
+                      <p className="text-xs text-gray-400">This page updates automatically</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 justify-center">
+                    <div className="w-2 h-2 bg-[#1a3a8f] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <div className="w-2 h-2 bg-[#1a3a8f] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <div className="w-2 h-2 bg-[#1a3a8f] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    <p className="text-xs text-gray-400 ml-1">Waiting for confirmation...</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Success */}
+              {payStatus === "success" && (
+                <div className="flex flex-col items-center gap-3 py-2">
+                  <div className="w-16 h-16 rounded-full bg-green-50 border-2 border-green-200 flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                      stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <p className="text-base font-black text-green-600">Payment Successful!</p>
+                  <p className="text-xs text-gray-500 text-center">{payMessage}</p>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="w-full bg-[#1a3a8f] text-[#F5C518] py-3 rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition mt-2"
+                  >
+                    Go to Login
+                  </button>
+                </div>
+              )}
+
+              {/* Failed retry */}
+              {payStatus === "failed" && (
+                <div className="bg-red-50 border border-red-100 rounded-[4px] px-3 py-2.5 flex gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    className="flex-shrink-0 mt-0.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p className="text-xs text-red-600">{payMessage}</p>
+                </div>
+              )}
+
+              {/* Back button when not waiting/loading */}
+              {(payStatus === "idle" || payStatus === "failed") && (
+                <button
+                  onClick={() => { setStep("method"); setPayStatus("idle"); setPayMessage(""); }}
+                  className="w-full bg-[#f8fafc] border border-[#e2e8f0] text-gray-500 py-2.5 rounded-[4px] font-medium text-sm hover:bg-[#f1f5f9] transition"
+                >
+                  ← Choose Different Method
+                </button>
+              )}
             </div>
           )}
 
@@ -193,10 +494,7 @@ export default function PaymentMockup({ user, onClose }) {
                 <p className="text-sm font-black text-[#1a3a8f] font-mono">{CONTACT}</p>
               </div>
 
-              {/* ── 3 contact buttons ── */}
               <div className="grid grid-cols-3 gap-2">
-
-                {/* WhatsApp */}
                 <a
                   href={`https://wa.me/${CONTACT.replace("+", "")}?text=Habari, ninaomba kuruhusiwa account yangu ya UDOM Market. ID yangu ni ${user?.user_code}`}
                   target="_blank"
@@ -209,7 +507,6 @@ export default function PaymentMockup({ user, onClose }) {
                   WhatsApp
                 </a>
 
-                {/* SMS */}
                 <a
                   href={`sms:${CONTACT}?body=Habari, ninaomba kuruhusiwa account yangu ya UDOM Market. ID yangu ni ${user?.user_code}`}
                   className="flex flex-col items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-[4px] text-xs font-bold transition"
@@ -221,7 +518,6 @@ export default function PaymentMockup({ user, onClose }) {
                   SMS
                 </a>
 
-                {/* Call */}
                 <a
                   href={`tel:${CONTACT}`}
                   className="flex flex-col items-center justify-center gap-1.5 bg-gray-800 hover:bg-gray-900 text-white py-3 rounded-[4px] text-xs font-bold transition"
@@ -232,7 +528,6 @@ export default function PaymentMockup({ user, onClose }) {
                   </svg>
                   Call
                 </a>
-
               </div>
 
               <button
@@ -243,6 +538,7 @@ export default function PaymentMockup({ user, onClose }) {
               </button>
             </div>
           )}
+
         </div>
       </div>
     </div>

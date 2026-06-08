@@ -15,6 +15,8 @@ import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminNameRequests from "./pages/Admin/AdminNameRequests";
 import AdminClaims from "./pages/Admin/AdminClaims";
 import AdminManagement from "./pages/Admin/AdminManagement";
+import AdminPaymentSettings from "./pages/Admin/AdminPaymentSettings";
+
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
       <Route path="/admin/name-requests" element={<AdminProtectedRoute><AdminNameRequests /></AdminProtectedRoute>} />
       <Route path="/admin/claims" element={<AdminProtectedRoute><AdminClaims /></AdminProtectedRoute>} />
       <Route path="/admin/admins" element={<AdminProtectedRoute><AdminManagement /></AdminProtectedRoute>} />
+      <Route path="/admin/payment-settings" element={<AdminProtectedRoute><AdminPaymentSettings /></AdminProtectedRoute>} />
+      
     </Routes>
   );
 }

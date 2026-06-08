@@ -4,9 +4,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import {
   FiGrid, FiUsers, FiPackage, FiLogOut,
-  FiBell, FiMenu, FiX, FiChevronRight, FiTag, FiAlertCircle, FiShield
+  FiBell, FiMenu, FiX, FiChevronRight, FiTag, FiAlertCircle, FiShield, FiDollarSign
 } from "react-icons/fi";
 import AdminNotifications from "./AdminNotifications";
+import AdminPaymentSettings from "./AdminPaymentSettings";
+
+
+
 
 const NAV = [
   { to: "/admin/dashboard", icon: FiGrid,    label: "Dashboard" },
@@ -14,6 +18,7 @@ const NAV = [
   { to: "/admin/products",  icon: FiPackage, label: "Products"  },
   { to: "/admin/name-requests",  icon: FiTag,     label: "Name Requests" },
   { to: "/admin/claims",        icon: FiAlertCircle, label: "Claims"    },
+  { to: "/admin/payment-settings", icon: FiDollarSign, label: "Payment Settings" }, 
   { to: "/admin/admins", icon: FiShield, label: "Admins" },
 ];
 
