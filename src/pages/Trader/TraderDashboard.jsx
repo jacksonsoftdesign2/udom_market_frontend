@@ -368,7 +368,7 @@ useEffect(() => {
   
 
 
-{!["products", "orders", "editprofile", "changepassword", "analytics", "name-requests"].includes(activeSection) && (
+{!["products", "orders", "payments", "editprofile", "changepassword", "analytics", "name-requests"].includes(activeSection) && (
     <div className="bg-white rounded-2xl shadow p-4 md:p-6 text-center text-gray-400">
       <div className="flex justify-center mb-2 text-gray-300">
         {(() => {
