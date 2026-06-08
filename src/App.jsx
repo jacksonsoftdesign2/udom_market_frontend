@@ -16,6 +16,7 @@ import AdminNameRequests from "./pages/Admin/AdminNameRequests";
 import AdminClaims from "./pages/Admin/AdminClaims";
 import AdminManagement from "./pages/Admin/AdminManagement";
 import AdminPaymentSettings from "./pages/Admin/AdminPaymentSettings";
+import Payments from "./pages/Trader/Payments";
 
 
 function App() {
@@ -32,6 +33,9 @@ function App() {
       {/* ── Trader ── */}
       <Route path="/trader/dashboard"  element={<ProtectedRoute><TraderDashboard /></ProtectedRoute>} />
       <Route path="/trader/orders"     element={<ProtectedRoute><TraderOrders /></ProtectedRoute>} />
+      <Route path="/trader/dashboard"  element={<ProtectedRoute><TraderDashboard /></ProtectedRoute>} />
+      <Route path="/trader/orders"     element={<ProtectedRoute><TraderOrders /></ProtectedRoute>} />
+      <Route path="/trader/payments"   element={<ProtectedRoute><Payments /></ProtectedRoute>} />
 
       {/* ── Admin ── */}
       <Route path="/admin/dashboard"   element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
@@ -41,7 +45,7 @@ function App() {
       <Route path="/admin/claims" element={<AdminProtectedRoute><AdminClaims /></AdminProtectedRoute>} />
       <Route path="/admin/admins" element={<AdminProtectedRoute><AdminManagement /></AdminProtectedRoute>} />
       <Route path="/admin/payment-settings" element={<AdminProtectedRoute><AdminPaymentSettings /></AdminProtectedRoute>} />
-      
+
     </Routes>
   );
 }
