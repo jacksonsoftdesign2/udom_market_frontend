@@ -11,6 +11,8 @@ import React from "react";
 import { listenForForegroundNotifications, removeFcmToken, requestNotificationPermission } from "../../utils/notifications";
 import Analytics from "./Analytics";
 import NameRequests from "./NameRequests";
+import Payments from "./Payments";
+
 
 function TraderDashboard() {
   const navigate = useNavigate();
@@ -379,6 +381,11 @@ useEffect(() => {
       <p className="text-xs md:text-sm mt-1">This section is coming soon.</p>
     </div>
   )}
+
+  {activeSection === "payments" && (
+  <Payments />
+)}
+
 {activeSection === "editprofile" && (
   <EditProfile user={user} setUser={setUser} />
 )}
