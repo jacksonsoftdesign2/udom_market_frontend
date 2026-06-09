@@ -136,130 +136,90 @@ export default function Payments() {
           </div>
 
           {/* ── STATUS CARD ── */}
-          <div className="bg-white rounded-[4px] border border-gray-100 p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left: Status */}
-              <div>
-                <p className="text-gray-600 text-sm font-medium mb-3">Account Status</p>
-                <div className="flex items-center gap-3">
-                  {paymentStatus.status === "disabled" ? (
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      <FiCheck className="w-6 h-6 text-blue-600" />
-                    </div>
-                  ) : paymentStatus.isPaid ? (
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                      <FiCheck className="w-6 h-6 text-green-600" />
-                    </div>
+          <div className={`rounded-[4px] border p-6 mb-6 ${
+            paymentStatus.status === "disabled" 
+              ? "bg-blue-50 border-blue-200" 
+              : paymentStatus.isPaid && paymentStatus.daysRemaining > 5
+              ? "bg-green-50 border-green-200"
+              : paymentStatus.isPaid && paymentStatus.daysRemaining <= 5
+              ? "bg-orange-50 border-orange-200"
+              : "bg-red-50 border-red-200"
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  paymentStatus.status === "disabled" 
+                    ? "bg-blue-100" 
+                    : paymentStatus.isPaid
+                    ? paymentStatus.daysRemaining > 5 ? "bg-green-100" : "bg-orange-100"
+                    : "bg-red-100"
+                }`}>
+                  {paymentStatus.status === "disabled" || (paymentStatus.isPaid && paymentStatus.daysRemaining > 5) ? (
+                    <FiCheck className={`w-6 h-6 ${paymentStatus.status === "disabled" ? "text-blue-600" : "text-green-600"}`} />
+                  ) : paymentStatus.isPaid && paymentStatus.daysRemaining <= 5 ? (
+                    <FiClock className="w-6 h-6 text-orange-600" />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                      <FiAlertCircle className="w-6 h-6 text-red-600" />
-                    </div>
+                    <FiAlertCircle className="w-6 h-6 text-red-600" />
                   )}
-                  <div>
-                    <p className="text-lg font-bold text-gray-800">
-                      {paymentStatus.status === "disabled"
-                        ? "✓ No Payment Required"
-                        : paymentStatus.isPaid
-                        ? "✓ Active"
-                        : "⚠️ Payment Due"}
-                    </p>
-                    <p className="text-sm text-gray-500">{paymentStatus.message}</p>
-                  </div>
+                </div>
+                <div>
+                  <p className={`text-lg font-bold ${
+                    paymentStatus.status === "disabled" 
+                      ? "text-blue-800" 
+                      : paymentStatus.isPaid
+                      ? paymentStatus.daysRemaining > 5 ? "text-green-800" : "text-orange-800"
+                      : "text-red-800"
+                  }`}>
+                    {paymentStatus.status === "disabled"
+                      ? "✓ No Payment Required"
+                      : paymentStatus.isPaid
+                      ? "✓ Paid"
+                      : "⚠️ Payment Due"}
+                  </p>
+                  <p className={`text-sm mt-1 ${
+                    paymentStatus.status === "disabled" 
+                      ? "text-blue-700" 
+                      : paymentStatus.isPaid
+                      ? paymentStatus.daysRemaining > 5 ? "text-green-700" : "text-orange-700"
+                      : "text-red-700"
+                  }`}>
+                    {paymentStatus.status === "disabled"
+                      ? "Monthly payments are disabled"
+                      : paymentStatus.isPaid && paymentStatus.daysRemaining > 5
+                      ? `${paymentStatus.daysRemaining} days remaining`
+                      : paymentStatus.isPaid && paymentStatus.daysRemaining <= 5
+                      ? `Only ${paymentStatus.daysRemaining} days left!`
+                      : "Complete payment to activate"}
+                  </p>
                 </div>
               </div>
 
-              {/* Right: Days Remaining or Info */}
-              <div>
-                {paymentStatus.status === "disabled" ? (
-                  <>
-                    <p className="text-gray-600 text-sm font-medium mb-3">Payment Status</p>
-                    <div>
-                      <p className="text-2xl font-bold text-blue-600">Disabled</p>
-                      <p className="text-sm text-gray-500 mt-1">You can operate without monthly payments</p>
-                    </div>
-                  </>
-                ) : paymentStatus.isPaid ? (
-                  <>
-                    <p className="text-gray-600 text-sm font-medium mb-3">Days Remaining</p>
-                    <div>
-                      <p className="text-4xl font-bold text-green-600">{paymentStatus.daysRemaining}</p>
-                      <p className="text-sm text-gray-500 mt-1">days until next payment</p>
-                      {paymentStatus.lastPaymentAmount && (
-                        <p className="text-xs text-gray-400 mt-2">
-                          Last paid: TZS {paymentStatus.lastPaymentAmount?.toLocaleString()}
-                        </p>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-gray-600 text-sm font-medium mb-3">Action Required</p>
-                    <div>
-                      <p className="text-2xl font-bold text-red-600">Pay Now</p>
-                      <p className="text-sm text-gray-500 mt-1">Your account access is limited</p>
-                    </div>
-                  </>
-                )}
-              </div>
+              {/* Right: Payment button if needed */}
+              {paymentStatus.isPaid && paymentStatus.daysRemaining <= 5 ? (
+                <button
+                  onClick={() => setShowPaymentModal(true)}
+                  className="px-6 py-3 bg-orange-600 text-white rounded-[4px] font-bold text-sm hover:bg-orange-700 transition flex items-center gap-2 flex-shrink-0"
+                >
+                  <FiCreditCard size={16} />
+                  Pay Now
+                </button>
+              ) : !paymentStatus.isPaid && paymentStatus.status !== "disabled" ? (
+                <button
+                  onClick={() => setShowPaymentModal(true)}
+                  className="px-6 py-3 bg-red-600 text-white rounded-[4px] font-bold text-sm hover:bg-red-700 transition flex items-center gap-2 flex-shrink-0"
+                >
+                  <FiCreditCard size={16} />
+                  Pay Now
+                </button>
+              ) : null}
             </div>
           </div>
 
-          {/* ── PAYMENT REQUIRED ALERT ── */}
-          {!paymentStatus.isPaid && paymentStatus.status !== "disabled" && (
-            <div className="bg-red-50 border border-red-200 rounded-[4px] p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-red-700 font-semibold text-sm">Payment Required</p>
-                  <p className="text-red-600 text-sm mt-1">
-                    Your account access is limited. You cannot add new products or edit listings until payment is made.
-                  </p>
-                  <button
-                    onClick={() => setShowPaymentModal(true)}
-                    className="mt-3 px-4 py-2 bg-red-600 text-white rounded-[4px] text-sm font-semibold hover:bg-red-700 transition"
-                  >
-                    Pay Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ── MONTHLY FEE CARD ── */}
-          {settings?.monthly_active && settings?.payments_active ? (
-            <div className="bg-gradient-to-br from-[#e8edf7] to-[#f0f4ff] rounded-[4px] border-2 border-[#c7d6f5] p-6 mb-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[#4a6fa5] text-sm font-medium mb-1">Monthly Subscription</p>
-                  <p className="text-4xl font-black text-[#1a3a8f]">
-                    {settings?.monthly_fee?.toLocaleString()}
-                  </p>
-                  <p className="text-[#4a6fa5] font-semibold mt-1">TZS per month</p>
-                </div>
-                {paymentStatus.isPaid && paymentStatus.daysRemaining !== null && (
-                  <button
-                    onClick={() => setShowPaymentModal(true)}
-                    className="px-6 py-3 bg-[#1a3a8f] text-[#F5C518] rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition flex items-center gap-2 flex-shrink-0"
-                  >
-                    <FiCreditCard size={16} />
-                    Pay Early
-                  </button>
-                )}
-                {!paymentStatus.isPaid && paymentStatus.status !== "disabled" && (
-                  <button
-                    onClick={() => setShowPaymentModal(true)}
-                    className="px-6 py-3 bg-[#1a3a8f] text-[#F5C518] rounded-[4px] font-bold text-sm hover:bg-[#0f2460] transition flex items-center gap-2 flex-shrink-0"
-                  >
-                    <FiCreditCard size={16} />
-                    Pay Now
-                  </button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-6 mb-6">
-              <p className="text-blue-700 font-medium">
-                💡 Monthly payments are currently disabled. Your account access is unrestricted.
+          {/* ── MONTHLY FEE INFO ── */}
+          {settings?.monthly_active && settings?.payments_active && (
+            <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
+              <p className="text-blue-700 text-sm font-medium">
+                 Monthly fee: <span className="font-bold">TZS {settings?.monthly_fee?.toLocaleString()}</span> per month
               </p>
             </div>
           )}
@@ -356,6 +316,8 @@ export default function Payments() {
               </div>
             )}
           </div>
+
+
         </div>
       </div>
       <Footer />

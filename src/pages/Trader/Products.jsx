@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { FiCheckCircle } from "react-icons/fi";
 import ProductListView from "./ProductListView";
-// ── helpers ────────────────────────────────────────────────────────────────
+import { usePaymentStatus } from '../../hooks/usePaymentStatus'; 
 
 // ── NEW: emptyForm now includes hierarchy fields ──
 const emptyForm = {
@@ -24,23 +24,22 @@ const newSpec = () => ({ id: Date.now() + Math.random(), attribute: "", value: "
 const daysElapsed = (date) =>
   Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
 
-/** Days remaining out of 90, floored at 0 */
+
 const daysRemaining = (date) => Math.max(0, 90 - daysElapsed(date));
 
-// ── NEW: label helper per category type ──
+
 const getLabels = (type) => {
   if (type === 'service')     return { l1: 'Service Type', l2: 'Package', l3: 'Add-on' };
   if (type === 'agriculture') return { l1: 'Type', l2: 'Product', l3: 'Variety' };
   return { l1: 'Brand', l2: 'Model', l3: 'Variant' };
 };
 
-// ── NEW: stock label helper ──
+
 const getStockLabel = (type, stockType) => {
   if (type === 'service') return stockType === 'capacity' ? 'Capacity (clients/day)' : 'Stock (units)';
   return 'Stock';
 };
 
-// ── component ──────────────────────────────────────────────────────────────
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -54,7 +53,7 @@ function Products() {
   const [, setTick] = useState(0);
   const [imageLimitMsg, setImageLimitMsg] = useState("");
 
-  // ── NEW: typeahead state ──
+  // ── NEW: typeahead state
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [variants, setVariants] = useState([]);
@@ -80,6 +79,7 @@ function Products() {
   const [loadingEditModels, setLoadingEditModels] = useState(false);
   const [loadingEditVariants, setLoadingEditVariants] = useState(false);
   const [showList, setShowList] = useState(false);
+  const { isPaid, loading: paymentLoading } = usePaymentStatus();
   useEffect(() => {
     fetch(`${API}/users/categories`)
       .then((res) => res.json())
@@ -643,10 +643,15 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
 </h2>
         <button
           onClick={() => { setShowAddForm(!showAddForm); setAddForm(emptyForm); setAddErrors({}); setBrands([]); setModels([]); setVariants([]); }}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm font-medium w-full sm:w-auto justify-center"
-        >
+           disabled={!isPaid || paymentLoading}
+  className={`px-4 py-2 rounded-lg transition flex items-center gap-2 text-sm font-medium w-full sm:w-auto justify-center ${
+    isPaid && !paymentLoading
+      ? 'bg-blue-600 text-white hover:bg-blue-700'
+      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+  }`}
+>
           <FaPlus size={13} />
-          Add Product
+           {paymentLoading ? 'Checking...' : 'Add Product'}
         </button>
       </div>
 
@@ -675,8 +680,23 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
         </div>
       )}
 
-      {/* ── Add Form ── */}
-      {showAddForm && (
+
+      {!isPaid && !paymentLoading && (
+  <div className="bg-red-50 border border-red-200 rounded-[4px] p-4 mb-4">
+    <div className="flex items-start gap-3">
+      <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="text-red-700 font-semibold text-sm">Payment Required</p>
+        <p className="text-red-600 text-sm mt-1">
+          You need to pay your monthly fee to add products. Visit the Payments page to complete payment.
+        </p>
+      </div>
+    </div>
+  </div>
+)}
+
+
+{showAddForm && isPaid && (
         <div className="bg-white rounded-xl shadow border border-blue-100 p-5">
           <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
             <FaPlus className="text-blue-500" size={14} /> New Product

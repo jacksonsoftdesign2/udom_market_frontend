@@ -125,9 +125,7 @@ export default function AdminPaymentSettings() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-bold text-gray-800">Enable All Payments</h3>
-              <p className="text-sm text-gray-500 mt-1">
-                Global kill switch — disables both registration and monthly payments
-              </p>
+
             </div>
             <button
               onClick={() => handleToggle("payments_active")}
@@ -274,20 +272,6 @@ export default function AdminPaymentSettings() {
         </button>
       </div>
 
-      {/* ── INFO BOX ── */}
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-[4px] p-4">
-        <p className="text-xs text-blue-700 leading-relaxed">
-          <strong> How it works:</strong>
-          <br />
-          • <strong>Registration Fee:</strong> One-time payment traders make after signup. Set to 0 to make registration free.
-          <br />
-          • <strong>Monthly Fee:</strong> Recurring payment to keep account active. Set to 0 to make it free.
-          <br />
-          • <strong>Active toggle:</strong> Hides payment option if off. Global toggle overrides both.
-          <br />
-          • When payment is disabled, traders are auto-approved without paying.
-        </p>
-      </div>
     </AdminLayout>
   );
 }
