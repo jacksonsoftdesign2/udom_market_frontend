@@ -684,7 +684,7 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
       {!isPaid && !paymentLoading && (
   <div className="bg-red-50 border border-red-200 rounded-[4px] p-4 mb-4">
     <div className="flex items-start gap-3">
-      <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+      <FiAlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
       <div>
         <p className="text-red-700 font-semibold text-sm">Payment Required</p>
         <p className="text-red-600 text-sm mt-1">

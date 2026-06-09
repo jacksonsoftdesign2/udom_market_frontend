@@ -159,7 +159,7 @@ export default function Payments() {
                   ) : paymentStatus.isPaid && paymentStatus.daysRemaining <= 5 ? (
                     <FiClock className="w-6 h-6 text-orange-600" />
                   ) : (
-                    <FiAlertCircle className="w-6 h-6 text-red-600" />
+                    <FiAlertTriangle className="w-6 h-6 text-red-600" />
                   )}
                 </div>
                 <div>
