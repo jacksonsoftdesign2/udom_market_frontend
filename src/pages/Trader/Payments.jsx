@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PaymentMockup from "../../components/PaymentMockup";
-import { FiCreditCard, FiCheck, FiX, FiClock, FiAlertCircle, FiAlertTriangle } from "react-icons/fi";
+import { FiCreditCard, FiCheck, FiX, FiClock} from "react-icons/fi";
 
 export default function Payments() {
   const [settings, setSettings] = useState(null);
@@ -159,7 +159,7 @@ export default function Payments() {
                   ) : paymentStatus.isPaid && paymentStatus.daysRemaining <= 5 ? (
                     <FiClock className="w-6 h-6 text-orange-600" />
                   ) : (
-                    <FiAlertTriangle className="w-6 h-6 text-red-600" />
+                    <span className="text-2xl">⚠️</span>
                   )}
                 </div>
                 <div>
