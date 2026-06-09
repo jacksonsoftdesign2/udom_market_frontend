@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PaymentMockup from "../../components/PaymentMockup";
-import { FiCreditCard, FiCheck, FiX, FiClock, FiAlertCircle } from "react-icons/fi";
+import { FiCreditCard, FiCheck, FiX, FiClock, FiAlertCircle, FiAlertTriangle } from "react-icons/fi";
 
 export default function Payments() {
   const [settings, setSettings] = useState(null);
