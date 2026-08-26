@@ -35,7 +35,7 @@ const [showClaim, setShowClaim] = useState(false);
     { label: t.register, icon: <FaInfoCircle />, action: () => navigate("/register-trader") },
     { label: t.delivery, icon: <FaTruckMoving />, action: () => navigate("/delivery") },
     { label: t.about, icon: <FaInfoCircle />, action: () => navigate("/about") },
-    { label: "Wasiliana / Claim", icon: <span>🚨</span>, action: () => setShowClaim(true) },
+    { label: "Wasiliana / Claim", icon: <span>🔆</span>, action: () => setShowClaim(true) },
   ];
 
   const toggleLanguage = () => {
