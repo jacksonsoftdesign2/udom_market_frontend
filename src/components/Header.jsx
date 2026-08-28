@@ -5,16 +5,21 @@ import tzFlag from "../assets/tz.png";
 import gbFlag from "../assets/gb.png";
 import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
-import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight } from "react-icons/fa";
+import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight, FaSearch } from "react-icons/fa";
 import ClaimForm from "./ClaimForm";
 
-export default function Header({ cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick, lang: langProp, onLangChange }) {
+export default function Header({
+  cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick,
+  lang: langProp, onLangChange,
+  minimized = false, onSearchIconClick, searchActive = false, onHeightChange,
+}) {
   const [lang, setLang] = useState(langProp || "sw");
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
+  const headerRef = useRef(null);
   
   const t = translations[lang] || translations["sw"];
 
@@ -115,6 +120,17 @@ ws = new WebSocket(`${wsProtocol}://${wsBase}?vid=${vid}`);
   };
 }, []);
 
+  // report real rendered height upward, so Home can position AdStrip/search correctly ──
+  useEffect(() => {
+    if (!headerRef.current || !onHeightChange) return;
+    const el = headerRef.current;
+    const report = () => onHeightChange(el.getBoundingClientRect().height);
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [onHeightChange, minimized]);
+
 // Counting animation
 useEffect(() => {
   const duration = 1200;
@@ -143,14 +159,14 @@ useEffect(() => {
     <>
       {/* 🔝 FLOATING HEADER */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center">
-   <div className="fixed top-0 left-0 right-0 z-50
-                        px-3 py-2
+   <div className={`fixed top-0 left-0 right-0 z-50
+                        px-3 ${minimized ? "py-1" : "py-2"}
                         flex items-center justify-between gap-2
                         bg-white
                         border-b border-gray-200
                         text-yellow-700
-                        shadow-sm">
-
+                        shadow-sm`}
+   >
           
          {/* LEFT: MENU BUTTON + LOGO + TITLE */}
 <div className="flex items-center gap-1 md:gap-2 whitespace-nowrap flex-1 min-w-0">
@@ -205,37 +221,45 @@ useEffect(() => {
 >
   {/* MOBILE */}
 <div className="relative flex md:hidden items-center">
-  {/* Stats pill — hides on scroll */}
-  <div className={`flex items-center gap-1.5 bg-slate-900 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolledInProduct ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-    <span className="relative flex h-2 w-2 flex-shrink-0">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60"></span>
-      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-    </span>
-    <span className="text-green-400 text-xs font-bold">{displayOnline}</span>
-    <span className="w-px h-3 bg-slate-600"></span>
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    <span className="text-blue-400 text-xs font-bold">{displayVisitors.toLocaleString()}</span>
-  </div>
 
-  {/* Nav icons — shows on scroll */}
-  <div className={`absolute right-0 flex items-center gap-1.5 transition-all duration-300 ${scrolledInProduct ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+  {minimized ? (
     <button
-      onClick={onBackClick}
-      className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-blue-600 hover:bg-white transition"
+      onClick={onSearchIconClick}
+      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition
+        ${searchActive ? "bg-blue-600 text-white" : "bg-slate-900 text-blue-300"}`}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-      </svg>
+      <FaSearch size={12} />
+      <span className="text-xs font-semibold">Search</span>
     </button>
-    <button
-      onClick={onHomeClick}
-      className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-gray-500 hover:bg-white transition"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-      </svg>
-    </button>
-  </div>
+  ) : (
+    <>
+      {/* Stats pill — hides on scroll (existing scrolledInProduct behavior, unchanged) */}
+      <div className={`flex items-center gap-1.5 bg-slate-900 rounded-full px-3 py-1.5 transition-all duration-300 ${scrolledInProduct ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+        <span className="relative flex h-2 w-2 flex-shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-60"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+        </span>
+        <span className="text-green-400 text-xs font-bold">{displayOnline}</span>
+        <span className="w-px h-3 bg-slate-600"></span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span className="text-blue-400 text-xs font-bold">{displayVisitors.toLocaleString()}</span>
+      </div>
+
+      {/* Nav icons — shows on scroll (product page context, unchanged) */}
+      <div className={`absolute right-0 flex items-center gap-1.5 transition-all duration-300 ${scrolledInProduct ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+        <button onClick={onBackClick} className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-blue-600 hover:bg-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
+        <button onClick={onHomeClick} className="w-8 h-8 flex items-center justify-center rounded-sm border border-gray-200 bg-white/80 text-gray-500 hover:bg-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+        </button>
+      </div>
+    </>
+  )}
 </div>
 
   {/* DESKTOP */}

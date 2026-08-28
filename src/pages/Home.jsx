@@ -15,6 +15,7 @@ import { getSocket } from "../utils/socket";
 import { isAdCurrentlyActive } from "../utils/adHelpers";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
        FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
+import { FaSearch, FaTimes } from "react-icons/fa";
 
 
 
@@ -254,6 +255,11 @@ function Home() {
   const [showContactOptions, setShowContactOptions] = useState(false);
   const [activeAds, setActiveAds] = useState([]);
   const [adsLoaded, setAdsLoaded] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(60);
+  const [adStripHeight, setAdStripHeight] = useState(0);
+  const [mobileMinimized, setMobileMinimized] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const clearTimerRef = useRef(null);
   const searchRef = useRef(null);
 
   // ── instant search ──
@@ -283,15 +289,23 @@ function Home() {
     };
   }, []);
 
-  // ── sticky observer ──
+  // ── detect scroll past the inline search box → trigger minimized header on mobile ──
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => setSearchSticky(!entry.isIntersecting),
+      ([entry]) => {
+        const scrolledPast = !entry.isIntersecting;
+        setSearchSticky(scrolledPast); // desktop: unchanged behavior
+        setMobileMinimized(scrolledPast); // mobile: triggers minimized header + search icon
+        if (scrolledPast && mobileSearchOpen) {
+          collapseMobileSearch(); // scrolling again while open → collapse it
+        }
+      },
       { threshold: 0, rootMargin: "-72px 0px 0px 0px" }
     );
     if (searchRef.current) observer.observe(searchRef.current);
     return () => observer.disconnect();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileSearchOpen]);
 
   // ── keep backend alive ──
   useEffect(() => {
@@ -317,6 +331,11 @@ function Home() {
     .catch(() => setActiveAds([]))
     .finally(() => setAdsLoaded(true));
 }, []);
+
+
+  useEffect(() => {
+    if (!adsLoaded || activeAds.length === 0) setAdStripHeight(0);
+  }, [adsLoaded, activeAds.length]);
 
 
   // ── live-sync ads from ANY manager, ANY device, instantly ──
@@ -520,6 +539,33 @@ if (key === "nearby") {
    return <><FiShoppingBag className="inline mb-0.5 mr-1"/> All Products</>;
   };
 
+
+
+    const CLEAR_DELAY_MS = 5 * 60 * 1000; // 5 minutes
+
+  const collapseMobileSearch = () => {
+    setMobileSearchOpen(false);
+    clearTimerRef.current = setTimeout(() => {
+      setSearchInput("");
+      setSearch("");
+    }, CLEAR_DELAY_MS);
+  };
+
+  const openMobileSearch = () => {
+    if (clearTimerRef.current) {
+      clearTimeout(clearTimerRef.current);
+      clearTimerRef.current = null;
+    }
+    setMobileSearchOpen(true);
+  };
+
+  const toggleMobileSearch = () => {
+    if (mobileSearchOpen) collapseMobileSearch();
+    else openMobileSearch();
+  };
+
+  useEffect(() => () => clearTimeout(clearTimerRef.current), []); // cleanup on unmount
+
   // ── shared props for SearchWithInstant ──
   const searchProps = {
     searchInput,
@@ -547,15 +593,24 @@ if (key === "nearby") {
       <Header
         cartCount={cart.reduce((s, c) => s + c.qty, 0)}
         stickySearch={searchSticky ? <SearchWithInstant {...searchProps} compact /> : null}
+        minimized={mobileMinimized}
+        onSearchIconClick={toggleMobileSearch}
+        searchActive={mobileSearchOpen}
+        onHeightChange={setHeaderHeight}
       />
 
-      {/* ── STICKY SEARCH — mobile only ── */}
-      {searchSticky && (
+         {/* ── MOBILE SEARCH — appears below pinned ad strip when tapped ── */}
+      {mobileSearchOpen && (
         <div
-          className="fixed left-0 right-0 z-40 bg-white shadow-sm border-b border-gray-200 px-3 py-2 md:hidden"
-          style={{ top: "56px" }}
+          className="fixed left-0 right-0 z-40 bg-white shadow-sm border-b border-gray-200 px-3 py-2 md:hidden flex items-center gap-2"
+          style={{ top: headerHeight + adStripHeight }}
         >
-          <SearchWithInstant {...searchProps} compact />
+          <div className="flex-1">
+            <SearchWithInstant {...searchProps} compact />
+          </div>
+          <button onClick={toggleMobileSearch} className="text-gray-400 flex-shrink-0 p-1">
+            <FaTimes size={16} />
+          </button>
         </div>
       )}
 
@@ -567,7 +622,14 @@ if (key === "nearby") {
       )}
 
       {/* ── CONTENT ── */}
-      <div className="pt-24 pb-10 relative z-10">
+      <div
+        className="pb-10 relative z-10"
+        style={{
+          paddingTop: activeAds.length > 0
+            ? headerHeight + adStripHeight + (mobileSearchOpen ? 56 : 0)
+            : headerHeight,
+        }}
+      >
 
               {/* INLINE SEARCH with instant panel */}
               <div ref={searchRef} className="mb-5 px-3 md:px-6 lg:px-12 max-w-7xl mx-auto">
@@ -577,7 +639,7 @@ if (key === "nearby") {
 
 {/* ── AD STRIP (if active ads exist) OR fallback BANNER ── */}
 {adsLoaded && activeAds.length > 0 ? (
-  <AdStrip ads={activeAds} />
+  <AdStrip ads={activeAds} top={headerHeight} onHeightChange={setAdStripHeight} />
 ) : (
   <AdBanner
     onCtaClick={(slideIndex) => {

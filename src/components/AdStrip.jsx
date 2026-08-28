@@ -4,13 +4,12 @@ import AdDetailModal from "./AdDetailModal";
 const MIN_ITEMS_PER_SET = 12; // ensures the strip never runs dry, even with 1-2 ads
 const SECONDS_PER_ITEM = 3;   // keeps scroll SPEED constant regardless of ad count
 
-export default function AdStrip({ ads }) {
+export default function AdStrip({ ads, top = 0, onHeightChange }) {
   const [openAdId, setOpenAdId] = useState(null);
   const [adCache, setAdCache] = useState({});
   const API = import.meta.env.VITE_API_URL;
-
   const containerRef = useRef(null);
-  const fetchedIds = useRef(new Set()); // dedupe — same ad.id appears many times in the loop
+  const fetchedIds = useRef(new Set());
 
   // ── Build a set wide enough to never show a gap, repeat it, then duplicate for the seamless loop ──
   const { loopAds, duration } = useMemo(() => {
@@ -38,6 +37,19 @@ export default function AdStrip({ ads }) {
     fetchedIds.current = new Set();
     setAdCache({});
   }, [ads]);
+
+
+
+    // ── report height upward so Home can position content/search below it ──
+  useEffect(() => {
+    if (!containerRef.current || !onHeightChange) return;
+    const el = containerRef.current;
+    const report = () => onHeightChange(el.getBoundingClientRect().height);
+    report();
+    const ro = new ResizeObserver(report);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [onHeightChange, ads]);
 
   // ── Observe chips as they scroll through the visible strip window, prefetch on entry ──
   useEffect(() => {
@@ -84,7 +96,8 @@ export default function AdStrip({ ads }) {
 
       <div
         ref={containerRef}
-        className="mb-5 rounded-[4px] bg-gray-50 border border-gray-100 overflow-hidden py-2 md:py-3.5"
+        className="fixed left-0 right-0 z-40 bg-gray-50 border-b border-gray-100 overflow-hidden py-2 md:py-3.5"
+        style={{ top }}
       >
         <div className="ad-strip-track flex w-max gap-5 sm:gap-7 md:gap-10 px-4">
           {loopAds.map((ad, i) => (
