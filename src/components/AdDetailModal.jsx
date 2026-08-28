@@ -1,18 +1,25 @@
 import { useState, useEffect } from "react";
 import { FiX, FiMapPin, FiCalendar, FiClock } from "react-icons/fi";
 
-export default function AdDetailModal({ adId, onClose }) {
-  const [ad, setAd] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function AdDetailModal({ adId, onClose, initialAd = null }) {
+  const [ad, setAd] = useState(initialAd);
+  const [loading, setLoading] = useState(!initialAd);
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    if (initialAd) {
+      setAd(initialAd);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     fetch(`${API}/advertisements/${adId}`)
       .then(r => r.json())
       .then(data => setAd(data))
       .catch(() => setAd(null))
       .finally(() => setLoading(false));
-  }, [adId]);
+  }, [adId, initialAd]);
+
 
   return (
     <div
