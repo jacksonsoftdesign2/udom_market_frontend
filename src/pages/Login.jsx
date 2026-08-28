@@ -155,9 +155,10 @@ setSuccessData(data.user);
 setStage("success");
 
 setTimeout(() => {
-    if (data.user.role === "admin")        navigate("/admin/dashboard");
-    else if (data.user.role === "trader")  navigate("/trader/dashboard");
-    else                                   navigate("/");
+    if (data.user.role === "admin")             navigate("/admin/dashboard");
+    else if (data.user.role === "business_manager") navigate("/manager/ads");
+    else if (data.user.role === "trader")       navigate("/trader/dashboard");
+    else                                         navigate("/");
 }, 4000);
 
     } catch (err) {
@@ -504,11 +505,12 @@ className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-
             const user = JSON.parse(localStorage.getItem("user") || "{}");
             setSuccessData(user);
             setStage("success");
-            setTimeout(() => {
-                if (user.role === "admin")       navigate("/admin/dashboard");
-                else if (user.role === "trader") navigate("/trader/dashboard");
-                else                             navigate("/");
-            }, 3500);
+        setTimeout(() => {
+            if (user.role === "admin")             navigate("/admin/dashboard");
+            else if (user.role === "business_manager") navigate("/manager/ads");
+            else if (user.role === "trader")       navigate("/trader/dashboard");
+            else                                    navigate("/");
+        }, 3500);
         }}
     />
 )}

@@ -10,6 +10,7 @@ import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
 import AdBanner from "../components/AdBanner";
+import AdStrip from "../components/AdStrip";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
        FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
 
@@ -249,6 +250,8 @@ function Home() {
   const [buyItem, setBuyItem] = useState(null);
   const [contactItem, setContactItem] = useState(null);
   const [showContactOptions, setShowContactOptions] = useState(false);
+  const [activeAds, setActiveAds] = useState([]);
+  const [adsLoaded, setAdsLoaded] = useState(false);
   const searchRef = useRef(null);
 
   // ── instant search ──
@@ -302,6 +305,16 @@ function Home() {
       .then(data => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]));
   }, []);
+
+  //for adds
+
+  useEffect(() => {
+  fetch(`${API}/advertisements/active`)
+    .then(r => r.json())
+    .then(data => setActiveAds(Array.isArray(data) ? data : []))
+    .catch(() => setActiveAds([]))
+    .finally(() => setAdsLoaded(true));
+}, []);
 
   // ── fetch products with auto-refresh ──
   useEffect(() => {
@@ -524,20 +537,26 @@ if (key === "nearby") {
                 <SearchWithInstant {...searchProps} />
               </div>
 
-              {/* ── AD BANNER ── */}
-      <AdBanner
-  onCtaClick={(slideIndex) => {
-    if (slideIndex === 0) {
-      navigate('/register-trader');
-    } else if (slideIndex === 1) {
-      setShowContactOptions(true);
-    } else if (slideIndex === 2) {
-      window.scrollTo({ top: 400, behavior: 'smooth' });
-    } else if (slideIndex === 3) {
-      setShowContactOptions(true);
-    }
-  }}
-/>
+
+{/* ── AD STRIP (if active ads exist) OR fallback BANNER ── */}
+{adsLoaded && activeAds.length > 0 ? (
+  <AdStrip ads={activeAds} />
+) : (
+  <AdBanner
+    onCtaClick={(slideIndex) => {
+      if (slideIndex === 0) {
+        navigate('/register-trader');
+      } else if (slideIndex === 1) {
+        setShowContactOptions(true);
+      } else if (slideIndex === 2) {
+        window.scrollTo({ top: 400, behavior: 'smooth' });
+      } else if (slideIndex === 3) {
+        setShowContactOptions(true);
+      }
+    }}
+  />
+)}
+
     <div className="px-3 md:px-6 lg:px-12 max-w-7xl mx-auto">
             {/* ── QUICK LINKS ── */}
             <QuickLinks
