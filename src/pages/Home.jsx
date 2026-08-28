@@ -11,6 +11,8 @@ import Footer from "../components/Footer";
 import QuickLinks from "../components/QuickLinks";
 import AdBanner from "../components/AdBanner";
 import AdStrip from "../components/AdStrip";
+import { getSocket } from "../utils/socket";
+import { isAdCurrentlyActive } from "../utils/adHelpers";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
        FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
 
@@ -315,6 +317,41 @@ function Home() {
     .catch(() => setActiveAds([]))
     .finally(() => setAdsLoaded(true));
 }, []);
+
+
+  // ── live-sync ads from ANY manager, ANY device, instantly ──
+  useEffect(() => {
+    const socket = getSocket();
+
+    const handleCreated = (ad) => {
+      if (!isAdCurrentlyActive(ad)) return;
+      setActiveAds(prev => prev.some(a => a.id === ad.id) ? prev : [...prev, ad]);
+    };
+
+    const handleUpdated = (ad) => {
+      setActiveAds(prev => {
+        const stillActive = isAdCurrentlyActive(ad);
+        const exists = prev.some(a => a.id === ad.id);
+        if (!stillActive) return prev.filter(a => a.id !== ad.id);
+        if (exists) return prev.map(a => a.id === ad.id ? ad : a);
+        return [...prev, ad];
+      });
+    };
+
+    const handleDeleted = ({ id }) => {
+      setActiveAds(prev => prev.filter(a => a.id !== id));
+    };
+
+    socket.on("ad:created", handleCreated);
+    socket.on("ad:updated", handleUpdated);
+    socket.on("ad:deleted", handleDeleted);
+
+    return () => {
+      socket.off("ad:created", handleCreated);
+      socket.off("ad:updated", handleUpdated);
+      socket.off("ad:deleted", handleDeleted);
+    };
+  }, []);
 
   // ── fetch products with auto-refresh ──
   useEffect(() => {
