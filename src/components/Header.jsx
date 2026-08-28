@@ -188,7 +188,7 @@ useEffect(() => {
                            bg-clip-text text-transparent 
                            transition-all duration-300 
                            hover:scale-105 md:hover:scale-110 hover:brightness-125">
-              UDOM Market
+              PAZA
             </h1>
             {/* Desktop: icon-only buttons after title */}
 {scrolledInProduct && (
