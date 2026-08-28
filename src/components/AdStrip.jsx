@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import AdDetailModal from "./AdDetailModal";
 
 const MIN_ITEMS_PER_SET = 12; // ensures the strip never runs dry, even with 1-2 ads
@@ -9,17 +9,8 @@ export default function AdStrip({ ads }) {
   const [adCache, setAdCache] = useState({});
   const API = import.meta.env.VITE_API_URL;
 
-  // ── Prefetch full detail for every ad as soon as the strip mounts ──
-  useEffect(() => {
-    if (!ads || ads.length === 0) return;
-    ads.forEach(ad => {
-      fetch(`${API}/advertisements/${ad.id}`)
-        .then(r => r.json())
-        .then(data => setAdCache(prev => ({ ...prev, [ad.id]: data })))
-        .catch(() => {}); // silently ignore — modal will just fall back to its own fetch
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ads]);
+  const containerRef = useRef(null);
+  const fetchedIds = useRef(new Set()); // dedupe — same ad.id appears many times in the loop
 
   // ── Build a set wide enough to never show a gap, repeat it, then duplicate for the seamless loop ──
   const { loopAds, duration } = useMemo(() => {
@@ -31,6 +22,48 @@ export default function AdStrip({ ads }) {
       duration: baseSet.length * SECONDS_PER_ITEM,
     };
   }, [ads]);
+
+  const prefetchAd = useCallback((adId) => {
+    if (fetchedIds.current.has(adId)) return; // already fetched or in-flight
+    fetchedIds.current.add(adId);
+    fetch(`${API}/advertisements/${adId}`)
+      .then(r => r.json())
+      .then(data => setAdCache(prev => ({ ...prev, [adId]: data })))
+      .catch(() => { fetchedIds.current.delete(adId); }); // allow retry on failure
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [API]);
+
+  // ── Reset cache/dedupe when the ad list itself changes ──
+  useEffect(() => {
+    fetchedIds.current = new Set();
+    setAdCache({});
+  }, [ads]);
+
+  // ── Observe chips as they scroll through the visible strip window, prefetch on entry ──
+  useEffect(() => {
+    if (!containerRef.current || loopAds.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const adId = entry.target.dataset.adid;
+            if (adId) prefetchAd(adId);
+          }
+        });
+      },
+      {
+        root: containerRef.current, // the overflow-hidden strip window, not the whole page
+        rootMargin: "0px 200px 0px 0px", // start loading slightly before it's fully visible (entering from left/right)
+        threshold: 0,
+      }
+    );
+
+    const buttons = containerRef.current.querySelectorAll("[data-adid]");
+    buttons.forEach(btn => observer.observe(btn));
+
+    return () => observer.disconnect();
+  }, [loopAds, prefetchAd]);
 
   if (!ads || ads.length === 0) return null;
 
@@ -49,11 +82,15 @@ export default function AdStrip({ ads }) {
         }
       `}</style>
 
-      <div className="mb-5 rounded-[4px] bg-gray-50 border border-gray-100 overflow-hidden py-2 md:py-3.5">
+      <div
+        ref={containerRef}
+        className="mb-5 rounded-[4px] bg-gray-50 border border-gray-100 overflow-hidden py-2 md:py-3.5"
+      >
         <div className="ad-strip-track flex w-max gap-5 sm:gap-7 md:gap-10 px-4">
           {loopAds.map((ad, i) => (
             <button
               key={`${ad.id}-${i}`}
+              data-adid={ad.id}
               onClick={() => setOpenAdId(ad.id)}
               className="flex items-center gap-2 md:gap-3 flex-shrink-0 cursor-pointer"
             >
