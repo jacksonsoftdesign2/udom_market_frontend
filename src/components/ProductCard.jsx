@@ -1,7 +1,11 @@
-
 import { FiEye, FiShoppingCart, FiShoppingBag, FiUser, FiHome } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import { supportsAVIF, pickSrc } from "../utils/imageUtils";
+import { useDwellTracking } from "../hooks/useProductEngagement";
+import { formatViews } from "../utils/formatters";
+
+const API = import.meta.env.VITE_API_URL;
+
 const daysRemaining = (date) =>
   date ? Math.max(0, 90 - Math.floor((Date.now() - new Date(date).getTime()) / 86400000)) : null;
 
@@ -9,37 +13,42 @@ const daysRemaining = (date) =>
 
 export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
   const [imgIdx, setImgIdx] = useState(0);
-  
   const avifRef = useRef(null);
-useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
+  useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
 
-const imgRow = item.images?.[0];
-const imgSrc = typeof imgRow === 'object'
-  ? pickSrc(imgRow, 'thumb', avifRef.current)
-  : (imgRow || item.imageUrl || null);
+  const { elementRef, recordClick } = useDwellTracking(item.id, API);
+
+  const imgRow = item.images?.[0];
+  const imgSrc = typeof imgRow === 'object'
+    ? pickSrc(imgRow, 'thumb', avifRef.current)
+    : (imgRow || item.imageUrl || null);
   const remaining = daysRemaining(item.listing_date || item.listingDate);
   const isAvailable = item.status === "Available";
   const isLowDays = remaining !== null && remaining <= 10;
   const isLowStock = item.stock <= 5;
 
+  const handleClick = () => {
+    recordClick();
+    onClick?.();
+  };
+
   return (
-  <div
-    className="rounded-sm overflow-hidden bg-white border border-[#1a3a8f50] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col cursor-pointer"
-    onClick={onClick}
-    onMouseEnter={() => {
-      if (!item.images?.length) return;
-      requestIdleCallback(() => {
-        item.images.forEach((img, i) => {
-          if (!img) return;
-          // First image → medium (what user sees on product page)
-          // Rest → thumb (for thumbnail strip)
-          const size = i === 0 ? 'medium' : 'thumb';
-          const src = typeof img === 'object' ? pickSrc(img, size, avifRef.current) : img;
-          if (src) new Image().src = src;
+    <div
+      ref={elementRef}
+      className="rounded-sm overflow-hidden bg-white border border-[#1a3a8f50] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col cursor-pointer"
+      onClick={handleClick}
+      onMouseEnter={() => {
+        if (!item.images?.length) return;
+        requestIdleCallback(() => {
+          item.images.forEach((img, i) => {
+            if (!img) return;
+            const size = i === 0 ? 'medium' : 'thumb';
+            const src = typeof img === 'object' ? pickSrc(img, size, avifRef.current) : img;
+            if (src) new Image().src = src;
+          });
         });
-      });
-    }}
-  >
+      }}
+    >
       {/* IMAGE */}
      <div className="relative overflow-hidden h-44 bg-gray-100">
   {imgSrc ? (
@@ -67,6 +76,13 @@ const imgSrc = typeof imgRow === 'object'
         }`}>
           {isAvailable ? "Available" : "Unavailable"}
         </span>
+
+                {/* Views (90-day) */}
+        {item.view_count_90d > 0 && (
+          <span className="absolute top-7 right-1.5 flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-sm font-semibold leading-tight bg-black/50 text-white">
+            <FiEye size={9} /> {formatViews(item.view_count_90d)}
+          </span>
+        )}
 
         {/* Image dots */}
         {item.images?.length > 1 && (
@@ -134,7 +150,7 @@ const imgSrc = typeof imgRow === 'object'
         {/* BUTTONS */}
         <div className="flex gap-1 mt-auto pt-0.5">
           <button
-            onClick={onClick}
+            onClick={handleClick}
             className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1 rounded-sm border border-[#1a3a8f] text-[#1a3a8f] font-semibold hover:bg-[#e8edf7] transition"
           >
             <FiEye size={12} /> View

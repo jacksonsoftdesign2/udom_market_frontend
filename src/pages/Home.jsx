@@ -532,8 +532,21 @@ if (key === "nearby") {
       );
     });
 
-    if (quickFilter === "new_arrival") return [...base].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    if (quickFilter === "popular") return [...base].sort((a, b) => (b.sold ?? 0) - (a.sold ?? 0));
+      if (quickFilter === "new_arrival") return [...base].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      if (quickFilter === "popular") {
+        const max = (key) => Math.max(...base.map(p => Number(p[key]) || 0), 1);
+        const maxSold = max("sold");
+        const maxViews = max("view_count_90d");
+        const maxDwell = max("dwell_seconds_90d");
+
+        return [...base].sort((a, b) => {
+          const scoreOf = (p) =>
+            (Number(p.sold) || 0) / maxSold * 0.4 +
+            (Number(p.view_count_90d) || 0) / maxViews * 0.35 +
+            (Number(p.dwell_seconds_90d) || 0) / maxDwell * 0.25;
+          return scoreOf(b) - scoreOf(a);
+        });
+      }
     if (quickFilter === "deals") return [...base].sort((a, b) => Number(a.price) - Number(b.price));
 
     return fairFeedOrder(base); // ← default "All Products" / category view / search results

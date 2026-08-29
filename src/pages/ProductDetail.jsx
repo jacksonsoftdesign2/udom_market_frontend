@@ -4,13 +4,18 @@ import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { FiZoomIn,FiShoppingCart, FiHeart, FiShare2 } from "react-icons/fi";
+import { FiZoomIn,FiShoppingCart, FiHeart, FiShare2, FiEye } from "react-icons/fi";
 import { supportsAVIF, pickSrc } from "../utils/imageUtils";
 import ShareSheet from "../components/ShareSheet";
 import { generateShareCard } from "../utils/shareUtils";
+import { useDwellTracking } from "../hooks/useProductEngagement";
+import { formatViews } from "../utils/formatters";
 const API = import.meta.env.VITE_API_URL;
 
-// ── Thumbnail Strip ─────────────────────────────────────────────────
+const daysRemaining = (date) =>
+  date ? Math.max(0, 90 - Math.floor((Date.now() - new Date(date).getTime()) / 86400000)) : null;
+
+// Thumbnail Strip 
 function ThumbStrip({ images, active, onSelect }) {
   if (!images || images.length <= 1) return null;
   return (
@@ -36,7 +41,6 @@ function ThumbStrip({ images, active, onSelect }) {
   );
 }
 
-// ── Related Product Mini-Card ───────────────────────────────────────
 function RelatedCard({ item, onClick }) {
   return (
     <div
@@ -46,9 +50,9 @@ function RelatedCard({ item, onClick }) {
       <div className="relative h-36 overflow-hidden">
         <img
           src={(() => {
-  const r = item.images?.[0];
-  return typeof r === 'object' ? pickSrc(r, 'thumb', null) : (r || item.imageUrl || null);
-})()}
+            const r = item.images?.[0];
+            return typeof r === 'object' ? pickSrc(r, 'thumb', null) : (r || item.imageUrl || null);
+          })()}
           alt={item.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
           onError={(e) => { e.target.onerror = null; e.target.style.display = "none"; }}
@@ -56,7 +60,13 @@ function RelatedCard({ item, onClick }) {
         <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 bg-[#1a2e6e] text-white rounded-sm font-semibold">
           {item.category || "General"}
         </span>
+        {item.view_count_90d > 0 && (
+          <span className="absolute top-2 right-2 flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-sm font-semibold bg-black/50 text-white">
+            <FiEye size={9} /> {formatViews(item.view_count_90d)}
+          </span>
+        )}
       </div>
+
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="text-xs font-bold text-gray-800 line-clamp-2 leading-snug">{item.name}</p>
         <p className="text-xs font-bold text-[#F5C518] mt-auto">
@@ -71,7 +81,7 @@ function RelatedCard({ item, onClick }) {
 }
 
 
-// ── Main ProductDetail ──────────────────────────────────────────────
+//Main ProductDetail
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -91,6 +101,7 @@ export default function ProductDetail() {
   const [shareCardBlob, setShareCardBlob] = useState(null);
   const [shareCardPreview, setShareCardPreview] = useState(null);
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
+  const { elementRef: detailEngagementRef } = useDwellTracking(product?.id, API, { active: !!product });
 useEffect(() => {
   const onScroll = () => setScrolled(window.scrollY > 60);
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -103,7 +114,7 @@ useEffect(() => {
   }
 }, [product, searchParams]);
 
-  // ── fetch product ──
+  //fetch product
 useLayoutEffect(() => {
     window.scrollTo(0, 0);
 }, [id]);
@@ -132,7 +143,7 @@ useEffect(() => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // ── fetch related products (same category OR same trader) ──
+  //fetch related products (same category OR same trader)
   useEffect(() => {
     if (!product) return;
 
@@ -157,7 +168,7 @@ useEffect(() => {
 const avifRef = useRef(null);
 useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
   
-  // ── swipe gestures for mobile image gallery ──
+  //swipe gestures for mobile image gallery
   const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
   const handleTouchEnd = (e) => {
     if (touchStartX.current === null || !product?.images?.length) return;
@@ -170,7 +181,7 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
   };
 
 
-  // ── loading ──
+  //loading
   if (loading) return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -182,7 +193,7 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
     </div>
   );
 
-  // ── error ──
+  //error
   if (error || !product) return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -241,7 +252,7 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
     .finally(() => setIsGeneratingCard(false));
 };
   return (
-    <div className="relative min-h-screen text-gray-800 overflow-x-hidden">
+    <div ref={detailEngagementRef} className="relative min-h-screen text-gray-800 overflow-x-hidden">
 
       {/* ── BACKGROUND ── */}
 
@@ -565,6 +576,40 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
   </div>
   
 )}
+
+
+
+
+              {/* Insights */}
+              {(product.view_count_90d > 0 || product.dwell_seconds_90d > 0 || product.sold > 0) && (
+                <div>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Insights</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="rounded-sm py-2 px-2 bg-[#e8edf7] text-center">
+                      <p className="text-sm font-bold text-[#1a3a8f] leading-tight flex items-center justify-center gap-1">
+                        <FiEye size={12} /> {formatViews(product.view_count_90d)}
+                      </p>
+                      <p className="text-[9px] text-gray-400 leading-tight mt-0.5">views (90d)</p>
+                    </div>
+                    <div className="rounded-sm py-2 px-2 bg-[#e8edf7] text-center">
+                      <p className="text-sm font-bold text-[#16a34a] leading-tight">
+                        {product.sold ?? 0}
+                      </p>
+                      <p className="text-[9px] text-gray-400 leading-tight mt-0.5">sold</p>
+                    </div>
+                    <div className="rounded-sm py-2 px-2 bg-[#e8edf7] text-center">
+                      <p className={`text-sm font-bold leading-tight ${
+                        daysRemaining(product.listing_date) !== null && daysRemaining(product.listing_date) <= 10
+                          ? "text-red-500"
+                          : "text-[#1a3a8f]"
+                      }`}>
+                        {daysRemaining(product.listing_date) ?? "—"}
+                      </p>
+                      <p className="text-[9px] text-gray-400 leading-tight mt-0.5">days left</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Description */}
               {product.description && (
