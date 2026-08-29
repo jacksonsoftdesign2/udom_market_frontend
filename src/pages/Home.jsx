@@ -289,24 +289,28 @@ function Home() {
     };
   }, []);
 
+  const mobileSearchOpenRef = useRef(false);
+  useEffect(() => {
+    mobileSearchOpenRef.current = mobileSearchOpen;
+  }, [mobileSearchOpen]);
+
   // ── detect scroll past the inline search box → trigger minimized header on mobile ──
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         const scrolledPast = !entry.isIntersecting;
-        setSearchSticky(scrolledPast); // desktop: unchanged behavior
-        setMobileMinimized(scrolledPast); // mobile: triggers minimized header + search icon
-        if (scrolledPast && mobileSearchOpen) {
-          collapseMobileSearch(); // scrolling again while open → collapse it
+        setSearchSticky(scrolledPast);
+        setMobileMinimized(scrolledPast);
+        if (scrolledPast && mobileSearchOpenRef.current) {
+          collapseMobileSearch();
         }
       },
       { threshold: 0, rootMargin: "-72px 0px 0px 0px" }
     );
     if (searchRef.current) observer.observe(searchRef.current);
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mobileSearchOpen]);
-
+  }, []); 
+  
   // ── keep backend alive ──
   useEffect(() => {
     const ping = () => fetch(`${API}/users/categories`).catch(() => {});

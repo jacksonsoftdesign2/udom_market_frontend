@@ -120,11 +120,10 @@ ws = new WebSocket(`${wsProtocol}://${wsBase}?vid=${vid}`);
   };
 }, []);
 
-  // report real rendered height upward, so Home can position AdStrip/search correctly ──
   useEffect(() => {
     if (!headerRef.current || !onHeightChange) return;
     const el = headerRef.current;
-    const report = () => onHeightChange(el.getBoundingClientRect().height);
+    const report = () => onHeightChange(Math.ceil(el.getBoundingClientRect().height));
     report();
     const ro = new ResizeObserver(report);
     ro.observe(el);
@@ -164,8 +163,7 @@ useEffect(() => {
                         flex items-center justify-between gap-2
                         bg-white
                         border-b border-gray-200
-                        text-yellow-700
-                        shadow-sm`}
+                      text-yellow-700`}
    >
           
          {/* LEFT: MENU BUTTON + LOGO + TITLE */}
@@ -188,7 +186,7 @@ useEffect(() => {
                            bg-clip-text text-transparent 
                            transition-all duration-300 
                            hover:scale-105 md:hover:scale-110 hover:brightness-125">
-              PAZA
+              UDOM Market
             </h1>
             {/* Desktop: icon-only buttons after title */}
 {scrolledInProduct && (
@@ -224,7 +222,7 @@ useEffect(() => {
 
   {minimized ? (
     <button
-      onClick={onSearchIconClick}
+      onClick={(e) => { e.stopPropagation(); onSearchIconClick(); }}
       className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition
         ${searchActive ? "bg-blue-600 text-white" : "bg-slate-900 text-blue-300"}`}
     >
