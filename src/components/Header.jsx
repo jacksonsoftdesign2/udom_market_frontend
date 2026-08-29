@@ -183,13 +183,22 @@ useEffect(() => {
                             bg-white flex items-center justify-center shadow flex-shrink-0">
               <img src={logo} alt="logo" className="w-6 md:w-7 h-6 md:h-7 object-contain" />
             </div>
-            <h1 className="font-bold text-lg md:text-3xl tracking-wide font-[Poppins] 
-                           bg-gradient-to-r from-blue-800 via-blue-400 to-blue-600 
-                           bg-clip-text text-transparent 
-                           transition-all duration-300 
-                           hover:scale-105 md:hover:scale-110 hover:brightness-125">
-              UDOM Market
-            </h1>
+            <div
+              onClick={() => { window.location.href = "/"; }}
+              className="flex items-center gap-1 md:gap-2 cursor-pointer"
+            >
+              <div className="w-8 md:w-10 h-8 md:h-10 rounded-full overflow-hidden 
+                              bg-white flex items-center justify-center shadow flex-shrink-0">
+                <img src={logo} alt="logo" className="w-6 md:w-7 h-6 md:h-7 object-contain" />
+              </div>
+              <h1 className="font-bold text-lg md:text-3xl tracking-wide font-[Poppins] 
+                             bg-gradient-to-r from-blue-800 via-blue-400 to-blue-600 
+                             bg-clip-text text-transparent 
+                             transition-all duration-300 
+                             hover:scale-105 md:hover:scale-110 hover:brightness-125">
+                UDOM Market
+              </h1>
+            </div>
             {/* Desktop: icon-only buttons after title */}
 {scrolledInProduct && (
   <div className="hidden md:flex items-center gap-1.5 ml-2 transition-all duration-300">
