@@ -179,10 +179,6 @@ useEffect(() => {
   >
     ☰
   </button>
-            <div className="w-8 md:w-10 h-8 md:h-10 rounded-full overflow-hidden 
-                            bg-white flex items-center justify-center shadow flex-shrink-0">
-              <img src={logo} alt="logo" className="w-6 md:w-7 h-6 md:h-7 object-contain" />
-            </div>
             <div
               onClick={() => { window.location.href = "/"; }}
               className="flex items-center gap-1 md:gap-2 cursor-pointer"
