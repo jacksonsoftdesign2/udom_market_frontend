@@ -215,15 +215,22 @@ useEffect(() => {
           </div>
 <div
   className="relative flex items-center cursor-pointer select-none"
-  onMouseEnter={() => setShowTooltip(true)}
+  onMouseEnter={(e) => {
+    if (e.target.closest('[data-mobile-search-toggle]')) return;
+    setShowTooltip(true);
+  }}
   onMouseLeave={() => setShowTooltip(false)}
-  onClick={() => setShowTooltip(prev => !prev)}
+  onClick={(e) => {
+    if (e.target.closest('[data-mobile-search-toggle]')) return;
+    setShowTooltip(prev => !prev);
+  }}
 >
   {/* MOBILE */}
 <div className="relative flex md:hidden items-center">
 
   {minimized ? (
     <button
+      data-mobile-search-toggle="true"
       onClick={(e) => { e.stopPropagation(); onSearchIconClick(); }}
       className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition
         ${searchActive ? "bg-blue-600 text-white" : "bg-slate-900 text-blue-300"}`}

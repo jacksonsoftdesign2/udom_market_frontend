@@ -189,9 +189,10 @@ function SearchWithInstant({
   hasInstantResults,
   instantRef,
   compact = false,
+  showDropdown = false,
 }) {
   return (
-    <div className="relative w-full" ref={!compact ? instantRef : undefined}>
+    <div className="relative w-full" ref={showDropdown ? instantRef : undefined}>
       <form onSubmit={onSearch} className="flex gap-1.5 w-full">
         <div
          className={`flex-1 flex items-center bg-white border border-yellow-500 shadow-sm
@@ -222,7 +223,7 @@ function SearchWithInstant({
       </form>
 
       {/* Instant results dropdown — only on main (non-compact) search */}
-      {!compact && showInstant && hasInstantResults && (
+      {showDropdown && showInstant && hasInstantResults && (
         <InstantResults
           results={instantResults}
           onSelectCategory={onSelectCategory}
@@ -303,19 +304,19 @@ function Home() {
         setMobileMinimized(scrolledPast);
         if (mobileSearchOpenRef.current) {
           if (scrolledPast) {
-            collapseMobileSearch(); 
+            collapseMobileSearch();
           } else {
-            setMobileSearchOpen(false); 
+            setMobileSearchOpen(false);
           }
         }
       },
-      { threshold: 0, rootMargin: "-72px 0px 0px 0px" }
+      { threshold: 0, rootMargin: `-${headerHeight + adStripHeight}px 0px 0px 0px` }
     );
     if (searchRef.current) observer.observe(searchRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [headerHeight, adStripHeight]);
 
-  // ── keep backend alive ──
+  //keep backend alive
   useEffect(() => {
     const ping = () => fetch(`${API}/users/categories`).catch(() => {});
     const id = setInterval(ping, 14 * 60 * 1000);
@@ -455,11 +456,11 @@ const handleQuickSelect = (key) => {
       setQuickFilter(null);
       setNearbyProducts([]);
       setNearbyError("");
-      setPage(1);
+      
       return;
     }
     setQuickFilter(key);
-    setPage(1);
+    
 if (key === "nearby") {
   setNearbyLoading(true);
   setNearbyError("");
@@ -600,7 +601,7 @@ if (key === "nearby") {
       {/* ── HEADER ── */}
       <Header
         cartCount={cart.reduce((s, c) => s + c.qty, 0)}
-        stickySearch={searchSticky ? <SearchWithInstant {...searchProps} compact /> : null}
+        stickySearch={searchSticky ? <SearchWithInstant {...searchProps} compact showDropdown={searchSticky} /> : null}
         minimized={mobileMinimized}
         onSearchIconClick={toggleMobileSearch}
         searchActive={mobileSearchOpen}
@@ -614,7 +615,7 @@ if (key === "nearby") {
           style={{ top: headerHeight + adStripHeight }}
         >
           <div className="flex-1">
-            <SearchWithInstant {...searchProps} compact />
+            <SearchWithInstant {...searchProps} compact showDropdown={mobileSearchOpen} />
           </div>
           <button onClick={toggleMobileSearch} className="text-gray-400 flex-shrink-0 p-1">
             <FaTimes size={16} />
@@ -641,7 +642,7 @@ if (key === "nearby") {
 
               {/* INLINE SEARCH with instant panel */}
               <div ref={searchRef} className="mb-5 px-3 md:px-6 lg:px-12 max-w-7xl mx-auto">
-                <SearchWithInstant {...searchProps} />
+                <SearchWithInstant {...searchProps} showDropdown={!searchSticky} />
               </div>
 
 
