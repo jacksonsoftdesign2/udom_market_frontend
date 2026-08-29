@@ -522,7 +522,7 @@ export default function Analytics() {
             Products Performance
             <span className="text-xs font-normal text-gray-400">({filteredProducts.length})</span>
           </h3>
-          <p className="text-xs text-gray-400">Tap to deep dive →</p>
+
         </div>
 
         {/* Search */}

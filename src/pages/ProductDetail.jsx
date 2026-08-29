@@ -143,7 +143,6 @@ useEffect(() => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  //fetch related products (same category OR same trader)
   useEffect(() => {
     if (!product) return;
 
@@ -154,13 +153,22 @@ useEffect(() => {
       .then(r => r.json())
       .then(data => {
         const all = Array.isArray(data) ? data : data.products || [];
-        const filtered = all.filter(p => {
-          if (p.id === product.id) return false;
-          const sameCategory = p.category_id === product.category_id;
-          const sameTrader = p.trader_id === product.trader_id;
-          return sameCategory || sameTrader;
-        });
-        setRelated(filtered.slice(0, 8));
+
+        const scored = all
+          .filter(p => p.id !== product.id)
+          .map(p => {
+            let score = 0;
+            if (product.variant_id && p.variant_id === product.variant_id) score = 4;
+            else if (product.model_id && p.model_id === product.model_id) score = 3;
+            else if (product.brand_id && p.brand_id === product.brand_id) score = 2;
+            else if (product.category_id && p.category_id === product.category_id) score = 1;
+            else if (product.trader_id && p.trader_id === product.trader_id) score = 0.5;
+            return { ...p, _relScore: score };
+          })
+          .filter(p => p._relScore > 0)
+          .sort((a, b) => b._relScore - a._relScore || new Date(b.created_at) - new Date(a.created_at));
+
+        setRelated(scored.slice(0, 8).map(({ _relScore, ...p }) => p));
       })
       .catch(() => setRelated([]));
   }, [product]);
