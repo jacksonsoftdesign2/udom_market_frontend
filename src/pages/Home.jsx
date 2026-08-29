@@ -647,7 +647,7 @@ if (key === "nearby") {
 
 
 {/* ── AD STRIP (if active ads exist) OR fallback BANNER ── */}
-{adsLoaded && activeAds.length > 0 ? (
+{!adsLoaded ? null : activeAds.length > 0 ? (
   <AdStrip ads={activeAds} top={headerHeight} onHeightChange={setAdStripHeight} />
 ) : (
   <AdBanner
