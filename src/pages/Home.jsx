@@ -295,26 +295,34 @@ function Home() {
     mobileSearchOpenRef.current = mobileSearchOpen;
   }, [mobileSearchOpen]);
 
+  // ── heights change often; keep refs so the scroll listener never needs to be recreated ──
+  const headerHeightRef = useRef(headerHeight);
+  const adStripHeightRef = useRef(adStripHeight);
+  useEffect(() => { headerHeightRef.current = headerHeight; }, [headerHeight]);
+  useEffect(() => { adStripHeightRef.current = adStripHeight; }, [adStripHeight]);
+
   // ── detect scroll past the inline search box → trigger minimized header on mobile ──
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const scrolledPast = !entry.isIntersecting;
-        setSearchSticky(scrolledPast);
-        setMobileMinimized(scrolledPast);
-        if (mobileSearchOpenRef.current) {
-          if (scrolledPast) {
-            collapseMobileSearch();
-          } else {
-            setMobileSearchOpen(false);
-          }
+    const handleScroll = () => {
+      if (!searchRef.current) return;
+      const offset = headerHeightRef.current + adStripHeightRef.current;
+      const rect = searchRef.current.getBoundingClientRect();
+      const scrolledPast = rect.bottom <= offset;
+
+      setSearchSticky(scrolledPast);
+      setMobileMinimized(scrolledPast);
+      if (mobileSearchOpenRef.current) {
+        if (scrolledPast) {
+          collapseMobileSearch();
+        } else {
+          setMobileSearchOpen(false);
         }
-      },
-      { threshold: 0, rootMargin: `-${headerHeight + adStripHeight}px 0px 0px 0px` }
-    );
-    if (searchRef.current) observer.observe(searchRef.current);
-    return () => observer.disconnect();
-  }, [headerHeight, adStripHeight]);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // set correct initial state on mount, without ever "recreating" later
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []); // ← empty deps forever — this listener never needs rebuilding
 
   //keep backend alive
   useEffect(() => {
