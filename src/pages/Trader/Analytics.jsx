@@ -95,7 +95,7 @@ function MetricCard({ icon, label, value, sub, color }) {
 // ── Product Row ───────────────────────────────────────────────────────────────
 function ProductRow({ product, rank, onClick }) {
   const thumb = product.images?.[0]?.thumb_webp || product.images?.[0]?.image_url || null;
-  const winRate = product.views > 0 ? ((product.sold / product.views) * 100).toFixed(1) : "0.0";
+  const winRate = product.views > 0 ? ((product.delivered_orders / product.views) * 100).toFixed(1) : "0.0";
 
   return (
     <button
@@ -205,8 +205,8 @@ function ProductAnalytics({ product, onBack }) {
         <MetricCard
           icon={<FiTrendingUp size={18} className="text-purple-600" />}
           label="Conversion"
-          value={product.views > 0 ? `${((product.sold / product.views) * 100).toFixed(1)}%` : "0%"}
-          sub="orders ÷ views"
+          value={product.views > 0 ? `${((product.delivered_orders / product.views) * 100).toFixed(1)}%` : "0%"}
+          sub="delivered ÷ views"
           color="bg-purple-50"
         />
       </div>
@@ -332,7 +332,7 @@ export default function Analytics() {
   );
 
   const winRate = summary.total_views > 0
-    ? ((summary.total_orders / summary.total_views) * 100).toFixed(1)
+    ? ((summary.delivered_orders / summary.total_views) * 100).toFixed(1)
     : "0.0";
 
   if (loading) return (
@@ -365,7 +365,6 @@ export default function Analytics() {
   return (
     <div className="space-y-5">
 
-      {/* ── Summary Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <MetricCard
           icon={<FiEye size={18} className="text-blue-600" />}
@@ -375,26 +374,50 @@ export default function Analytics() {
           color="bg-blue-50"
         />
         <MetricCard
-          icon={<FiShoppingBag size={18} className="text-green-600" />}
-          label="Total Orders"
-          value={Number(summary.total_orders || 0).toLocaleString()}
-          sub={`${summary.cancelled_orders || 0} cancelled`}
-          color="bg-green-50"
-        />
-        <MetricCard
           icon={<FiDollarSign size={18} className="text-amber-600" />}
           label="Revenue"
           value={`TZS ${formatTZS(summary.total_revenue || 0)}`}
-          sub="excl. cancelled"
+          sub="delivered orders only"
           color="bg-amber-50"
+        />
+        <MetricCard
+          icon={<FiShoppingBag size={18} className="text-green-600" />}
+          label="Delivered"
+          value={Number(summary.delivered_orders || 0).toLocaleString()}
+          sub={`of ${Number(summary.total_orders || 0).toLocaleString()} total orders`}
+          color="bg-green-50"
         />
         <MetricCard
           icon={<FiTrendingUp size={18} className="text-purple-600" />}
           label="Conversion"
           value={`${winRate}%`}
-          sub="orders ÷ views"
+          sub="delivered ÷ views"
           color="bg-purple-50"
         />
+      </div>
+
+      {/* Order status breakdown */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="rounded-2xl p-4 text-center bg-yellow-50 text-yellow-700">
+          <div className="w-2 h-2 rounded-full mx-auto mb-2 bg-yellow-400" />
+          <p className="text-lg font-black">{summary.pending_orders || 0}</p>
+          <p className="text-xs font-medium opacity-70 mt-0.5">Pending</p>
+        </div>
+        <div className="rounded-2xl p-4 text-center bg-blue-50 text-blue-700">
+          <div className="w-2 h-2 rounded-full mx-auto mb-2 bg-blue-400" />
+          <p className="text-lg font-black">{summary.confirmed_orders || 0}</p>
+          <p className="text-xs font-medium opacity-70 mt-0.5">Confirmed</p>
+        </div>
+        <div className="rounded-2xl p-4 text-center bg-green-50 text-green-700">
+          <div className="w-2 h-2 rounded-full mx-auto mb-2 bg-green-400" />
+          <p className="text-lg font-black">{summary.delivered_orders || 0}</p>
+          <p className="text-xs font-medium opacity-70 mt-0.5">Delivered</p>
+        </div>
+        <div className="rounded-2xl p-4 text-center bg-red-50 text-red-600">
+          <div className="w-2 h-2 rounded-full mx-auto mb-2 bg-red-400" />
+          <p className="text-lg font-black">{summary.cancelled_orders || 0}</p>
+          <p className="text-xs font-medium opacity-70 mt-0.5">Cancelled</p>
+        </div>
       </div>
 
       {/* ── Chart Card ── */}
@@ -534,21 +557,7 @@ export default function Analytics() {
         )}
       </div>
 
-      {/* ── Orders Summary ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Delivered", value: analytics?.products?.reduce((a, p) => a + (parseInt(p.sold) || 0), 0) || 0, color: "bg-green-50 text-green-700", dot: "bg-green-400" },
-          { label: "Revenue", value: `TZS ${formatTZS(summary.total_revenue || 0)}`, color: "bg-blue-50 text-blue-700", dot: "bg-blue-400" },
-          { label: "Cancelled", value: summary.cancelled_orders || 0, color: "bg-red-50 text-red-600", dot: "bg-red-400" },
-          { label: "Products", value: summary.total_products || 0, color: "bg-purple-50 text-purple-700", dot: "bg-purple-400" },
-        ].map(item => (
-          <div key={item.label} className={`rounded-2xl p-4 text-center ${item.color}`}>
-            <div className={`w-2 h-2 rounded-full mx-auto mb-2 ${item.dot}`} />
-            <p className="text-lg font-black">{item.value}</p>
-            <p className="text-xs font-medium opacity-70 mt-0.5">{item.label}</p>
-          </div>
-        ))}
-      </div>
+
 
     </div>
   );
