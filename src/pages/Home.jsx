@@ -194,8 +194,8 @@ function SearchWithInstant({
     <div className="relative w-full" ref={!compact ? instantRef : undefined}>
       <form onSubmit={onSearch} className="flex gap-1.5 w-full">
         <div
-         className={`flex-1 flex items-center bg-white border border-gray-200 shadow-sm
-            ${compact ? "rounded-md px-2" : "rounded-lg px-3"}
+         className={`flex-1 flex items-center bg-white border border-yellow-500 shadow-sm
+            ${compact ? "rounded-xs px-2" : "rounded-md px-3"}
             ${showInstant && !compact ? "border-blue-300 ring-2 ring-blue-100" : ""}`}
         >
           <FiSearch className="text-gray-400 mr-1.5 flex-shrink-0" size={15} />
@@ -310,7 +310,7 @@ function Home() {
     if (searchRef.current) observer.observe(searchRef.current);
     return () => observer.disconnect();
   }, []); 
-  
+
   // ── keep backend alive ──
   useEffect(() => {
     const ping = () => fetch(`${API}/users/categories`).catch(() => {});
