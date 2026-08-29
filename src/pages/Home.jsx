@@ -16,6 +16,7 @@ import { isAdCurrentlyActive } from "../utils/adHelpers";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
        FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
 import { FaSearch, FaTimes } from "react-icons/fa";
+import { fairFeedOrder } from "../utils/feedOrder";
 
 
 
@@ -534,7 +535,8 @@ if (key === "nearby") {
     if (quickFilter === "new_arrival") return [...base].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     if (quickFilter === "popular") return [...base].sort((a, b) => (b.sold ?? 0) - (a.sold ?? 0));
     if (quickFilter === "deals") return [...base].sort((a, b) => Number(a.price) - Number(b.price));
-    return base;
+
+    return fairFeedOrder(base); // ← default "All Products" / category view / search results
   };
 
   const displayed = getDisplayed();
