@@ -1,8 +1,9 @@
-import { FiEye, FiShoppingCart, FiShoppingBag, FiUser, FiHome } from "react-icons/fi";
+import { FiEye, FiShoppingCart, FiShoppingBag, FiUser, FiHome, FiHeart } from "react-icons/fi";
 import { useState, useEffect, useRef } from "react";
 import { supportsAVIF, pickSrc } from "../utils/imageUtils";
 import { useDwellTracking } from "../hooks/useProductEngagement";
 import { formatViews } from "../utils/formatters";
+import { getCustomerToken, isCustomerLoggedIn } from "../utils/customerAuth";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -11,7 +12,7 @@ const daysRemaining = (date) =>
 
 
 
-export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
+export default function ProductCard({ item, onClick, onAddToCart, onBuy, t, isLiked = false, onToggleLike }) {
   const [imgIdx, setImgIdx] = useState(0);
   const avifRef = useRef(null);
   useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
@@ -108,16 +109,28 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
           {item.description || "No description available"}
         </p>
 
-        {/* Price + Views */}
+        {/* Price + Like + Views */}
         <div className="flex items-center justify-between gap-1">
           <p className="text-sm font-extrabold text-[#F5C518] leading-tight">
             Tsh {item.price ? Number(item.price).toLocaleString() : "—"}
           </p>
-          {item.view_count_90d > 0 && (
-            <span className="flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-full font-bold leading-tight bg-blue-100 text-blue-600 flex-shrink-0">
-              <FiEye size={9} /> {formatViews(item.view_count_90d)}
-            </span>
-          )}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleLike?.(item.id); }}
+              className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+            >
+              <FiHeart
+                size={13}
+                className={isLiked ? "text-red-500" : "text-gray-400"}
+                fill={isLiked ? "currentColor" : "none"}
+              />
+            </button>
+            {item.view_count_90d > 0 && (
+              <span className="flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-full font-bold leading-tight bg-blue-100 text-blue-600">
+                <FiEye size={9} /> {formatViews(item.view_count_90d)}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Stats row: days | stock | sold */}

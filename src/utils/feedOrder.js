@@ -24,7 +24,7 @@ function recencyWeight(product) {
   return 1;
 }
 
-export function fairFeedOrder(products) {
+export function fairFeedOrder(products, preferences = null) {
   if (!products || products.length === 0) return [];
 
   const epoch = Math.floor(Date.now() / REFRESH_WINDOW_MS);
@@ -32,14 +32,20 @@ export function fairFeedOrder(products) {
   const withKeys = products.map(p => {
     const seed = hashString(`${epoch}-${p.id}`);
     const r = seededRandom(seed);
-    const weight = recencyWeight(p);
-    const sortKey = Math.pow(r, 1 / weight); // higher weight → more likely to sort early
+    let weight = recencyWeight(p);
+
+    if (preferences?.hasPreferences) {
+      if (preferences.boostedVariantIds?.includes(p.variant_id)) weight *= 6;
+      else if (preferences.boostedBrandIds?.includes(p.brand_id)) weight *= 4;
+      else if (preferences.boostedCategoryIds?.includes(p.category_id)) weight *= 2.5;
+    }
+
+    const sortKey = Math.pow(r, 1 / weight);
     return { p, sortKey };
   });
 
   withKeys.sort((a, b) => b.sortKey - a.sortKey);
 
-  // ── round-robin interleave by trader so one trader never dominates a stretch ──
   const buckets = new Map();
   const traderOrder = [];
   withKeys.forEach(({ p }) => {

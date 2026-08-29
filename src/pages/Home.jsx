@@ -17,7 +17,7 @@ import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
        FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { fairFeedOrder } from "../utils/feedOrder";
-
+import CustomerAuthModal from "../components/CustomerAuthModal";
 
 
 // ── Category Bar ────────────────────────────────────────────────────
@@ -263,6 +263,7 @@ function Home() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const clearTimerRef = useRef(null);
   const searchRef = useRef(null);
+  const [showCustomerAuth, setShowCustomerAuth] = useState(false);
 
   // ── instant search ──
   const [showInstant, setShowInstant] = useState(false);
@@ -295,6 +296,20 @@ function Home() {
   useEffect(() => {
     mobileSearchOpenRef.current = mobileSearchOpen;
   }, [mobileSearchOpen]);
+
+
+  const [customerPreferences, setCustomerPreferences] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("customerToken"); // adjust to wherever you store it
+    if (!token) return;
+    fetch(`${API}/products/my-preferences`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => setCustomerPreferences(data))
+      .catch(() => setCustomerPreferences(null));
+  }, []);
 
   // ── heights change often; keep refs so the scroll listener never needs to be recreated ──
   const headerHeightRef = useRef(headerHeight);
@@ -548,7 +563,7 @@ if (key === "nearby") {
     }
     if (quickFilter === "deals") return [...base].sort((a, b) => Number(a.price) - Number(b.price));
 
-    return fairFeedOrder(base); // ← default "All Products" / category view / search results
+    return fairFeedOrder(base, customerPreferences);
   };
 
   const displayed = getDisplayed();
@@ -808,6 +823,7 @@ if (key === "nearby") {
             t={t}
             onAddToCart={handleAddToCart}
             onBuy={(item) => setBuyItem(item)}
+            onRequireLogin={() => setShowCustomerAuth(true)}
           />
         )}
 
@@ -887,6 +903,25 @@ if (key === "nearby") {
     </div>
   </div>
 )}
+
+
+      {showCustomerAuth && (
+        <CustomerAuthModal
+          onClose={() => setShowCustomerAuth(false)}
+          onSuccess={() => {
+            // refetch preferences now that they're logged in
+            const token = localStorage.getItem("customerToken");
+            if (token) {
+              fetch(`${API}/products/my-preferences`, {
+                headers: { Authorization: `Bearer ${token}` },
+              })
+                .then(r => r.ok ? r.json() : null)
+                .then(setCustomerPreferences)
+                .catch(() => {});
+            }
+          }}
+        />
+      )}
 
       <Footer />
     </div>
