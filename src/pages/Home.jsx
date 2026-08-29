@@ -301,15 +301,19 @@ function Home() {
         const scrolledPast = !entry.isIntersecting;
         setSearchSticky(scrolledPast);
         setMobileMinimized(scrolledPast);
-        if (scrolledPast && mobileSearchOpenRef.current) {
-          collapseMobileSearch();
+        if (mobileSearchOpenRef.current) {
+          if (scrolledPast) {
+            collapseMobileSearch(); 
+          } else {
+            setMobileSearchOpen(false); 
+          }
         }
       },
       { threshold: 0, rootMargin: "-72px 0px 0px 0px" }
     );
     if (searchRef.current) observer.observe(searchRef.current);
     return () => observer.disconnect();
-  }, []); 
+  }, []);
 
   // ── keep backend alive ──
   useEffect(() => {
