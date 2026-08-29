@@ -77,13 +77,6 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
           {isAvailable ? "Available" : "Unavailable"}
         </span>
 
-                {/* Views (90-day) */}
-        {item.view_count_90d > 0 && (
-          <span className="absolute top-7 right-1.5 flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-sm font-semibold leading-tight bg-black/50 text-white">
-            <FiEye size={9} /> {formatViews(item.view_count_90d)}
-          </span>
-        )}
-
         {/* Image dots */}
         {item.images?.length > 1 && (
           <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
@@ -115,10 +108,17 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t }) {
           {item.description || "No description available"}
         </p>
 
-        {/* Price */}
-        <p className="text-sm font-extrabold text-[#F5C518] leading-tight">
-          Tsh {item.price ? Number(item.price).toLocaleString() : "—"}
-        </p>
+        {/* Price + Views */}
+        <div className="flex items-center justify-between gap-1">
+          <p className="text-sm font-extrabold text-[#F5C518] leading-tight">
+            Tsh {item.price ? Number(item.price).toLocaleString() : "—"}
+          </p>
+          {item.view_count_90d > 0 && (
+            <span className="flex items-center gap-0.5 text-[9px] px-1.5 py-0.5 rounded-full font-bold leading-tight bg-blue-100 text-blue-600 flex-shrink-0">
+              <FiEye size={9} /> {formatViews(item.view_count_90d)}
+            </span>
+          )}
+        </div>
 
         {/* Stats row: days | stock | sold */}
         <div className="grid grid-cols-3 gap-1 text-center">
