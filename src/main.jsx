@@ -10,16 +10,18 @@ import "./App.css";
 
 
 
-// ── Register Firebase SW with root scope before app loads ──
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/firebase-messaging-sw.js", {
-    scope: "/"
-  }).then(reg => {
-    console.log("[SW] Registered with scope:", reg.scope);
-  }).catch(err => {
-    console.error("[SW] Registration failed:", err);
-  });
+  // Register PWA service worker
+  navigator.serviceWorker.register("/service-worker.js")
+    .then(() => console.log("[SW] PWA Service Worker registered"))
+    .catch(err => console.error("[SW] PWA Registration failed:", err));
+
+  // Register Firebase messaging service worker
+  navigator.serviceWorker.register("/firebase-messaging-sw.js", { scope: "/" })
+    .then(reg => console.log("[SW] Firebase Registered with scope:", reg.scope))
+    .catch(err => console.error("[SW] Firebase Registration failed:", err));
 }
+
 
 
 
