@@ -403,15 +403,25 @@ useEffect(() => {
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
            
             {/* ACCOUNT */}
-            <button
-              onClick={() => navigate("/account")}
-              className="flex items-center gap-1 p-1 md:px-2 md:py-1.5 rounded-full bg-white/20 
-                         hover:scale-105 md:hover:scale-110 transition active:scale-95
-                         touch-manipulation"
-            >
-              <FiUser size={16} className="text-yellow-700" />
-              <span className="hidden md:inline text-xs font-semibold text-yellow-700">Me</span>
-            </button>
+            <div className="flex flex-col items-center flex-shrink-0">
+              <button
+                onClick={() => navigate("/account")}
+                className="flex items-center gap-1.5 px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-[#1a3a8f]
+                           hover:scale-105 md:hover:scale-110 transition active:scale-95
+                           touch-manipulation"
+                style={{ boxShadow: "0 0 0 2px #F5C518, 0 0 0 3.5px #1EB53A" }}
+              >
+                <FiUser size={16} className="md:hidden text-white" />
+                <FiUser size={20} className="hidden md:block text-white" />
+                <span className="hidden md:inline text-sm font-semibold text-white">Me</span>
+              </button>
+              <div className="w-8 md:w-10 h-[3px] mt-1 rounded-full overflow-hidden flex flex-shrink-0">
+                <div className="flex-1 bg-[#1EB53A]" />
+                <div className="flex-1 bg-[#FCD116]" />
+                <div className="flex-1 bg-black" />
+                <div className="flex-1 bg-[#00A3DD]" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
