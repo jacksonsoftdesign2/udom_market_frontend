@@ -415,12 +415,7 @@ useEffect(() => {
                 <FiUser size={20} className="hidden md:block text-white" />
                 <span className="hidden md:inline text-sm font-semibold text-white">Me</span>
               </button>
-              <div className="w-8 md:w-10 h-[3px] mt-1 rounded-full overflow-hidden flex flex-shrink-0">
-                <div className="flex-1 bg-[#1EB53A]" />
-                <div className="flex-1 bg-[#FCD116]" />
-                <div className="flex-1 bg-black" />
-                <div className="flex-1 bg-[#00A3DD]" />
-              </div>
+
             </div>
           </div>
         </div>
