@@ -10,6 +10,9 @@ import ShareSheet from "../components/ShareSheet";
 import { generateShareCard } from "../utils/shareUtils";
 import { useDwellTracking } from "../hooks/useProductEngagement";
 import { formatViews } from "../utils/formatters";
+import { getCustomerToken, isCustomerLoggedIn } from "../utils/customerAuth";
+import CustomerAuthModal from "../components/CustomerAuthModal";
+
 const API = import.meta.env.VITE_API_URL;
 
 const daysRemaining = (date) =>
@@ -101,6 +104,10 @@ export default function ProductDetail() {
   const [shareCardBlob, setShareCardBlob] = useState(null);
   const [shareCardPreview, setShareCardPreview] = useState(null);
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [showCustomerAuth, setShowCustomerAuth] = useState(false);
+
   const { elementRef: detailEngagementRef } = useDwellTracking(product?.id, API, { active: !!product });
 useEffect(() => {
   const onScroll = () => setScrolled(window.scrollY > 60);
@@ -138,10 +145,23 @@ useEffect(() => {
             ? typeof p.specs === "string" ? JSON.parse(p.specs) : p.specs
             : [],
         });
+        setLikeCount(Number(p.like_count) || 0);
       })
       .catch(() => setError("Product not found."))
       .finally(() => setLoading(false));
   }, [id]);
+
+
+
+    useEffect(() => {
+    if (!product || !isCustomerLoggedIn()) return;
+    fetch(`${API}/products/my-likes`, {
+      headers: { Authorization: `Bearer ${getCustomerToken()}` },
+    })
+      .then(r => r.ok ? r.json() : [])
+      .then(ids => setIsLiked(ids.includes(product.id)))
+      .catch(() => {});
+  }, [product]);
 
   useEffect(() => {
     if (!product) return;
@@ -186,6 +206,31 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
       else setActiveImg(i => (i - 1 + product.images.length) % product.images.length);
     }
     touchStartX.current = null;
+  };
+
+
+    const handleToggleLike = async () => {
+    if (!isCustomerLoggedIn()) {
+      setShowCustomerAuth(true);
+      return;
+    }
+    const prevLiked = isLiked;
+    const prevCount = likeCount;
+    setIsLiked(!prevLiked);
+    setLikeCount(prevLiked ? prevCount - 1 : prevCount + 1);
+
+    try {
+      const res = await fetch(`${API}/products/${product.id}/like`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${getCustomerToken()}` },
+      });
+      const data = await res.json();
+      setIsLiked(data.liked);
+      setLikeCount(data.like_count);
+    } catch {
+      setIsLiked(prevLiked);
+      setLikeCount(prevCount);
+    }
   };
 
 
@@ -491,7 +536,15 @@ className="absolute inset-0 w-full h-full object-cover transition-opacity durati
 
            {/*like and share buttons*/}
             <div className="flex gap-3 text-gray-400">
-              <FiHeart size={18} className="cursor-pointer hover:text-red-500 transition" />
+               <span className="flex items-center gap-1">
+              <FiHeart
+                size={18}
+                onClick={handleToggleLike}
+                className={`cursor-pointer transition ${isLiked ? "text-red-500" : "hover:text-red-500"}`}
+                fill={isLiked ? "currentColor" : "none"}
+              />
+              {likeCount > 0 && <span className="text-xs font-semibold text-gray-500">{likeCount}</span>}
+              </span>
               <FiShare2 size={18} className="cursor-pointer hover:text-[#1a2e6e] transition" onClick={handleShare} />
             </div>
           </div>
@@ -704,6 +757,10 @@ Contact
           isGenerating={isGeneratingCard}
           onClose={() => setShowShareSheet(false)}
         />
+      )}
+
+     {showCustomerAuth && (
+        <CustomerAuthModal onClose={() => setShowCustomerAuth(false)} onSuccess={() => setShowCustomerAuth(false)} />
       )}
 
       <Footer />

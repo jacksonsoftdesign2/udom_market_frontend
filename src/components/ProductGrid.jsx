@@ -24,7 +24,6 @@ export default function ProductGrid({ items, t, onAddToCart, onBuy, onRequireLog
       onRequireLogin?.();
       return;
     }
-    // optimistic update
     setLikedIds(prev => {
       const next = new Set(prev);
       next.has(productId) ? next.delete(productId) : next.add(productId);
@@ -42,7 +41,6 @@ export default function ProductGrid({ items, t, onAddToCart, onBuy, onRequireLog
         return next;
       });
     } catch {
-      // rollback on failure
       setLikedIds(prev => {
         const next = new Set(prev);
         next.has(productId) ? next.delete(productId) : next.add(productId);
