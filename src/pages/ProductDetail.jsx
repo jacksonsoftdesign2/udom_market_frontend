@@ -266,32 +266,8 @@ useEffect(() => { supportsAVIF().then(v => { avifRef.current = v; }); }, []);
 
   const images = product.images?.length ? product.images : [];
   const isAvailable = product.status === "Available";
- const handleShare = async () => {
-  const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-  if (navigator.share && isMobile) {
-    try {
-      const blob = await generateShareCard(product, images, activeImg, avifRef.current);
-      const file = new File([blob], "product.jpg", { type: "image/jpeg" });
-        if (navigator.canShare?.({ files: [file] })) {
-          const slugUrl = `${import.meta.env.VITE_APP_URL || window.location.origin}/product/${product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
-          await navigator.share({
-            title: product.name,
-            text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}\n\n${slugUrl}`,
-            files: [file],
-          });
-          return;
-        }
-      await navigator.share({
-        title: product.name,
-        text: `${product.name}\nTsh ${Number(product.price || 0).toLocaleString()}\nSold by: ${product.trader_name || "UDOM Market"}`,
-        url: `${import.meta.env.VITE_APP_URL || window.location.origin}/product/${product.id}`,
-      });
-      return;
-    } catch (e) {
-      if (e.name === "AbortError") return;
-    }
-  }
-  // ✅ open sheet immediately, generate card in background
+ const handleShare = () => {
+
   setShowShareSheet(true);
   setIsGeneratingCard(true);
   setShareCardBlob(null);

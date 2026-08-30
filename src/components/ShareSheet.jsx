@@ -4,9 +4,9 @@ import { getProductUrl, getShareText } from "../utils/shareUtils";
 const getProductSlug = (name) =>
   name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-const getSlugUrl = (product) => {
+const getProductLinkUrl = (product) => {
   const base = import.meta.env.VITE_APP_URL || window.location.origin;
-  return `${base}/product/${getProductSlug(product.name)}`;
+  return `${base}/product/${product.id}`;
 };
 
 const GmailIcon = () => (
@@ -49,11 +49,11 @@ const SHARE_APPS = [
 export default function ShareSheet({ product, images, activeImg, cardBlob, cardPreview, isGenerating, onClose }) {
   const [copied, setCopied] = useState(false);
 
-  const slugUrl = getSlugUrl(product);
+  const productUrl = getProductLinkUrl(product);
 
   const shareViaApp = (appId) => {
     const text = encodeURIComponent(getShareText(product));
-    const url = encodeURIComponent(slugUrl);
+    const url = encodeURIComponent(productUrl);
     const urls = {
       whatsapp: `https://wa.me/?text=${text}`,
       telegram: `https://t.me/share/url?url=${url}&text=${text}`,
@@ -66,7 +66,7 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
   };
 
   const copyLink = async () => {
-    await navigator.clipboard.writeText(slugUrl);
+    await navigator.clipboard.writeText(productUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -92,7 +92,7 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
         await navigator.share({
           title: product.name,
           text: getShareText(product),
-          url: slugUrl,
+          url: productUrl,
         });
       }
     } catch (e) {
@@ -161,7 +161,7 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
 
               {/* Copy URL row */}
               <div className="flex items-center gap-2 mt-1 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5">
-                <span className="text-[10px] text-gray-400 flex-1 truncate">{slugUrl.replace(/^https?:\/\//, "")}</span>
+                <span className="text-[10px] text-gray-400 flex-1 truncate">{productUrl.replace(/^https?:\/\//, "")}</span>
                 <button
                   onClick={copyLink}
                   className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md transition-all flex-shrink-0 ${
