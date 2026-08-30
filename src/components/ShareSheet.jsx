@@ -239,6 +239,6 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
 
         <div className="pb-6" />
       </div>
-    </div>%
+    </div>
   );
 }
