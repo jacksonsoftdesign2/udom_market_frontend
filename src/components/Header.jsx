@@ -406,10 +406,11 @@ useEffect(() => {
             <div className="flex flex-col items-center flex-shrink-0">
               <button
                 onClick={() => navigate("/account")}
-                className="flex items-center gap-1.5 px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-[#1a3a8f]
+                className="flex items-center gap-1.5 px-2 py-1.5 md:px-3 md:py-2 rounded-full bg-[#4367c9]
                            hover:scale-105 md:hover:scale-110 transition active:scale-95
                            touch-manipulation"
-                style={{ boxShadow: "0 0 0 2px #F5C518, 0 0 0 3.5px #1EB53A" }}
+                style={{ boxShadow: "0 0 0 2px #F5C518" }}
+
               >
                 <FiUser size={16} className="md:hidden text-white" />
                 <FiUser size={20} className="hidden md:block text-white" />
