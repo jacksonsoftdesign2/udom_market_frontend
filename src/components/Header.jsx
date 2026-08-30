@@ -7,6 +7,7 @@ import logo from "../assets/upmarket_logo.png";
 import translations from "../translations";
 import { FaUser, FaInfoCircle, FaTruckMoving, FaHome, FaChevronRight, FaSearch } from "react-icons/fa";
 import ClaimForm from "./ClaimForm";
+import { FiUser } from "react-icons/fi";
 
 export default function Header({
   cartCount, stickySearch, scrolledInProduct, onBackClick, onHomeClick,
@@ -401,18 +402,15 @@ useEffect(() => {
           {/* RIGHT: MENU + LANGUAGE */}
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
            
-            {/* LANGUAGE */}
+            {/* ACCOUNT */}
             <button
-              onClick={toggleLanguage}
-              className="p-1 md:p-1.5 rounded-full bg-white/20 
+              onClick={() => navigate("/account")}
+              className="flex items-center gap-1 p-1 md:px-2 md:py-1.5 rounded-full bg-white/20 
                          hover:scale-105 md:hover:scale-110 transition active:scale-95
                          touch-manipulation"
             >
-              <img
-                src={lang === "sw" ? tzFlag : gbFlag}
-                alt="language"
-                className="w-6 md:w-7 h-6 md:h-7 rounded-full object-cover border border-white"
-              />
+              <FiUser size={16} className="text-yellow-700" />
+              <span className="hidden md:inline text-xs font-semibold text-yellow-700">Me</span>
             </button>
           </div>
         </div>

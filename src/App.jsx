@@ -20,6 +20,7 @@ import Payments from "./pages/Trader/Payments";
 import ManagerProtectedRoute from "./components/ManagerProtectedRoute";
 import ManagerAds from "./pages/Manager/ManagerAds";
 import StaffManagement from "./pages/Admin/StaffManagement";
+import Account from "./pages/Account";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
 
       <Route path="/admin/staff" element={<AdminProtectedRoute><StaffManagement /></AdminProtectedRoute>} />
       <Route path="/manager/ads" element={<ManagerProtectedRoute><ManagerAds /></ManagerProtectedRoute>} />
+      <Route path="/account" element={<Account />} />
 
     </Routes>
   );
