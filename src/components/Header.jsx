@@ -174,7 +174,7 @@ useEffect(() => {
   <button
     ref={menuRef}
     onClick={toggleMenu}
-    className="text-lg md:text-xl px-2 md:px-3 py-1.5 md:py-2 rounded-md bg-yellow-500 text-white 
+    className="text-xl font-extrabold md:text-2xl px-2 md:px-3 py-1.5 md:py-2  text-blue-700 
                hover:scale-105 md:hover:scale-110 transition active:scale-95
                touch-manipulation flex-shrink-0"
   >
