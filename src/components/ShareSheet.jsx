@@ -110,27 +110,30 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
       : null;
 
   return (
-    <div className="fixed inset-0 z-[10002] flex flex-col justify-end">
+    <div className="fixed inset-0 z-[10002] flex flex-col justify-end md:items-center md:justify-center">
 
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Sheet */}
       <div
-        className="relative bg-white rounded-t-2xl shadow-2xl z-10 max-h-[90vh] overflow-y-auto"
-        style={{ animation: "slideUp 0.25s ease" }}
+        className="relative bg-white rounded-t-2xl md:rounded-2xl shadow-2xl z-10 max-h-[90vh] w-full md:max-w-md overflow-y-auto"
+        style={{ animation: window.innerWidth >= 768 ? "fadeScaleIn 0.2s ease" : "slideUp 0.25s ease" }}
       >
-        <style>{`@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+        <style>{`
+          @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+          @keyframes fadeScaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        `}</style>
 
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1">
+        {/* Handle — mobile only */}
+        <div className="flex md:hidden justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-gray-300" />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <p className="font-semibold text-gray-800 text-sm">Share product</p>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+          <p className="font-semibold text-gray-800 text-sm md:text-base">Share product</p>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl md:text-2xl leading-none">&times;</button>
         </div>
 
         <div className="px-4 py-4 space-y-3">
@@ -139,7 +142,7 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
           <div className="flex gap-3">
 
             {/* Thumbnail */}
-            <div className="w-20 h-20 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0 flex items-center justify-center">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0 flex items-center justify-center">
               {isGenerating ? (
                 <div className="w-5 h-5 border-2 border-[#1a2e6e] border-t-transparent rounded-full animate-spin" />
               ) : thumbSrc ? (
@@ -153,18 +156,18 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
 
             {/* Info */}
             <div className="flex-1 min-w-0 flex flex-col gap-1 justify-center">
-              <p className="text-sm font-semibold text-gray-800 truncate">{product.name}</p>
-              <p className="text-sm font-bold text-[#c49200]">Tsh {Number(product.price || 0).toLocaleString()}</p>
+              <p className="text-sm md:text-base font-semibold text-gray-800 truncate">{product.name}</p>
+              <p className="text-sm md:text-base font-bold text-[#c49200]">Tsh {Number(product.price || 0).toLocaleString()}</p>
               {product.trader_name && (
-                <p className="text-xs text-gray-400 truncate">Sold by {product.trader_name}</p>
+                <p className="text-xs md:text-sm text-gray-400 truncate">Sold by {product.trader_name}</p>
               )}
 
               {/* Copy URL row */}
-              <div className="flex items-center gap-2 mt-1 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5">
-                <span className="text-[10px] text-gray-400 flex-1 truncate">{productUrl.replace(/^https?:\/\//, "")}</span>
+              <div className="flex items-center gap-2 mt-1 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 md:py-2">
+                <span className="text-[10px] md:text-xs text-gray-400 flex-1 truncate">{productUrl.replace(/^https?:\/\//, "")}</span>
                 <button
                   onClick={copyLink}
-                  className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-1 rounded-md transition-all flex-shrink-0 ${
+                  className={`flex items-center gap-1 text-[10px] md:text-xs font-semibold px-2 md:px-3 py-1 md:py-1.5 rounded-md transition-all flex-shrink-0 ${
                     copied ? "bg-green-500 text-white" : "bg-[#1a2e6e] text-[#F5C518]"
                   }`}
                 >
@@ -180,17 +183,20 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
 
           {/* App grid */}
           <div>
-            <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-widest mb-3">Share via</p>
-            <div className="grid grid-cols-8 gap-1">
+            <p className="text-[10px] md:text-xs text-gray-400 font-semibold uppercase tracking-widest mb-3">Share via</p>
+            <div
+              className="flex md:grid md:grid-cols-8 gap-4 md:gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0"
+              style={{ scrollbarWidth: "none" }}
+            >
 
               {SHARE_APPS.map(({ id, label, color, border, icon }) => (
                 <button
                   key={id}
                   onClick={() => shareViaApp(id)}
-                  className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
+                  className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform flex-shrink-0"
                 >
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center"
+                    className="w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center"
                     style={{
                       background: color,
                       border: border ? "0.5px solid #e5e7eb" : "none",
@@ -198,7 +204,7 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
                   >
                     {icon}
                   </div>
-                  <span className="text-[9px] text-gray-500 font-medium leading-tight text-center">{label}</span>
+                  <span className="text-[9px] md:text-xs text-gray-500 font-medium leading-tight text-center">{label}</span>
                 </button>
               ))}
 
@@ -206,25 +212,25 @@ export default function ShareSheet({ product, images, activeImg, cardBlob, cardP
               <button
                 onClick={downloadCard}
                 disabled={!cardBlob}
-                className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform disabled:opacity-40"
+                className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform disabled:opacity-40 flex-shrink-0"
               >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#1a2e6e]">
+                <div className="w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center bg-[#1a2e6e]">
                   <svg className="w-5 h-5" fill="none" stroke="#F5C518" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
                   </svg>
                 </div>
-                <span className="text-[9px] text-gray-500 font-medium leading-tight text-center">Download</span>
+                <span className="text-[9px] md:text-xs text-gray-500 font-medium leading-tight text-center">Download</span>
               </button>
 
               {/* More — native share (shown on all, works best on mobile) */}
               <button
                 onClick={triggerNativeShare}
-                className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
+                className="flex flex-col items-center gap-1.5 active:scale-95 transition-transform flex-shrink-0"
               >
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-gray-100 border border-gray-200">
+                <div className="w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center bg-gray-100 border border-gray-200">
                   <span className="text-gray-600 font-bold text-base tracking-tighter">⋯</span>
                 </div>
-                <span className="text-[9px] text-gray-500 font-medium leading-tight text-center">More</span>
+                <span className="text-[9px] md:text-xs text-gray-500 font-medium leading-tight text-center">More</span>
               </button>
 
             </div>
