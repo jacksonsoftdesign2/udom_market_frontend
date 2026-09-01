@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Home / Nyumbani -->
+  <url>
+    <loc>https://udom-market.vercel.app/</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Ingia (Login) -->
+  <url>
+    <loc>https://udom-market.vercel.app/login</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Jisajili (Register) -->
+  <url>
+    <loc>https://udom-market.vercel.app/register</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Usafiri (Transport) -->
+  <url>
+    <loc>https://udom-market.vercel.app/transport</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Kuhusu Sisi (About Us) -->
+  <url>
+    <loc>https://udom-market.vercel.app/about</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Wasiliana / Claim (Contact) -->
+  <url>
+    <loc>https://udom-market.vercel.app/contact</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Browse Products -->
+  <url>
+    <loc>https://udom-market.vercel.app/products</loc>
+    <lastmod>2026-09-01</lastmod>
+    <priority>0.9</priority>
+  </url>
+
+</urlset>
