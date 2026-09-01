@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CustomerAuthModal from "../components/CustomerAuthModal";
+import CartTab from "../components/CartTab";
 import {
   FiUser, FiHeart, FiPackage, FiSettings, FiHelpCircle,
-  FiChevronRight, FiLogOut, FiX, FiShoppingBag,
+  FiX, FiShoppingBag, FiShoppingCart,
+  FiLogOut,
 } from "react-icons/fi";
 import {
   getCustomerToken, getCustomerData, isCustomerLoggedIn, clearCustomerSession,
@@ -25,13 +27,15 @@ export default function Account() {
   const [loggedIn, setLoggedIn] = useState(isCustomerLoggedIn());
   const [customer, setCustomer] = useState(getCustomerData());
   const [showAuth, setShowAuth] = useState(false);
-  const [activeTab, setActiveTab] = useState("orders"); // "orders" | "wishlist" | "settings" | "help"
+  const [activeTab, setActiveTab] = useState("orders"); // "orders" | "cart" | "wishlist" | "settings" | "help"
 
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
 
   const [likedProducts, setLikedProducts] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     if (!loggedIn) return;
@@ -62,6 +66,15 @@ export default function Account() {
         .finally(() => setWishlistLoading(false));
     }
   }, [activeTab, loggedIn]);
+
+  // ── Load cart count on mount so the badge shows even before opening the tab ──
+  useEffect(() => {
+    if (!loggedIn) return;
+    fetch(`${API}/cart`, { headers: { Authorization: `Bearer ${getCustomerToken()}` } })
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setCartCount(data.length))
+      .catch(() => {});
+  }, [loggedIn]);
 
   const removeFromWishlist = async (productId) => {
     setLikedProducts(prev => prev.filter(p => p.id !== productId));
@@ -133,9 +146,10 @@ export default function Account() {
           <>
             {/* ── Tabs ── */}
             <div className="bg-white border border-[#1a3a8f20] rounded-sm shadow-sm overflow-hidden mb-4">
-              <div className="flex border-b border-gray-100">
+              <div className="flex border-b border-gray-100 overflow-x-auto">
                 {[
                   { key: "orders", label: "My Orders", icon: <FiPackage size={14} /> },
+                  { key: "cart", label: "Cart", icon: <FiShoppingCart size={14} />, badge: cartCount },
                   { key: "wishlist", label: "Wish List", icon: <FiHeart size={14} /> },
                   { key: "settings", label: "Settings", icon: <FiSettings size={14} /> },
                   { key: "help", label: "Help", icon: <FiHelpCircle size={14} /> },
@@ -143,13 +157,19 @@ export default function Account() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex-1 py-3 text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
+                    className={`flex-1 py-3 text-xs font-semibold flex items-center justify-center gap-1.5 transition relative whitespace-nowrap px-2 ${
                       activeTab === tab.key
                         ? "bg-[#1a3a8f] text-[#F5C518]"
                         : "text-gray-500 hover:bg-[#e8edf7]"
                     }`}
                   >
                     {tab.icon} <span className="hidden sm:inline">{tab.label}</span>
+                    {tab.badge > 0 && (
+                      <span className={`absolute top-1.5 right-2 sm:relative sm:top-0 sm:right-0 text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center
+                        ${activeTab === tab.key ? "bg-[#F5C518] text-[#1a3a8f]" : "bg-red-500 text-white"}`}>
+                        {tab.badge}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -201,6 +221,11 @@ export default function Account() {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* ── Cart tab ── */}
+            {activeTab === "cart" && (
+              <CartTab onCartCountChange={setCartCount} />
             )}
 
             {/* ── Wish List tab ── */}

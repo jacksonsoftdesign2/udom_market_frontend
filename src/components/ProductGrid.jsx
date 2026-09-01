@@ -1,13 +1,17 @@
 import ProductCard from "./ProductCard";
+import AddToCartConfirm from "./AddToCartConfirm";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getCustomerToken, isCustomerLoggedIn } from "../utils/customerAuth";
 
 const API = import.meta.env.VITE_API_URL;
 
-export default function ProductGrid({ items, t, onAddToCart, onBuy, onRequireLogin }) {
+export default function ProductGrid({ items, t, onBuy, onRequireLogin }) {
   const navigate = useNavigate();
   const [likedIds, setLikedIds] = useState(new Set());
+  const [cartConfirmItem, setCartConfirmItem] = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     if (!isCustomerLoggedIn()) return;
@@ -49,6 +53,36 @@ export default function ProductGrid({ items, t, onAddToCart, onBuy, onRequireLog
     }
   };
 
+  const handleAddToCartClick = (item) => {
+    if (!isCustomerLoggedIn()) {
+      onRequireLogin?.();
+      return;
+    }
+    setCartConfirmItem(item);
+  };
+
+  const handleConfirmAdd = async () => {
+    if (!cartConfirmItem) return;
+    setAdding(true);
+    try {
+      const res = await fetch(`${API}/cart`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getCustomerToken()}` },
+        body: JSON.stringify({ product_id: cartConfirmItem.id, quantity: 1 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+      setToast("Added to cart!");
+      setTimeout(() => setToast(null), 2000);
+    } catch (err) {
+      setToast(err.message || "Could not add to cart");
+      setTimeout(() => setToast(null), 2500);
+    } finally {
+      setAdding(false);
+      setCartConfirmItem(null);
+    }
+  };
+
   if (!items || items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-gray-400">
@@ -60,19 +94,36 @@ export default function ProductGrid({ items, t, onAddToCart, onBuy, onRequireLog
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-      {items.map((item, i) => (
-        <ProductCard
-          key={item.id || i}
-          item={item}
-          t={t}
-          onAddToCart={onAddToCart}
-          onBuy={() => onBuy?.(item)}
-          onClick={() => navigate(`/product/${item.id || item.name}`)}
-          isLiked={likedIds.has(item.id)}
-          onToggleLike={handleToggleLike}
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+        {items.map((item, i) => (
+          <ProductCard
+            key={item.id || i}
+            item={item}
+            t={t}
+            onAddToCart={handleAddToCartClick}
+            onBuy={() => onBuy?.(item)}
+            onClick={() => navigate(`/product/${item.id || item.name}`)}
+            isLiked={likedIds.has(item.id)}
+            onToggleLike={handleToggleLike}
+          />
+        ))}
+      </div>
+
+      {cartConfirmItem && (
+        <AddToCartConfirm
+          product={cartConfirmItem}
+          adding={adding}
+          onConfirm={handleConfirmAdd}
+          onClose={() => setCartConfirmItem(null)}
         />
-      ))}
-    </div>
+      )}
+
+      {toast && (
+        <div className="fixed top-20 right-4 z-[300] bg-[#1a3a8f] text-[#F5C518] text-sm font-semibold px-4 py-2 rounded-sm shadow-lg">
+          {toast}
+        </div>
+      )}
+    </>
   );
 }

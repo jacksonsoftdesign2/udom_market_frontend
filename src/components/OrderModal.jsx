@@ -4,7 +4,7 @@ import AddressMapPicker from "./AddressMapPicker";
 
 const API = import.meta.env.VITE_API_URL;
 
-export default function OrderModal({ product, onClose, onContact }) {
+export default function OrderModal({ product, onClose, onContact, onSuccess }) {
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -68,6 +68,7 @@ export default function OrderModal({ product, onClose, onContact }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setSuccess(true);
+      onSuccess?.();
     } catch (err) {
       alert("Error: " + err.message);
     } finally {

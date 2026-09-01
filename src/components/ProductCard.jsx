@@ -161,13 +161,13 @@ export default function ProductCard({ item, onClick, onAddToCart, onBuy, t, isLi
         )}
 
         {/* BUTTONS */}
-        <div className="flex gap-1 mt-auto pt-0.5">
-          <button
-            onClick={handleClick}
-            className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1 rounded-sm border border-[#1a3a8f] text-[#1a3a8f] font-semibold hover:bg-[#e8edf7] transition"
-          >
-            <FiEye size={12} /> View
-          </button>
+<div className="flex gap-1 mt-auto pt-0.5">
+  <button
+    onClick={(e) => { e.stopPropagation(); onAddToCart?.(item); }}
+    className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1 rounded-sm border border-[#1a3a8f] text-[#1a3a8f] font-semibold hover:bg-[#e8edf7] transition"
+  >
+    <FiShoppingCart size={12} /> Cart
+  </button>
      <button
   onClick={(e) => { e.stopPropagation(); onBuy?.(item); }}
   className="flex-1 flex items-center justify-center gap-1 text-[11px] py-1 rounded-sm bg-[#1a3a8f] text-[#F5C518] font-semibold hover:bg-[#0f2460] transition"
