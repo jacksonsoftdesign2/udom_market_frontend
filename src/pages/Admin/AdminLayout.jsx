@@ -21,6 +21,7 @@ const NAV = [
   { to: "/admin/payment-settings", icon: FiDollarSign, label: "Payment Settings" }, 
   { to: "/admin/admins", icon: FiShield, label: "Admins" },
   { to: "/admin/staff", icon: FiUserCheck, label: "Staff" },
+  { to: "/admin/regions", icon: FiUserCheck, label: "Regions" },
 ];
 
 export default function AdminLayout({ children }) {
