@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/upmarket_logo.png";
 import {
   FiGrid, FiUsers,FiUserCheck, FiPackage, FiLogOut,
-  FiBell, FiMenu, FiX, FiChevronRight, FiTag, FiAlertCircle, FiShield, FiDollarSign
+  FiBell, FiMenu, FiX, FiChevronRight, FiTag, FiMap, FiAlertCircle, FiShield, FiDollarSign
 } from "react-icons/fi";
 import AdminNotifications from "./AdminNotifications";
 import AdminPaymentSettings from "./AdminPaymentSettings";
@@ -21,7 +21,7 @@ const NAV = [
   { to: "/admin/payment-settings", icon: FiDollarSign, label: "Payment Settings" }, 
   { to: "/admin/admins", icon: FiShield, label: "Admins" },
   { to: "/admin/staff", icon: FiUserCheck, label: "Staff" },
-  { to: "/admin/regions", icon: FiUserCheck, label: "Regions" },
+  { to: "/admin/regions", icon: FiMap, label: "Regions" },
 ];
 
 export default function AdminLayout({ children }) {
