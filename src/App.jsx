@@ -15,6 +15,7 @@ import AdminProducts from "./pages/Admin/AdminProducts";
 import AdminNameRequests from "./pages/Admin/AdminNameRequests";
 import AdminClaims from "./pages/Admin/AdminClaims";
 import AdminManagement from "./pages/Admin/AdminManagement";
+import AdminRegions from "./pages/Admin/AdminRegions";
 import AdminPaymentSettings from "./pages/Admin/AdminPaymentSettings";
 import Payments from "./pages/Trader/Payments";
 import ManagerProtectedRoute from "./components/ManagerProtectedRoute";
@@ -48,7 +49,7 @@ function App() {
       <Route path="/admin/claims" element={<AdminProtectedRoute><AdminClaims /></AdminProtectedRoute>} />
       <Route path="/admin/admins" element={<AdminProtectedRoute><AdminManagement /></AdminProtectedRoute>} />
       <Route path="/admin/payment-settings" element={<AdminProtectedRoute><AdminPaymentSettings /></AdminProtectedRoute>} />
-
+      <Route path="/admin/regions"    element={<AdminProtectedRoute><AdminRegions /></AdminProtectedRoute>} />
       <Route path="/admin/staff" element={<AdminProtectedRoute><StaffManagement /></AdminProtectedRoute>} />
       <Route path="/manager/ads" element={<ManagerProtectedRoute><ManagerAds /></ManagerProtectedRoute>} />
       <Route path="/account" element={<Account />} />
