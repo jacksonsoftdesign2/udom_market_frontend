@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { FiMapPin, FiX, FiPlus, FiTrash2, FiGlobe } from "react-icons/fi";
+import { FiMapPin, FiX, FiPlus, FiTrash2, FiGlobe, FiChevronDown, FiChevronRight, FiCheck } from "react-icons/fi";
 
 const API = import.meta.env.VITE_API_URL;
 
 export default function ProductVisibilityModal({ product, onClose, onSaved }) {
   const [regions, setRegions] = useState([]);
   const [targets, setTargets] = useState([]); // [{ region_id, district_id }]
+  const [expandedRegion, setExpandedRegion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -30,35 +31,46 @@ export default function ProductVisibilityModal({ product, onClose, onSaved }) {
       .finally(() => setLoading(false));
   }, [product.id]);
 
-  const addTarget = () => {
-    setTargets(prev => [...prev, { region_id: "", district_id: "" }]);
+  const isRegionSelected = (regionId) =>
+    targets.some(t => String(t.region_id) === String(regionId) && !t.district_id);
+
+  const isDistrictSelected = (regionId, districtId) =>
+    targets.some(t => String(t.region_id) === String(regionId) && String(t.district_id) === String(districtId));
+
+  const hasAnySelectionInRegion = (regionId) =>
+    targets.some(t => String(t.region_id) === String(regionId));
+
+  // Selecting "whole region" removes any district-level picks for that region
+  const toggleWholeRegion = (regionId) => {
+    setTargets(prev => {
+      const withoutRegion = prev.filter(t => String(t.region_id) !== String(regionId));
+      if (isRegionSelected(regionId)) return withoutRegion; // deselect
+      return [...withoutRegion, { region_id: regionId, district_id: null }];
+    });
   };
 
-  const removeTarget = (idx) => {
-    setTargets(prev => prev.filter((_, i) => i !== idx));
+  // Selecting a district removes the "whole region" pick if present, toggles that district
+  const toggleDistrict = (regionId, districtId) => {
+    setTargets(prev => {
+      const withoutWholeRegion = prev.filter(
+        t => !(String(t.region_id) === String(regionId) && !t.district_id)
+      );
+      const exists = withoutWholeRegion.some(
+        t => String(t.region_id) === String(regionId) && String(t.district_id) === String(districtId)
+      );
+      if (exists) {
+        return withoutWholeRegion.filter(
+          t => !(String(t.region_id) === String(regionId) && String(t.district_id) === String(districtId))
+        );
+      }
+      return [...withoutWholeRegion, { region_id: regionId, district_id: districtId }];
+    });
   };
 
-  const updateTargetRegion = (idx, regionId) => {
-    setTargets(prev => prev.map((t, i) => i === idx ? { region_id: regionId, district_id: "" } : t));
-  };
-
-  const updateTargetDistrict = (idx, districtId) => {
-    setTargets(prev => prev.map((t, i) => i === idx ? { ...t, district_id: districtId } : t));
-  };
-
-  const getDistrictsFor = (regionId) => {
-    const region = regions.find(r => String(r.id) === String(regionId));
-    return region?.districts || [];
-  };
+  const clearAll = () => setTargets([]);
 
   const handleSave = async () => {
     setError("");
-    // Every added row must at least have a region selected
-    if (targets.some(t => !t.region_id)) {
-      setError("Select a region for each row, or remove empty rows.");
-      return;
-    }
-
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
@@ -84,99 +96,140 @@ export default function ProductVisibilityModal({ product, onClose, onSaved }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h3 className="font-bold text-gray-800 text-base flex items-center gap-2">
-            <FiMapPin className="text-purple-500" size={16} /> Customize Availability
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-sm shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100" style={{ background: "#1a3a8f" }}>
+          <h3 className="font-bold text-white text-sm md:text-base flex items-center gap-2">
+            <FiMapPin size={16} className="text-[#F5C518]" /> Customize Availability
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
+          <button onClick={onClose} className="text-blue-200 hover:text-white">
             <FiX size={18} />
           </button>
         </div>
 
-        <div className="p-5">
-          <p className="text-xs text-gray-500 mb-1 truncate">{product.name}</p>
+        <div className="px-5 pt-3">
+          <p className="text-xs md:text-sm text-gray-400 truncate">{product.name}</p>
+        </div>
 
+        {/* Body */}
+        <div className="px-5 py-3 flex-1 overflow-y-auto">
           {loading ? (
             <div className="py-10 flex justify-center">
-              <svg className="animate-spin w-6 h-6 text-purple-500" viewBox="0 0 24 24" fill="none">
+              <svg className="animate-spin w-6 h-6" style={{ color: "#1a3a8f" }} viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
             </div>
           ) : (
             <>
-              {targets.length === 0 ? (
-                <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-3 mb-4">
-                  <FiGlobe size={16} className="text-blue-500 flex-shrink-0" />
-                  <p className="text-xs text-blue-600">
-                    Currently visible <strong>everywhere</strong>. Add a region below to restrict visibility.
+              {targets.length === 0 && (
+                <div className="flex items-center gap-2 rounded-sm px-3 py-2.5 mb-3" style={{ background: "#e8edf7" }}>
+                  <FiGlobe size={15} className="flex-shrink-0" style={{ color: "#1a3a8f" }} />
+                  <p className="text-xs md:text-sm" style={{ color: "#1a3a8f" }}>
+                    Visible <strong>everywhere</strong>. Select regions below to restrict.
                   </p>
-                </div>
-              ) : (
-                <div className="space-y-3 mb-4">
-                  {targets.map((t, idx) => (
-                    <div key={idx} className="flex gap-2 items-start">
-                      <div className="flex-1 space-y-2">
-                        <select
-                          value={t.region_id}
-                          onChange={(e) => updateTargetRegion(idx, e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-400 bg-white"
-                        >
-                          <option value="">Select region</option>
-                          {regions.map(r => (
-                            <option key={r.id} value={r.id}>{r.name}</option>
-                          ))}
-                        </select>
-
-                        {t.region_id && (
-                          <select
-                            value={t.district_id}
-                            onChange={(e) => updateTargetDistrict(idx, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-400 bg-white"
-                          >
-                            <option value="">Whole region (all districts)</option>
-                            {getDistrictsFor(t.region_id).map(d => (
-                              <option key={d.id} value={d.id}>{d.name}</option>
-                            ))}
-                          </select>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => removeTarget(idx)}
-                        className="text-red-400 hover:text-red-600 p-2 flex-shrink-0"
-                      >
-                        <FiTrash2 size={15} />
-                      </button>
-                    </div>
-                  ))}
                 </div>
               )}
 
-              <button
-                onClick={addTarget}
-                className="flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-800 mb-2"
-              >
-                <FiPlus size={12} /> Add {targets.length > 0 ? "another " : ""}region
-              </button>
+              <div className="border border-gray-100 rounded-sm divide-y divide-gray-100 overflow-hidden">
+                {regions.map(region => {
+                  const expanded = expandedRegion === region.id;
+                  const wholeSelected = isRegionSelected(region.id);
+                  const anySelected = hasAnySelectionInRegion(region.id);
+                  const hasDistricts = region.districts?.length > 0;
 
-              {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+                  return (
+                    <div key={region.id}>
+                      {/* Region row */}
+                      <div
+                        className={`flex items-center gap-2 px-3 py-2.5 cursor-pointer transition ${anySelected ? "bg-[#e8edf7]" : "hover:bg-gray-50"}`}
+                        onClick={() => hasDistricts && setExpandedRegion(expanded ? null : region.id)}
+                      >
+                        {hasDistricts ? (
+                          expanded
+                            ? <FiChevronDown size={14} className="text-gray-400 flex-shrink-0" />
+                            : <FiChevronRight size={14} className="text-gray-400 flex-shrink-0" />
+                        ) : (
+                          <span className="w-[14px] flex-shrink-0" />
+                        )}
+
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleWholeRegion(region.id); }}
+                          className={`w-4 h-4 rounded-sm border flex items-center justify-center flex-shrink-0 transition ${
+                            wholeSelected ? "border-[#1a3a8f]" : "border-gray-300"
+                          }`}
+                          style={{ background: wholeSelected ? "#1a3a8f" : "transparent" }}
+                        >
+                          {wholeSelected && <FiCheck size={11} className="text-[#F5C518]" />}
+                        </button>
+
+                        <span className="text-sm md:text-base font-medium text-gray-700 flex-1">{region.name}</span>
+
+                        {hasDistricts && (
+                          <span className="text-[10px] md:text-xs text-gray-400">{region.districts.length} districts</span>
+                        )}
+                      </div>
+
+                      {/* Nested districts */}
+                      {expanded && hasDistricts && (
+                        <div className="bg-gray-50 py-1">
+                          {region.districts.map(district => {
+                            const selected = isDistrictSelected(region.id, district.id);
+                            return (
+                              <div
+                                key={district.id}
+                                onClick={() => toggleDistrict(region.id, district.id)}
+                                className="flex items-center gap-2 pl-9 pr-3 py-2 cursor-pointer hover:bg-gray-100 transition"
+                              >
+                                <button
+                                  className={`w-3.5 h-3.5 rounded-sm border flex items-center justify-center flex-shrink-0 transition ${
+                                    selected ? "border-[#1a3a8f]" : "border-gray-300"
+                                  }`}
+                                  style={{ background: selected ? "#1a3a8f" : "transparent" }}
+                                >
+                                  {selected && <FiCheck size={9} className="text-[#F5C518]" />}
+                                </button>
+                                <span className="text-xs md:text-sm text-gray-600">{district.name}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {targets.length > 0 && (
+                <button
+                  onClick={clearAll}
+                  className="flex items-center gap-1.5 text-xs md:text-sm font-semibold mt-3 hover:opacity-70"
+                  style={{ color: "#dc2626" }}
+                >
+                  <FiTrash2 size={12} /> Clear all — make visible everywhere
+                </button>
+              )}
+
+              {error && <p className="text-xs md:text-sm text-red-500 mt-2">{error}</p>}
             </>
           )}
         </div>
 
-        <div className="px-5 pb-5 flex gap-3">
+        {/* Footer */}
+        <div className="px-5 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
           <button
             onClick={handleSave}
             disabled={saving || loading}
-            className="flex-1 bg-purple-600 text-white py-2.5 rounded-lg hover:bg-purple-700 transition text-sm font-medium disabled:opacity-70 flex items-center justify-center gap-2"
+            className="flex-1 py-2.5 rounded-sm text-sm md:text-base font-semibold text-[#F5C518] disabled:opacity-60 transition"
+            style={{ background: "#1a3a8f" }}
           >
             {saving ? "Saving..." : "Save Availability"}
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
+            className="flex-1 py-2.5 rounded-sm text-sm md:text-base font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition"
           >
             Cancel
           </button>

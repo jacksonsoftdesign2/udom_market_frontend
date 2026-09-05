@@ -5,7 +5,7 @@ import {
   FaBox, FaEdit, FaTrash, FaPlus, FaSearch,
   FaChevronLeft, FaChevronRight, FaTimes, FaRedo, FaUpload, FaTag, FaList,
 } from "react-icons/fa";
-import { FiCheckCircle, FiMapPin } from "react-icons/fi";
+import { FiCheckCircle, FiMap } from "react-icons/fi";
 import ProductListView from "./ProductListView";
 import ProductVisibilityModal from "../../components/ProductVisibilityModal";
 import { usePaymentStatus } from '../../hooks/usePaymentStatus'; 
@@ -1483,7 +1483,7 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
       <FaRedo size={11} /> Reset Timer
     </button>
     <button onClick={() => openVisibilityModal(product)} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-50 text-yellow-700 hover:bg-gray-100 rounded-lg transition text-xs font-semibold">
-      <FiMapPin size={11} /> Control Visibility
+      <FiMap size={11} /> Control Visibility
     </button>
   </div>
   <div className="flex gap-2">
