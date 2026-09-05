@@ -14,13 +14,14 @@ import AdStrip from "../components/AdStrip";
 import { getSocket } from "../utils/socket";
 import { isAdCurrentlyActive } from "../utils/adHelpers";
 import { FiStar, FiZap, FiClock, FiTruck, FiPhone, FiMail, FiTrendingUp,
-       FiUsers, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
+       FiUsers, FiChevronDown, FiMapPin, FiTag, FiShoppingBag, FiSearch } from "react-icons/fi";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { fairFeedOrder } from "../utils/feedOrder";
 import CustomerAuthModal from "../components/CustomerAuthModal";
+import LocationFilterModal from "../components/LocationFilterModal";
 
 
-// ── Category Bar ────────────────────────────────────────────────────
+//Category Bar
 function CategoryBar({ categories, selected, onSelect }) {
   return (
 <div className="flex gap-2 pb-1 mb-5 overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
@@ -175,7 +176,7 @@ function InstantResults({ results, onSelectCategory, onSelectTrader, onClose }) 
   );
 }
 
-// ── Search With Instant Panel ───────────────────────────────────────
+//Search With Instant Panel 
 // IMPORTANT: defined at module level (outside Home) so it never remounts on re-render
 function SearchWithInstant({
   searchInput,
@@ -236,7 +237,7 @@ function SearchWithInstant({
   );
 }
 
-// ── Main Home ───────────────────────────────────────────────────────
+//Main Home
 function Home() {
   const navigate = useNavigate();
   const [lang] = useState("sw");
@@ -274,6 +275,8 @@ function Home() {
   const [nearbyProducts, setNearbyProducts] = useState([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
   const [nearbyError, setNearbyError] = useState("");
+  const [locationFilter, setLocationFilter] = useState({ region_id: null, district_id: null, region_name: null, district_name: null });
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -413,14 +416,15 @@ function Home() {
       const params = new URLSearchParams();
       if (search) params.append("search", search);
       if (selectedCategory) params.append("category_id", selectedCategory);
+      if (locationFilter.region_id) params.append("region_id", locationFilter.region_id);
+      if (locationFilter.district_id) params.append("district_id", locationFilter.district_id);
 
-fetch(`${API}/products/public?${params}`)
-  .then(r => r.json())
-  .then(data => {
-    const prods = Array.isArray(data) ? data : data.products || [];
-    console.log('IMAGE SAMPLE:', JSON.stringify(prods[0]?.images));
-    setProducts(prods);
-  })
+      fetch(`${API}/products/public?${params}`)
+        .then(r => r.json())
+        .then(data => {
+          const prods = Array.isArray(data) ? data : data.products || [];
+          setProducts(prods);
+        })
         .catch(() => setError("Failed to load products"))
         .finally(() => setLoading(false));
     };
@@ -431,7 +435,7 @@ fetch(`${API}/products/public?${params}`)
 
     const interval = setInterval(fetchProducts, 30000);
     return () => clearInterval(interval);
-  }, [search, selectedCategory, quickFilter]);
+  }, [search, selectedCategory, quickFilter, locationFilter]);
 
   // ── instant results (derived) ──
   const instantResults = buildInstantResults(searchInput, products, categories);
@@ -703,6 +707,20 @@ if (key === "nearby") {
 )}
 
     <div className="px-3 md:px-6 lg:px-12 max-w-7xl mx-auto">
+            
+          {/* ── LOCATION FILTER ── */}
+          <div className="mb-3">
+          <button
+          onClick={() => setShowLocationModal(true)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs md:text-sm font-semibold border border-[#1a3a8f] text-[#1a3a8f] bg-white/60 hover:bg-[#e8edf7] transition"
+          >
+          <FiMapPin size={13} />
+          {locationFilter.district_name || locationFilter.region_name || "All Tanzania"}
+          <FiChevronDown size={12} />
+          </button>
+          </div>
+
+            
             {/* ── QUICK LINKS ── */}
             <QuickLinks
           activeKey={quickFilter}
@@ -922,6 +940,14 @@ if (key === "nearby") {
           }}
         />
       )}
+
+      {showLocationModal && (
+  <LocationFilterModal
+    current={locationFilter}
+    onApply={setLocationFilter}
+    onClose={() => setShowLocationModal(false)}
+  />
+)}
 
       <Footer />
     </div>
