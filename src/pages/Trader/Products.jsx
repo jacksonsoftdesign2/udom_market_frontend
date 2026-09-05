@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { FiCheckCircle, FiMapPin } from "react-icons/fi";
 import ProductListView from "./ProductListView";
-import ProductVisibilityModal from "./ProductVisibilityModal";
+import ProductVisibilityModal from "../../components/ProductVisibilityModal";
 import { usePaymentStatus } from '../../hooks/usePaymentStatus'; 
 
 // ── NEW: emptyForm now includes hierarchy fields ──
