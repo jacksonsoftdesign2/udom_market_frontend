@@ -5,8 +5,10 @@ import {
   FaBox, FaEdit, FaTrash, FaPlus, FaSearch,
   FaChevronLeft, FaChevronRight, FaTimes, FaRedo, FaUpload, FaTag, FaList,
 } from "react-icons/fa";
-import { FiCheckCircle } from "react-icons/fi";
+import { FiCheckCircle, FiMapPin } from "react-icons/fi";
 import ProductListView from "./ProductListView";
+import ProductVisibilityModal from "./ProductVisibilityModal";
+import { FiMapPin } from "react-icons/fi";
 import { usePaymentStatus } from '../../hooks/usePaymentStatus'; 
 
 // ── NEW: emptyForm now includes hierarchy fields ──
@@ -79,6 +81,7 @@ function Products() {
   const [loadingEditModels, setLoadingEditModels] = useState(false);
   const [loadingEditVariants, setLoadingEditVariants] = useState(false);
   const [showList, setShowList] = useState(false);
+  const [visibilityProduct, setVisibilityProduct] = useState(null);
   const { isPaid, loading: paymentLoading } = usePaymentStatus();
   useEffect(() => {
     fetch(`${API}/users/categories`)
@@ -126,6 +129,8 @@ const fetchEditModels = async (brandId, q = '') => {
   } catch { setEditModels([]); }
   finally { setLoadingEditModels(false); }
 };
+
+const openVisibilityModal = (product) => setVisibilityProduct(product);
 
 const fetchEditVariants = async (modelId, q = '') => {
   setLoadingEditVariants(true);
@@ -1473,27 +1478,32 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
                     </div>
                   )}
 
-                  <div className="mt-auto pt-2 border-t border-gray-100 space-y-2">
-                    <button onClick={() => handleRenew(product.id)} className="w-full flex items-center justify-center gap-1.5 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition text-xs font-semibold">
-                      <FaRedo size={11} /> Update Listing (Reset Timer)
-                    </button>
-                    <div className="flex gap-2">
-                      <button onClick={() => openEdit(product)} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition text-xs font-semibold">
-                        <FaEdit size={12} /> Edit
-                      </button>
-                      <button
-                        onClick={() => setConfirmDelete(product.id)}
-                        disabled={deleting === product.id}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition text-xs font-semibold disabled:opacity-70"
-                      >
-                        {deleting === product.id ? (
-                          <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
-                        ) : (
-                          <><FaTrash size={12} /> Delete</>
-                        )}
-                      </button>
-                    </div>
-                  </div>
+<div className="mt-auto pt-2 border-t border-gray-100 space-y-2">
+  <div className="flex gap-2">
+    <button onClick={() => handleRenew(product.id)} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition text-xs font-semibold">
+      <FaRedo size={11} /> Reset Timer
+    </button>
+    <button onClick={() => openVisibilityModal(product)} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-50 text-yellow-700 hover:bg-gray-100 rounded-lg transition text-xs font-semibold">
+      <FiMapPin size={11} /> Control Visibility
+    </button>
+  </div>
+  <div className="flex gap-2">
+    <button onClick={() => openEdit(product)} className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition text-xs font-semibold">
+      <FaEdit size={12} /> Edit
+    </button>
+    <button
+      onClick={() => setConfirmDelete(product.id)}
+      disabled={deleting === product.id}
+      className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition text-xs font-semibold disabled:opacity-70"
+    >
+      {deleting === product.id ? (
+        <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+      ) : (
+        <><FaTrash size={12} /> Delete</>
+      )}
+    </button>
+  </div>
+</div>
                 </div>
               </div>
             );
@@ -1501,7 +1511,7 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
         </div>
       )}
 
-      {/* ── Delete Confirmation — UNCHANGED ── */}
+      {/*Delete Confirmation*/}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
@@ -1533,6 +1543,17 @@ if (showList) return <ProductListView onClose={() => setShowList(false)} />;
           </div>
         </div>
       )}
+
+{visibilityProduct && (
+      <ProductVisibilityModal
+        product={visibilityProduct}
+        onClose={() => setVisibilityProduct(null)}
+        onSaved={() => {
+          setSuccessMsg("Availability updated!");
+          setTimeout(() => setSuccessMsg(""), 3000);
+        }}
+      />
+    )}
     </div>
   );
 }
